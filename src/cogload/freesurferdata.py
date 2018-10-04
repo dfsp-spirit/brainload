@@ -1,3 +1,5 @@
+import os
+import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 

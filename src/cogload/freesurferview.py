@@ -1,5 +1,6 @@
 import mayavi.mlab as mlab
 import numpy as np
+from cogload.spatial_transform import *
 
 def print_mlab_view(view):
     '''See http://docs.enthought.com/mayavi/mayavi/auto/mlab_camera.html#view for details.'''
@@ -38,7 +39,7 @@ def plot_brain_data_on_mesh(vert_coords, faces, morphology_data, meta_data, do_d
     if not draw_mesh_only:
         #mlab.axes().label_text_property.font_size = 12
         mlab.colorbar()
-        mlab.title('Brain of subject ' + subject_id, size=0.4)
+        mlab.title('Brain of subject ' + meta_data.get('subject_id', '?'), size=0.4)
         #mlab.text(0.1, 0.5, meta_data.get('surf', ''), color=(1.0, 0.0, 0.0), width=0.05) # width should be scaled by the number of characters
         #mlab.text(0.1, 0.55, meta_data.get('measure', ''), color=(1.0, 0.0, 0.0), width=0.05)
         #mlab.text(0.1, 0.6, meta_data.get('space', ''), color=(1.0, 0.0, 0.0), width=0.05)
@@ -46,7 +47,7 @@ def plot_brain_data_on_mesh(vert_coords, faces, morphology_data, meta_data, do_d
     #mlab.view(49, 31.5, 52.8, (4.2, 37.3, 20.6))
     if not export_image_file is None:
         print "Exporting scene to file '%s'." % export_image_file
-        mlab.savefig(export_image_file, figure=fig_handle)   # save scene: this could also be saved in a 3D file format.
+        #mlab.savefig(export_image_file, figure=fig_handle)   # save scene: this could also be saved in a 3D file format.
 
     if do_display_interactively:
         mlab.show()
