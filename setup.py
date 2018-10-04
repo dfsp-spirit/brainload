@@ -1,4 +1,8 @@
-from setuptools import setup, findpackages
+
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 setup(
     name='CognitiveLoad',
@@ -9,7 +13,7 @@ setup(
     author='Tim Schäfer',
     url='https://github.com/dfsp-spirit/cogload',
     #packages = ['cogload'],
-    packages=find_packages(),
+    packages=['cogload'],
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
