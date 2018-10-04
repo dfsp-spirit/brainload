@@ -36,3 +36,7 @@ To run the unit tests, you need `pytest`, which can be installed via `pip`. Then
 
     cd develop/cogload/
     ./run_tests.sh
+
+## License
+
+MIT
