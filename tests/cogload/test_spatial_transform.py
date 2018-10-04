@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+import cogload as cl
 import cogload.spatial_transform as st
 
 def test_rad2deg_with_positive_input():
