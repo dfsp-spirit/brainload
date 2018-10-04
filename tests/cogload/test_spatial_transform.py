@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
-from cogload import spatial_transform
+import cogload.spatial_transform as st
 
 def test_rad2deg_with_valid_input():
-    deg = rad2deg(2 * np.pi)
-    assert deg == pytest.approx(180.0, 0.1)
+    deg = st.rad2deg(2 * np.pi)
+    assert deg == pytest.approx(360.0, 0.01)
