@@ -85,12 +85,18 @@ If you do not have your MRI data / FreeSurfer output at hand but still want to t
 
 ## Tests
 
-To run the unit tests, you need `pytest`, which can be installed via `pip`. Then just:
+To run the unit tests, you need `pytest` and `pytest-cov`, both of which can be installed via `pip`. In the virtual environment and the top-level cogload directory, just run:
 
 ```console
-cd develop/cogload/
-./run_tests.sh
+pytest
 ```
+
+To run the tests with code coverage:
+
+```console
+pytest --cov=src/
+```
+
 
 ## Alternatives and similar tools (in python)
 

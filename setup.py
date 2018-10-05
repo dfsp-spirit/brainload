@@ -15,16 +15,16 @@ setup(
     author='Tim Schäfer',
     url='https://github.com/dfsp-spirit/cogload',
     packages=find_packages(where='src'),
-    classifiers = ['Development Status :: 2 - Pre-Alpha',                               # see https://pypi.org/pypi?%3Aaction=list_classifiers for full classifier list
+    classifiers = ['Development Status :: 2 - Pre-Alpha',     # See https://pypi.org/pypi?%3Aaction=list_classifiers for full classifier list
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
           'Programming Language :: Python :: 2'],
     license='MIT',
     setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'pytest-cov'],
     install_requires=['numpy', 'nibabel'],
-    extras_require={'plot_brain': ['mayavi']},     # to use this, you have to `pip install cogload[plot_brain]`
-    package_dir = {'': 'src'},             # The root directory that contains the source for the modules (relative to setup.py) is ./src/
+    extras_require={'plot_brain': ['mayavi']},               # To use this, you have to `pip install cogload[plot_brain]`
+    package_dir = {'': 'src'},                               # The root directory that contains the source for the modules (relative to setup.py) is ./src/
     zip_safe=False
 )
