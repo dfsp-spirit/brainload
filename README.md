@@ -12,20 +12,20 @@ A python module designed to reduce your cognitive load while accessing FreeSurfe
 
 Here is an example usage that loads surface data for a subject:
 
-    ```
-    from cogload.freesurferdata import parse_subject
-    subject_id = 'bert'
-    vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id, surf='pial', measure='area')
-    ```
+```python
+from cogload.freesurferdata import parse_subject
+subject_id = 'bert'
+vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id, surf='pial', measure='area')
+```
 Now you have the brain surface mesh (defined by `vert_coords` and `faces`) and the morphology data from the curv file in `per_vertex_data`. The `meta_data` holds information like the subject id and the full paths of the files that were used to retrieve the data. The parse_subject function uses the environment variable `SUBJECTS_DIR` to determine where your data is. You can override that (and change many other things via optional named arguments), of course.
 
 Note that the data we retrieved in the example above is in native space. You may want to retrieve standard space data, i.e., subject data mapped to an average subject like FreeSurfer's `fsaverage` subject, instead. Here is an example for that:
 
-    ```
-    from cogload.freesurferdata import parse_subject_standard_space_data
-    subject_id = 'bert'
-    vert_coords, faces, per_vertex_data, meta_data = parse_subject_standard_space_data(subject_id, surf='white', display_surf='inflated', measure='area')
-    ```
+```python
+from cogload.freesurferdata import parse_subject_standard_space_data
+subject_id = 'bert'
+vert_coords, faces, per_vertex_data, meta_data = parse_subject_standard_space_data(subject_id, surf='white', display_surf='inflated', measure='area')
+```
 
 This time, the mesh you get is the inflated surface of the `fsaverage` subject (since that is the default for the named parameter `average_subject`, which we omitted in the example above). The `per_vertex_data` represents the area data for the white matter surface of your subject, mapped to the vertices of the average subject and ready for group comparison.
 
