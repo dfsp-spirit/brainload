@@ -33,7 +33,7 @@ You can now use the data for statistical analysis in python, e.g., using Pandas,
 
 ### Alternatives and similar tools (in python)
 
-Alternatives to CogLoad:
+Alternatives to `CogLoad`:
 
 - If you want a full brain visualization package for python, you may want to have a look at [PySurfer](https://pysurfer.github.io/) instead.
 - You could also use the `freesurfer.io` and `freesurfer.mghformat` modules from [nibabel](http://nipy.org/nibabel/) directly and open the FreeSurfer files yourself. (Most likely you would end up with boilerplate that is pretty similar to `CogLoad`.)
@@ -52,24 +52,30 @@ This is pre-alpha and not ready for usage yet. Come back another day.
 
 It is recommended to use a virtual environment for hacking on `cogload`.
 
-    pip install --user virtualenv      # unless you already have it
-    cd develop/cogload/                # or wherever you cloned the repo
-    python -m virtualenv env/          # creates a virtual python environment in the new directory env/
+```console
+pip install --user virtualenv      # unless you already have it
+cd develop/cogload/                # or wherever you cloned the repo
+python -m virtualenv env/          # creates a virtual python environment in the new directory env/
+```
 
 
 Once you have created the virtual environment, all you have to do is use it:
 
-    source env/bin/activate            # to change into it
+```console
+source env/bin/activate            # to change into it
 
-    some_command...
+some_command...
 
-    deactivate                         # to leave it
+deactivate                         # to leave it
+```
 
 
 To install `cogload` in development mode (you should be in the virtual environment, of course):
 
-    cd develop/cogload/
-    pip install --editable .           # also installs the dependencies
+```console
+cd develop/cogload/
+pip install --editable .           # also installs the dependencies
+```
 
 You can now use `cogload` by typing `import cogload` in your application or an interactive python session.
 
@@ -79,39 +85,39 @@ Here is a full interactive example session from Ubuntu 18.04 LTS:
 
 Installation:
 
-    ```
-    [ts@box:~/develop/cogload] $ source env/bin/activate
-    (env) [ts@box:~/develop/cogload] $ pip install --editable .
-    Obtaining file:///home/ts/develop/cogload
-    Collecting numpy (from cogload==0.1.0)
-      Using cached https://files.pythonhosted.org/packages/40/c5/f1ed15dd931d6667b40f1ab1c2fe1f26805fc2b6c3e25e45664f838de9d0/numpy-1.15.2-cp27-cp27mu-manylinux1_x86_64.whl
-    Collecting nibabel (from cogload==0.1.0)
-    Installing collected packages: numpy, nibabel, cogload
-      Running setup.py develop for cogload
-    Successfully installed cogload nibabel-2.3.0 numpy-1.15.2
-    ```
+```console
+[ts@box:~/develop/cogload] $ source env/bin/activate
+(env) [ts@box:~/develop/cogload] $ pip install --editable .
+Obtaining file:///home/ts/develop/cogload
+Collecting numpy (from cogload==0.1.0)
+  Using cached https://files.pythonhosted.org/packages/40/c5/f1ed15dd931d6667b40f1ab1c2fe1f26805fc2b6c3e25e45664f838de9d0/numpy-1.15.2-cp27-cp27mu-manylinux1_x86_64.whl
+Collecting nibabel (from cogload==0.1.0)
+Installing collected packages: numpy, nibabel, cogload
+  Running setup.py develop for cogload
+Successfully installed cogload nibabel-2.3.0 numpy-1.15.2
+```
 
 Using the module:
 
-    ```
-    (env) [ts@box:~/develop/cogload] $ python
-    Python 2.7.15rc1 (default, Apr 15 2018, 21:51:34)
-    [GCC 7.3.0] on linux2
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import cogload
-    >>> from cogload.spatial_transform import *
-    >>> deg2rad(90)
-    1.5707963267948966
-    >>> exit()
-    (env) [ts@box:~/develop/cogload] $ deactivate
-    [ts@box:~/develop/cogload] $
-    ```
+```console
+(env) [ts@box:~/develop/cogload] $ python
+Python 2.7.15rc1 (default, Apr 15 2018, 21:51:34)
+[GCC 7.3.0] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import cogload
+>>> from cogload.spatial_transform import *
+>>> deg2rad(90)
+1.5707963267948966
+>>> exit()
+(env) [ts@box:~/develop/cogload] $ deactivate
+[ts@box:~/develop/cogload] $
+```
 
 ### Packaging
 
 You can use the `setup.py` file to generate a wheel package. This should be done in the virtual environment.
 
-```
+```console
 pip install --upgrade setuptools wheel              # just make sure we have the latest versions
 python setup.py sdist bdist_wheel                   # will create the packages in the sub directory dist/
 ```
@@ -126,8 +132,11 @@ If you do not have your MRI data / FreeSurfer output at hand but still want to t
 
 To run the unit tests, you need `pytest`, which can be installed via `pip`. Then just:
 
-    cd develop/cogload/
-    ./run_tests.sh
+```console
+cd develop/cogload/
+./run_tests.sh
+```
+
 
 ## License
 
