@@ -13,7 +13,7 @@ A python module designed to reduce your cognitive load while accessing FreeSurfe
 This is pre-alpha and not ready for usage yet. Come back another day.
 
 
-### Interface (WIP)
+## Interface (WIP)
 
 Here is an example usage that loads surface data for a subject:
 
@@ -36,7 +36,7 @@ This time, the mesh you get is the inflated surface of the `fsaverage` subject (
 
 You can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
 
-### Alternatives and similar tools (in python)
+## Alternatives and similar tools (in python)
 
 Alternatives to `CogLoad`:
 
