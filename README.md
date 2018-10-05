@@ -36,6 +36,11 @@ This time, the mesh you get is the inflated surface of the `fsaverage` subject (
 
 You can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
 
+## API Documentation
+
+It's a bit too early for that.
+
+
 ## Alternatives and similar tools (in python)
 
 Alternatives to `CogLoad`:
