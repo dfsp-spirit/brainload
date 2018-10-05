@@ -54,7 +54,7 @@ It is recommended to use a virtual environment for hacking on `cogload`.
 
     pip install --user virtualenv      # unless you already have it
     cd develop/cogload/                # or wherever you cloned the repo
-    python -m virtualenv env/          # creates a virtual python environment under env/
+    python -m virtualenv env/          # creates a virtual python environment in the new directory env/
 
 
 Once you have created the virtual environment, all you have to do is use it:
@@ -63,15 +63,15 @@ Once you have created the virtual environment, all you have to do is use it:
 
     some_command...
 
-    deactivate                          # to leave it
+    deactivate                         # to leave it
 
 
 To install `cogload` in development mode (you should be in the virtual environment, of course):
 
     cd develop/cogload/
-    pip install --editable .
+    pip install --editable .           # also installs the dependencies
 
-You can now use `cogload` by typing `import cogload` in your application.
+You can now use `cogload` by typing `import cogload` in your application or an interactive python session.
 
 ### Detailed development instructions
 
@@ -106,6 +106,15 @@ Using the module:
     (env) [ts@box:~/develop/cogload] $ deactivate
     [ts@box:~/develop/cogload] $
     ```
+
+### Packaging
+
+You can use the `setup.py` file to generate a wheel package. This should be done in the virtual environment.
+
+```
+pip install --upgrade setuptools wheel              # just make sure we have the latest versions
+python setup.py sdist bdist_wheel                   # will create the packages in the sub directory dist/
+```
 
 ## Obtaining suitable pre-processed sMRI input data for cogload
 
