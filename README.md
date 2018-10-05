@@ -39,4 +39,4 @@ To run the unit tests, you need `pytest`, which can be installed via `pip`. Then
 
 ## License
 
-MIT
+MIT, see https://opensource.org/licenses/MIT
