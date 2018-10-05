@@ -41,20 +41,6 @@ You can now use the data for statistical analysis in python, e.g., using Pandas,
 It's a bit too early for that.
 
 
-## Alternatives and similar tools (in python)
-
-Alternatives to `CogLoad`:
-
-- If you want a full brain visualization package for python, you may want to have a look at [PySurfer](https://pysurfer.github.io/) instead.
-- You could also use the `freesurfer.io` and `freesurfer.mghformat` modules from [nibabel](http://nipy.org/nibabel/) directly and open the FreeSurfer files yourself. (Most likely you would end up with boilerplate that is pretty similar to `CogLoad`.)
-
-Less related but still useful:
-
-- If you want a full python interface that wraps the command line utilities of various existing neuroimaging software (FSL, FreeSurfer, ...) and allows you to create a full neuroimaging pipeline, you should definitely have a look at [nipype](http://nipy.org/packages/nipype/index.html).
-- In case you do not yet know it, I highly recommend that you have a look at some of the great neuroimaging tools for python at [nipy.org](http://nipy.org/).
-
-
-
 
 ## Development
 
@@ -105,6 +91,19 @@ To run the unit tests, you need `pytest`, which can be installed via `pip`. Then
 cd develop/cogload/
 ./run_tests.sh
 ```
+
+## Alternatives and similar tools (in python)
+
+Alternatives to `CogLoad`:
+
+- If you want a full brain visualization package for python, you may want to have a look at [PySurfer](https://pysurfer.github.io/) instead.
+- You could also use the `freesurfer.io` and `freesurfer.mghformat` modules from [nibabel](http://nipy.org/nibabel/) directly and open the FreeSurfer files yourself. (Most likely you would end up with boilerplate that is pretty similar to `CogLoad`.)
+
+Less related but still useful:
+
+- If you want a full python interface that wraps the command line utilities of various existing neuroimaging software (FSL, FreeSurfer, ...) and allows you to create a full neuroimaging pipeline, you should definitely have a look at [nipype](http://nipy.org/packages/nipype/index.html).
+- In case you do not yet know it, I highly recommend that you have a look at some of the great neuroimaging tools for python at [nipy.org](http://nipy.org/).
+
 
 
 ## License
