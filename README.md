@@ -68,8 +68,15 @@ To install `cogload` in development mode (you should be in the virtual environme
 
 ```console
 cd develop/cogload/
-pip install --editable .           # also installs the dependencies
+pip install --editable .           # installs cogload from the current directory, and grabs its dependencies from PyPI
 ```
+
+You may want to get the optional dependencies that are needed only if you want to plot the brain in 3D as well. In that case, replace the latter with:
+```console
+pip install --editable .[brain_plot]           # also installs the 'brain_plot' extra and all its dependencies (e.g., MayaVi)
+```
+
+
 
 You can now use `cogload` by typing `import cogload` in your application or an interactive python session.
 
