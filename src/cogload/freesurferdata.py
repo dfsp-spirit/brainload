@@ -3,17 +3,29 @@ import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 
-def merge_meshes(mesh_file_list):
+def merge_meshes(mesh_file_list, meta_data={}):
+    '''Reads all brain mesh files in the numpy array mesh_file_list and merges the meshes into a single one.
+       This is intended for reading the left and right hemispheres of a brain.
+    '''
     merged_vert_coords = np.empty((0, 3), dtype=float)
     merged_faces = np.empty((0, 3), dtype=int)
+    vertex_count_per_mesh = {}
+    face_count_per_mesh = {}
     for mesh_file in mesh_file_list:
         ## merge vertex coordinates: all we have to do is append them and record the number we appended
         vertex_index_shift = merged_vert_coords.shape[0]
         vert_coords, faces = fsio.read_geometry(mesh_file)
+
+        vertex_count_per_mesh[mesh_file] = vert_coords.shape[0]             # collect meta data
+        face_count_per_mesh[mesh_file] = faces.shape[0]
+        print "Metadata: Found %d vertices, %d faces in file %s." % (vert_coords.shape[0], faces.shape[0], mesh_file)
+
         merged_vert_coords = np.vstack((merged_vert_coords, vert_coords))
         ## Now merge the new faces. We need to modify the vertex indices: shift them by the number of vertices we already have
         faces_shifted = faces + vertex_index_shift
         merged_faces = np.vstack((merged_faces, faces_shifted))
+    meta_data['vertex_count_per_mesh'] = vertex_count_per_mesh
+    meta_data['face_count_per_mesh'] = face_count_per_mesh
     return merged_vert_coords, merged_faces
 
 
@@ -68,7 +80,7 @@ def merge_per_vertex_data(curv_file_list, curv_file_format='curv', dtype=float):
 
 def parse_brain_files(mesh_lh, mesh_rh, curv_lh=None, curv_rh=None, meta_data={}, curv_file_format='curv'):
     '''Low-level interface to parse FreeSurfer brain data. Parses both hemispheres of a brain and the respective surface data files.'''
-    verts, faces = merge_meshes(np.array([mesh_lh, mesh_rh]))
+    verts, faces = merge_meshes(np.array([mesh_lh, mesh_rh]), meta_data)
     meta_data['file_mesh_lh'] = mesh_lh
     meta_data['file_mesh_rh'] = mesh_rh
     morphology_data = None
