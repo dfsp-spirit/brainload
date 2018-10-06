@@ -19,11 +19,11 @@ setup(
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
-          'Programming Language :: Python :: 2'],
+          'Programming Language :: Python :: 2.7'],
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'pytest-cov'],
-    install_requires=['numpy', 'nibabel'],
+    install_requires=['numpy', 'nibabel', 'pandas', 'matplotlib'],
     extras_require={'plot_brain': ['mayavi']},               # To use this, you have to `pip install cogload[plot_brain]`
     package_dir = {'': 'src'},                               # The root directory that contains the source for the modules (relative to setup.py) is ./src/
     zip_safe=False
