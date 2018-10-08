@@ -36,11 +36,23 @@ Type "help", "copyright", "credits" or "license" for more information.
 [ts@box:~/develop/cogload] $
 ```
 
+## Building the documentation
+
+We use sphinx to generate the documentation. In the virtual environment:
+
+```console
+pip install sphinx
+cd doc/
+make html
+```
+
 ## Packaging
 
 We are following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here.
 
 You can use the `setup.py` file to generate a wheel package. This should be done in the virtual environment.
+
+IMPORTANT: Be sure to adapt the `setup.py` file before packaging, especially the version information.
 
 ```console
 pip install --upgrade setuptools wheel              # just make sure we have the latest versions
@@ -52,5 +64,5 @@ Then deactivate the virtual environment and upload the packages to PiPy:
 ```console
 deactivate                                    # only if you were in the virtual environment
 pip install --user --upgrade twine            # just to be sure
-twine upload dist/*
+twine upload dist/*                           # will ask for your PyPI credentials
 ```
