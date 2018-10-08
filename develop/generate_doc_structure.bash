@@ -18,16 +18,9 @@ if [ ! -d "${PROJECT_SOURCE_DIR}" ]; then
 fi
 
 if [ ! -d "${DOC_DIR}" ]; then
-    echo "Directory '${DOC_DIR}' does not exist in current path. It must exist (and be empty). Exiting."
+    echo "Directory '${DOC_DIR}' does not exist in current path. It must exist and should have the settings from your run of `sphinx-quickstart` in there already. Exiting."
     exit 1
 fi
 
-if [ "$(ls -A ${DOC_DIR})" ]; then
-    echo "It looks like the documentation dir '${DOC_DIR}' already has some files in it."
-    echo "If all you wanted to do is rebuild the documentation after you changed the code, do NOT run this script! Read the development readme file instead."
-    echo "Only if you really know what you are doing: delete all files in doc/ and then re-run this script."
-    #exit 1
-fi
 
-#sphinx-apidoc --full -H "${PROJECT}" -A "${AUTHOR}" -o ${DOC_DIR} src/${PROJECT}
 sphinx-apidoc --full -o ${DOC_DIR} src/${PROJECT}
