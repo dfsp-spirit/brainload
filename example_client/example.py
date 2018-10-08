@@ -9,89 +9,91 @@ from cogload.spatial_transform import *
 from cogload.freesurferview import *
 from cogload.freesurferdata import *
 
+if __name__ == '__main__':
+    run_example()
+
+def run_example():
+    ## Settings
+    surfaces = ['white', 'pial']
+    hemispheres = ['lh', 'rh']
+    subjects_file = 'subjects.txt'
 
 
-## Settings
-surfaces = ['white', 'pial']
-hemispheres = ['lh', 'rh']
-subjects_file = 'subjects.txt'
+    ## Parse command line
+    print "--------------------------------- brain mesh fun --------------------------------------"
+    if len(sys.argv) > 1:
+        subjects_file = sys.argv[1]
+
+    ## Read subjects file
+    df_subjects = pd.read_csv(subjects_file, names=["subject_id"])
+    subject_ids = df_subjects["subject_id"]
+
+    ## Read data
+    subjects_dir = os.getenv('SUBJECTS_DIR', '.')
+    if len(sys.argv) > 2:
+        subjects_dir = sys.argv[2]
 
 
-## Parse command line
-print "--------------------------------- brain mesh fun --------------------------------------"
-if len(sys.argv) > 1:
-    subjects_file = sys.argv[1]
+    for subject_id in subject_ids:
+        subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
+        print "Handling subject %s, looking for data in directory %s." % (subject_id, subject_surf_dir)
 
-## Read subjects file
-df_subjects = pd.read_csv(subjects_file, names=["subject_id"])
-subject_ids = df_subjects["subject_id"]
+        use_whole_brain = True
+        if use_whole_brain:
+            print "Using whole brain."
+            lh_surf = os.path.join(subject_surf_dir, 'lh.white')
+            rh_surf = os.path.join(subject_surf_dir, 'rh.white')
+            lh_data = os.path.join(subject_surf_dir, 'lh.area')
+            rh_data = os.path.join(subject_surf_dir, 'rh.area')
 
-## Read data
-subjects_dir = os.getenv('SUBJECTS_DIR', '.')
-if len(sys.argv) > 2:
-    subjects_dir = sys.argv[2]
-
-
-for subject_id in subject_ids:
-    subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
-    print "Handling subject %s, looking for data in directory %s." % (subject_id, subject_surf_dir)
-
-    use_whole_brain = True
-    if use_whole_brain:
-        print "Using whole brain."
-        lh_surf = os.path.join(subject_surf_dir, 'lh.white')
-        rh_surf = os.path.join(subject_surf_dir, 'rh.white')
-        lh_data = os.path.join(subject_surf_dir, 'lh.area')
-        rh_data = os.path.join(subject_surf_dir, 'rh.area')
-
-        #vert_coords, faces, per_vertex_data, meta_data = parse_brain_files(lh_surf, rh_surf, curv_lh=lh_data, curv_rh=rh_data)
-        #vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id)
-        vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id, surf='pial', measure='area')
-        #vert_coords, faces, per_vertex_data, meta_data = parse_subject_standard_space_data(subject_id, display_surf='inflated', measure='area')
+            #vert_coords, faces, per_vertex_data, meta_data = parse_brain_files(lh_surf, rh_surf, curv_lh=lh_data, curv_rh=rh_data)
+            #vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id)
+            vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id, surf='pial', measure='area')
+            #vert_coords, faces, per_vertex_data, meta_data = parse_subject_standard_space_data(subject_id, display_surf='inflated', measure='area')
 
 
-        #vertex_data = { 'vidx': np.arange(vert_coords[:,0].size), 'x': vert_coords[:,0], 'y': vert_coords[:,1], 'z': vert_coords[:,2], 'value': per_vertex_data}
-        #df_brain_vertices = pd.DataFrame(data=vertex_data)
-        #print df_brain_vertices.describe()
+            #vertex_data = { 'vidx': np.arange(vert_coords[:,0].size), 'x': vert_coords[:,0], 'y': vert_coords[:,1], 'z': vert_coords[:,2], 'value': per_vertex_data}
+            #df_brain_vertices = pd.DataFrame(data=vertex_data)
+            #print df_brain_vertices.describe()
 
-        #face_data = { 'fidx': np.arange(faces[:,0].size), 'vidx1': faces[:,0], 'vidx2': faces[:,1], 'vidx3': faces[:,2]}
-        #df_brain_faces = pd.DataFrame(data=face_data, dtype=np.int32)
-        #print df_brain_faces.describe()
-    else:
-        print "Using one hemisphere only."
-        vert_coords, faces = fsio.read_geometry(os.path.join(subject_surf_dir, 'lh.white'))
-        per_vertex_data = fsio.read_morph_data(os.path.join(subject_surf_dir, 'lh.area'))
-
-
-    try_pymesh = False
-    plot_pymesh_hist = False
-    if try_pymesh:
-        print "Trying PyMesh"
-        import pymesh            # Install this from a wheel on the github page, see https://github.com/PyMesh/PyMesh/issues/110. The one in pip is broken. (Also note that the broken one is called pymesh2 in pip: pymesh on pip is a completely different library.)
-        mesh = pymesh.meshio.form_mesh(vert_coords, faces)
-        print(mesh.num_vertices, mesh.num_faces, mesh.num_voxels)
-        print " * Computing Gaussian curvature for all vertices..."
-        mesh.add_attribute('vertex_gaussian_curvature') # compute Gaussian curvature for all verts
-        sr_gaussian_curvature = pd.Series(mesh.get_attribute('vertex_gaussian_curvature'))
-
-        df_subject_mesh_data = pd.DataFrame({ 'gaussian_curvature' : sr_gaussian_curvature })
-        print df_subject_mesh_data.describe()
+            #face_data = { 'fidx': np.arange(faces[:,0].size), 'vidx1': faces[:,0], 'vidx2': faces[:,1], 'vidx3': faces[:,2]}
+            #df_brain_faces = pd.DataFrame(data=face_data, dtype=np.int32)
+            #print df_brain_faces.describe()
+        else:
+            print "Using one hemisphere only."
+            vert_coords, faces = fsio.read_geometry(os.path.join(subject_surf_dir, 'lh.white'))
+            per_vertex_data = fsio.read_morph_data(os.path.join(subject_surf_dir, 'lh.area'))
 
 
-        #sr_filtered = sr_gaussian_curvature.where(lambda x : x >-1.0).where(lambda x : x <1.0).dropna()
-        limits = [-0.01, 0.01]
-        sr_filtered_gaussian_curvature = sr_gaussian_curvature.where(lambda x : x > limits[0]).where(lambda x : x < limits[1])
+        try_pymesh = False
+        plot_pymesh_hist = False
+        if try_pymesh:
+            print "Trying PyMesh"
+            import pymesh            # Install this from a wheel on the github page, see https://github.com/PyMesh/PyMesh/issues/110. The one in pip is broken. (Also note that the broken one is called pymesh2 in pip: pymesh on pip is a completely different library.)
+            mesh = pymesh.meshio.form_mesh(vert_coords, faces)
+            print(mesh.num_vertices, mesh.num_faces, mesh.num_voxels)
+            print " * Computing Gaussian curvature for all vertices..."
+            mesh.add_attribute('vertex_gaussian_curvature') # compute Gaussian curvature for all verts
+            sr_gaussian_curvature = pd.Series(mesh.get_attribute('vertex_gaussian_curvature'))
 
-        if plot_pymesh_hist:
-            ax = sr_filtered_gaussian_curvature.plot.hist(alpha=0.5, bins=50, xlim=(-1.5, 1.5))
-            plt.title('Histogram of Gaussian curvature')
-            plt.xlabel('Gaussian curvature')
-            plt.ylabel('Frequency')
-            plt.show()
+            df_subject_mesh_data = pd.DataFrame({ 'gaussian_curvature' : sr_gaussian_curvature })
+            print df_subject_mesh_data.describe()
 
-    try_mayavi = True
-    if try_mayavi:
-        scalars = per_vertex_data                    # data loaded from FreeSurfer morphology (a.k.a. 'curv') files
-        #scalars = np.arange(x.size)                 # just map increasing numbers (fake data, but fast)
-        #scalars = sr_filtered_gaussian_curvature.values            # Gaussian curvature from PyMesh computation
-        plot_brain_data_on_mesh(vert_coords, faces, scalars, meta_data, export_image_file='brain.jpg')
+
+            #sr_filtered = sr_gaussian_curvature.where(lambda x : x >-1.0).where(lambda x : x <1.0).dropna()
+            limits = [-0.01, 0.01]
+            sr_filtered_gaussian_curvature = sr_gaussian_curvature.where(lambda x : x > limits[0]).where(lambda x : x < limits[1])
+
+            if plot_pymesh_hist:
+                ax = sr_filtered_gaussian_curvature.plot.hist(alpha=0.5, bins=50, xlim=(-1.5, 1.5))
+                plt.title('Histogram of Gaussian curvature')
+                plt.xlabel('Gaussian curvature')
+                plt.ylabel('Frequency')
+                plt.show()
+
+        try_mayavi = True
+        if try_mayavi:
+            scalars = per_vertex_data                    # data loaded from FreeSurfer morphology (a.k.a. 'curv') files
+            #scalars = np.arange(x.size)                 # just map increasing numbers (fake data, but fast)
+            #scalars = sr_filtered_gaussian_curvature.values            # Gaussian curvature from PyMesh computation
+            plot_brain_data_on_mesh(vert_coords, faces, scalars, meta_data, export_image_file='brain.jpg')
