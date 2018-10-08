@@ -81,7 +81,7 @@ pip install --editable .[brain_plot]           # also installs the 'brain_plot' 
 You can now use `cogload` by typing `import cogload` in your application or an interactive python session.
 
 
-See the file `DEVELOPMENT.md` for details.
+See the file `develop/README_DEVELOPMENT.md` for details.
 
 
 ## Obtaining suitable pre-processed sMRI input data for cogload
@@ -122,7 +122,6 @@ Less related but still useful:
 
 - If you want a full python interface that wraps the command line utilities of various existing neuroimaging software (FSL, FreeSurfer, ...) and allows you to create a full neuroimaging pipeline, you should definitely have a look at [nipype](http://nipy.org/packages/nipype/index.html).
 - In case you do not yet know it, I highly recommend that you have a look at some of the great neuroimaging tools for python at [nipy.org](http://nipy.org/).
-
 
 
 ## License
