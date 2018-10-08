@@ -46,13 +46,19 @@ cd doc/
 make html
 ```
 
+We will put the documentation online later (maybe on a GitHub page), but that does not make any sense yet.
+
+Note that if you added new modules in separate directories, for the documentation to show up,
+you will have to tell autodoc about the paths to the new directories by adding them to `sys.path`
+at the top of the `doc/conf.py` file.
+
 ## Packaging
 
 We are following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here.
 
 You can use the `setup.py` file to generate a wheel package. This should be done in the virtual environment.
 
-IMPORTANT: Be sure to adapt the `setup.py` file before packaging, especially the version information.
+IMPORTANT: Be sure to adapt the meta data in the `setup.py` file before packaging, especially the version information.
 
 ```console
 pip install --upgrade setuptools wheel              # just make sure we have the latest versions
