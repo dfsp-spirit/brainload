@@ -88,7 +88,7 @@ See the file `develop/README_DEVELOPMENT.md` for details.
 
 The cogload module is designed to work on structural Magnetic Resonance Imaging (sMRI) data that has been pre-processed with the popular [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) software suite.
 
-If you do not have your MRI data / FreeSurfer output at hand but still want to try cogload, you could use the `bert` example subject that comes with FreeSurfer.
+If you do not have your MRI data / FreeSurfer output at hand but still want to try `cogload`, you could use the `bert` example subject that comes with FreeSurfer.
 
 ## Tests
 
