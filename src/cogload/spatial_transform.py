@@ -28,6 +28,25 @@ def rotate_3D_coordinates_around_x_axis(x, y, z, rot):
     x_rotated  = x
     return x_rotated, y_rotated, z_rotated
 
+def coords_a2s(coords):
+    """
+    Splits a 3xn array of coordinates (x, y, z values) into 3 separate arrays of length n.
+    """
+    x = coords[:,0]
+    y = coords[:,1]
+    z = coords[:,2]
+    return x, y, z
+
+def coords_s2a(x, y, z):
+    """
+    Merges 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape 3xn.
+    """
+    if np.isscalar(x) and np.isscalar(y) and np.isscalar(z):
+        x = np.array([x])
+        y = np.array([y])
+        z = np.array([z])
+    return np.column_stack((x, y, z))
+
 
 def rotate_3D_coordinates_around_y_axis(x, y, z, rot):
     z_rotated = np.cos(rot) * z - np.sin(rot) * x
@@ -77,22 +96,33 @@ def point_mirror_3D_coordinates(x, y, z, point_x, point_y, point_z):
     return mirror_coordinates_at_axis(x, point_x), mirror_coordinates_at_axis(y, point_y), mirror_coordinates_at_axis(z, point_z)
 
 
-
-
-
 def rad2deg(rad):
-    '''Convert an angle given in radians to degree.'''
+    """
+    Convert an angle given in radians to degrees.
+
+    Convert an angle given in radians to degrees. Pi radians are 360 degrees.
+
+    Parameters
+    ----------
+    rad : float
+        The angle in radians.
+
+    Returns
+    -------
+    float
+        The angle in degrees.
+    """
     if rad < 0 or rad > 2 * np.pi:
         adjusted = rad % (2 * np.pi)
-        print "WARNING: rad2deg: called with unusual rad value '%d'. Adjusted to '%d'." % (rad, adjusted)
         rad = adjusted
     return rad * 180 / np.pi
 
 def deg2rad(degree):
-    '''Convert an angle given in degree to radians.'''
+    '''
+    Convert an angle given in degree to radians.
+    '''
     if degree < 0 or degree > 360:
         adjusted = degree % 360
-        print "WARNING: deg2rad: called with unusual degree value '%d'. Adjusted to '%d'." % (degree, adjusted)
         degree = adjusted
     return degree * np.pi / 180
 
