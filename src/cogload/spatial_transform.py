@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
 
 def rotate_3D_coordinates_around_axis(x, y, z, rot, axis):
