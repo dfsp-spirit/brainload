@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+from numpy.testing import assert_array_equal
 import cogload as cl
 import cogload.spatial_transform as st
 
@@ -53,6 +54,13 @@ def test_coords_s2a_arrays():
     assert coords[1][0] == 6
     assert coords[1][1] == 8
     assert coords[1][2] == 10
+
+def test_applying_s2a_followed_by_a2s_is_identical_to_start_value():
+    coords = np.array([[5, 7, 9], [6, 8, 10]])
+    x, y, z = st.coords_a2s(coords)
+    coords_new = st.coords_s2a(x, y, z)
+    assert_array_equal(coords, coords_new)
+
 
 def test_rotate_3D_coordinates_around_axis_with_x_axis():
     coords = np.array([])
