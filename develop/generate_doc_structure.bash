@@ -1,5 +1,7 @@
 #!/bin/bash
 ## This script was used to create the initial structure of the sphinx documentation.
+## !!!!! This script does NOT rebuild the documentation from the source code. !!!!!
+## It erases the settings for generating the documentation from the source code and sets new ones. Read the dev README file if you want to rebuild the docs only.
 ## There should be no need to run this script if the directory doc/ already exists in the repo. Just edit the files in there and re-run `make` in the doc/ directory.
 ##
 ## This script requires sphinx-apidoc, which is provided by sphinx: `pip install sphinx` or see http://www.sphinx-doc.org
@@ -21,7 +23,9 @@ if [ ! -d "${DOC_DIR}" ]; then
 fi
 
 if [ "$(ls -A ${DOC_DIR})" ]; then
-    echo "It looks like the documentation dir '${DOC_DIR}' already has some files in it. Remove all of them before running this (if you know what you are doing)."
+    echo "It looks like the documentation dir '${DOC_DIR}' already has some files in it."
+    echo "If all you wanted to do is rebuild the documentation after you changed the code, do NOT run this script! Read the development readme file instead."
+    echo "Only if you really know what you are doing: delete all files in doc/ and then re-run this script."
     exit 1
 fi
 
