@@ -92,6 +92,8 @@ If you do not have your MRI data / FreeSurfer output at hand but still want to t
 
 ## Tests
 
+### Running the tests locally
+
 There are several ways to run the tests. The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level cogload directory, just run:
 
 ```console
@@ -109,6 +111,12 @@ To run the tests with code coverage:
 ```console
 pytest --cov=src/
 ```
+
+### Continuous Integration
+
+Build status from travis-ci.org (Linux, branch master):
+
+[![Build Status](https://travis-ci.org/dfsp-spirit/cogload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/cogload)
 
 
 ## Alternatives and similar tools (in python)
