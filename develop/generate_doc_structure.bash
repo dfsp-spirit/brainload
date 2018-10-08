@@ -26,7 +26,8 @@ if [ "$(ls -A ${DOC_DIR})" ]; then
     echo "It looks like the documentation dir '${DOC_DIR}' already has some files in it."
     echo "If all you wanted to do is rebuild the documentation after you changed the code, do NOT run this script! Read the development readme file instead."
     echo "Only if you really know what you are doing: delete all files in doc/ and then re-run this script."
-    exit 1
+    #exit 1
 fi
 
-sphinx-apidoc --full --module-first -H "${PROJECT}" -A "${AUTHOR}" -o ${DOC_DIR} src/${PROJECT}
+#sphinx-apidoc --full -H "${PROJECT}" -A "${AUTHOR}" -o ${DOC_DIR} src/${PROJECT}
+sphinx-apidoc --full -o ${DOC_DIR} src/${PROJECT}
