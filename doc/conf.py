@@ -44,8 +44,9 @@ release = u''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.todo',
+#    'sphinx.ext.viewcode',
+#    'sphinx.ext.todo',
+    'sphinx.ext.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -103,6 +104,13 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
+
+
+# Disable some distractions
+html_show_sourcelink = False
+html_show_sphinx = False
+html_show_copyright = False
+
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
