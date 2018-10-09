@@ -9,7 +9,8 @@ import cogload.freesurferdata as fsd
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 FSAVERAGE_NUM_VERTS_PER_HEMISPHERE = 163842         # number of vertices of the 'fsaverage' subject from FreeSurfer 6.0
-
+SUBJECT1_SURF_LH_WHITE_NUM_VERTICES = 149244        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
+SUBJECT1_SURF_LH_WHITE_NUM_FACES = 298484           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
 
 def test_get_morphology_data_suffix_for_surface_with_surf_white():
     suffix = fsd.get_morphology_data_suffix_for_surface('white')
@@ -68,17 +69,20 @@ def test_merge_morphology_data():
 def test_read_fs_surface_file_and_record_meta_data_without_existing_metadata():
     surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(surf_file, 'lh')
-    assert meta_data['lh.num_vertices'] == 149244     # the number is quite arbitrary: the number of vertices is specific for this subject and surface.
-    assert meta_data['lh.num_faces'] == 298484    # the number is quite arbitrary: the number of vertices is specific for this subject and surface.
-    assert vert_coords.shape == (149244, 3)
-    assert faces.shape == (298484, 3)
-    assert len(meta_data) == 2
+    assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES    # the number is quite arbitrary: the number of vertices is specific for this subject and surface.
+    assert meta_data['lh.surf_file'] == surf_file
+    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
+    assert len(meta_data) == 3
 
 
 def test_read_fs_surface_file_and_record_meta_data_with_existing_metadata():
     surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(surf_file, 'lh', meta_data={'this_boy': 'still_exists'})
-    assert len(meta_data) == 3
+    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
+    assert len(meta_data) == 4
     assert meta_data['this_boy'] == 'still_exists'
 
 
@@ -87,7 +91,49 @@ def test_read_fs_surface_file_and_record_meta_data_raises_on_wrong_hemisphere_va
     with pytest.raises(ValueError) as exc_info:
         vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(surf_file, 'invalid_hemisphere')
     assert 'hemisphere_label must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
 
-def test_read_fs_morphology_data_file_and_record_meta_data_with_curv_file():
-    curv_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(curv_file, 'lh')
+
+def test_read_fs_morphology_data_file_and_record_meta_data_with_subj1_curv_file_without_existing_metadata():
+    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh')
+    assert len(meta_data) == 3
+    assert meta_data['lh.morphology_file'] == morphology_file
+    assert meta_data['lh.morphology_file_format'] == 'curv'
+    assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert per_vertex_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+
+
+def test_read_fs_morphology_data_file_and_record_meta_data_with_subj1_curv_file_with_existing_metadata():
+    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', meta_data={'this_boy': 'still_exists'})
+    assert len(meta_data) == 4
+    assert meta_data['this_boy'] == 'still_exists'
+    assert per_vertex_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+
+
+def test_read_fs_morphology_data_file_and_record_meta_data_with_fsavg_mgh_file_with_existing_metadata():
+    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
+    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', format='mgh', meta_data={'this_boy': 'still_exists'})
+    assert len(meta_data) == 4
+    assert meta_data['this_boy'] == 'still_exists'
+    assert meta_data['lh.morphology_file'] == morphology_file
+    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+    assert per_vertex_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+
+
+def test_read_fs_morphology_data_file_and_record_meta_data_raises_on_wrong_hemisphere_value():
+    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    with pytest.raises(ValueError) as exc_info:
+        per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'invalid_hemisphere')
+    assert 'hemisphere_label must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
+
+
+def test_read_fs_morphology_data_file_and_record_meta_data_raises_on_wrong_format_value():
+    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    with pytest.raises(ValueError) as exc_info:
+        per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', format='invalid_format')
+    assert 'format must be one of' in str(exc_info.value)
+    assert 'invalid_format' in str(exc_info.value)

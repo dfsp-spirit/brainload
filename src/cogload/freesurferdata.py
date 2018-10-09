@@ -53,7 +53,7 @@ def get_morphology_data_suffix_for_surface(surf):
 
 def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_data={}):
     if hemisphere_label not in ('lh', 'rh'):
-        raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'}.")
+        raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'} but is '%s'." % hemisphere_label)
     vert_coords, faces = fsio.read_geometry(surf_file)
 
     label_num_vertices = hemisphere_label + '.num_vertices'
@@ -70,7 +70,10 @@ def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_
 
 def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_label, meta_data={}, format='curv'):
     if format not in ('curv', 'mgh'):
-        raise ValueError("ERROR: format must be one of {'curv', 'mgh'}.")
+        raise ValueError("ERROR: format must be one of {'curv', 'mgh'} but is '%s'." % format)
+
+    if hemisphere_label not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'} but is '%s'." % hemisphere_label)
 
     if format == 'mgh':
         full_mgh_data, mgh_meta_data = read_mgh_file(curv_file, collect_meta_data=False)
@@ -93,7 +96,7 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
 
 def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data={}):
     if hemi not in ('lh', 'rh', 'both'):
-        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'}")
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
     if hemi == 'lh':
         vert_coords, faces, meta_data = read_fs_surface_file_and_record_meta_data(lh_surf_file, 'lh', meta_data=meta_data)
@@ -108,7 +111,7 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data={
 
 def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_data_file, hemi='both', format='curv', meta_data={}):
     if hemi not in ('lh', 'rh', 'both'):
-        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'}")
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
     if hemi == 'lh':
         morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
@@ -127,7 +130,7 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
        Use the low-level interface 'parse_brain_files' if you have non-standard file names.
     '''
     if hemi not in ('lh', 'rh', 'both'):
-        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'}")
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', '.')
