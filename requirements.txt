@@ -1,0 +1,13 @@
+## requirements.txt -- Requirements to be installed for automated tests on travis. Users should ignore this file.
+numpy
+nibabel
+
+## The following packages are needed for testing
+pytest
+pytest-cov
+## The following packages are needed for building the documentation
+#sphinx
+## The following packages are needed for visualization only, they may be removed later when we split that into a separate package
+#matplotlib
+#vtk
+#mayavi
