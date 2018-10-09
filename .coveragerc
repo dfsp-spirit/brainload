@@ -1,0 +1,4 @@
+[run]
+branch = True
+source = src/cogload
+omit = */*/__init__.py
