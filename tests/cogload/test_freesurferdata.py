@@ -9,8 +9,12 @@ import cogload.freesurferdata as fsd
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 FSAVERAGE_NUM_VERTS_PER_HEMISPHERE = 163842         # number of vertices of the 'fsaverage' subject from FreeSurfer 6.0
+
 SUBJECT1_SURF_LH_WHITE_NUM_VERTICES = 149244        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
 SUBJECT1_SURF_LH_WHITE_NUM_FACES = 298484           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
+
+SUBJECT1_SURF_RH_WHITE_NUM_VERTICES = 153333        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
+SUBJECT1_SURF_RH_WHITE_NUM_FACES = 306662           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
 
 def test_get_morphology_data_suffix_for_surface_with_surf_white():
     suffix = fsd.get_morphology_data_suffix_for_surface('white')
@@ -70,7 +74,7 @@ def test_read_fs_surface_file_and_record_meta_data_without_existing_metadata():
     surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(surf_file, 'lh')
     assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES    # the number is quite arbitrary: the number of vertices is specific for this subject and surface.
+    assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
     assert meta_data['lh.surf_file'] == surf_file
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
@@ -137,3 +141,46 @@ def test_read_fs_morphology_data_file_and_record_meta_data_raises_on_wrong_forma
         per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', format='invalid_format')
     assert 'format must be one of' in str(exc_info.value)
     assert 'invalid_format' in str(exc_info.value)
+
+def test_load_subject_mesh_files():
+    lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
+    rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
+    vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both')
+    assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
+    assert meta_data['lh.surf_file'] == lh_surf_file
+    assert meta_data['rh.num_vertices'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+    assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
+    assert meta_data['rh.surf_file'] == rh_surf_file
+    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
+    assert len(meta_data) == 6
+
+def test_load_subject_mesh_files_preserves_existing_meta_data():
+    lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
+    rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
+    vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data={'this_boy': 'still_exists'})
+    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
+    assert meta_data['this_boy'] == 'still_exists'
+    assert len(meta_data) == 7
+
+def test_load_subject_mesh_files_works_with_left_hemisphere_only():
+    lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
+    vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, '', hemi='lh')
+    assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
+    assert meta_data['lh.surf_file'] == lh_surf_file
+    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
+    assert len(meta_data) == 3
+
+def test_load_subject_mesh_files_works_with_right_hemisphere_only():
+    rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
+    vert_coords, faces, meta_data = fsd.load_subject_mesh_files('', rh_surf_file, hemi='rh')
+    assert meta_data['rh.num_vertices'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+    assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
+    assert meta_data['rh.surf_file'] == rh_surf_file
+    assert vert_coords.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
+    assert len(meta_data) == 3
