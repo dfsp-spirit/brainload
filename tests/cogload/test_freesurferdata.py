@@ -167,7 +167,7 @@ def test_load_subject_mesh_files_preserves_existing_meta_data():
 
 def test_load_subject_mesh_files_works_with_left_hemisphere_only():
     lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
-    vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, '', hemi='lh')
+    vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, 'dgdsg', hemi='lh')
     assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
     assert meta_data['lh.surf_file'] == lh_surf_file
@@ -177,7 +177,7 @@ def test_load_subject_mesh_files_works_with_left_hemisphere_only():
 
 def test_load_subject_mesh_files_works_with_right_hemisphere_only():
     rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
-    vert_coords, faces, meta_data = fsd.load_subject_mesh_files('', rh_surf_file, hemi='rh')
+    vert_coords, faces, meta_data = fsd.load_subject_mesh_files('dsggd', rh_surf_file, hemi='rh')
     assert meta_data['rh.num_vertices'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
     assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
     assert meta_data['rh.surf_file'] == rh_surf_file
