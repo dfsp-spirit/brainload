@@ -2,7 +2,6 @@ import os
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
-from mock import MagicMock
 
 def read_mgh_file(mgh_file_name, collect_meta_data=True):
     """
@@ -221,8 +220,8 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     faces = None
     if load_surface_files:
         fsaverage_surf_dir = os.path.join(subjects_dir_for_average_subject, average_subject, 'surf')
-        lh_surf = os.path.join(fsaverage_surf_dir, ('lh.' + display_surf))
-        rh_surf = os.path.join(fsaverage_surf_dir, ('rh.' + display_surf))
+        lh_surf_file = os.path.join(fsaverage_surf_dir, ('lh.' + display_surf))
+        rh_surf_file = os.path.join(fsaverage_surf_dir, ('rh.' + display_surf))
         vert_coords, faces, meta_data = load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi=hemi, meta_data=meta_data)
         meta_data['display_surf'] = display_surf
 
@@ -232,5 +231,6 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     meta_data['space'] = 'standard_space'
     meta_data['average_subject'] = average_subject
     meta_data['fwhm'] = fwhm
+    meta_data['hemi'] = hemi
 
     return vert_coords, faces, morphology_data, meta_data

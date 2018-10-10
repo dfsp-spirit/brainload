@@ -10,6 +10,7 @@ from mock import MagicMock
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 FSAVERAGE_NUM_VERTS_PER_HEMISPHERE = 163842         # number of vertices of the 'fsaverage' subject from FreeSurfer 6.0
+FSAVERAGE_NUM_FACES_PER_HEMISPHERE = 327680
 
 SUBJECT1_SURF_LH_WHITE_NUM_VERTICES = 149244        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
 SUBJECT1_SURF_LH_WHITE_NUM_FACES = 298484           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
@@ -394,37 +395,37 @@ def test_parse_subject_does_not_load_morphology_data_when_asked_not_to():
 
 def test_parse_subject_standard_space_data():
     expected_subjects_dir = TEST_DATA_DIR
-    expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf1')
+    expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running develop/get_test_data_fsaverage.bash if you have FreeSurfer installed." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR)
-    assert len(meta_data) == 18
+    assert len(meta_data) == 21
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
-    assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
+    assert meta_data['lh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+    assert meta_data['lh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['lh.surf_file'] == expected_lh_surf_file
-    assert meta_data['rh.num_vertices'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
-    assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
+    assert meta_data['rh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+    assert meta_data['rh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['rh.surf_file'] == expected_rh_surf_file
 
     assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
-    assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
     assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'curv'
-    assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
     assert meta_data['subject_id'] == 'subject1'
     assert meta_data['subjects_dir'] == expected_subjects_dir
     assert meta_data['surf'] == 'white'
     assert meta_data['measure'] == 'area'
-    assert meta_data['space'] == 'native_space'
+    assert meta_data['space'] == 'standard_space'
     assert meta_data['hemi'] == 'both'
 
-    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
-    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
+    assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
+    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
