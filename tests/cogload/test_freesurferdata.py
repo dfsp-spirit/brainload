@@ -236,3 +236,15 @@ def test_load_subject_morphology_data_files_raises_on_invalid_hemisphere():
         morphology_data, meta_data = fsd.load_subject_morphology_data_files('some_file', 'some_other_file', hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
+
+def test_parse_subject():
+    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR)
+    assert len(meta_data) == 18
+    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    #assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    #assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
+    #assert meta_data['lh.surf_file'] == lh_surf_file
+    #assert meta_data['rh.num_vertices'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+    #assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
+    #assert meta_data['rh.surf_file'] == rh_surf_file
