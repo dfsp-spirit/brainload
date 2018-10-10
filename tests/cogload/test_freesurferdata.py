@@ -144,6 +144,7 @@ def test_read_fs_morphology_data_file_and_record_meta_data_raises_on_wrong_forma
     assert 'format must be one of' in str(exc_info.value)
     assert 'invalid_format' in str(exc_info.value)
 
+
 def test_load_subject_mesh_files():
     lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
@@ -158,6 +159,7 @@ def test_load_subject_mesh_files():
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert len(meta_data) == 6
 
+
 def test_load_subject_mesh_files_preserves_existing_meta_data():
     lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
@@ -166,6 +168,7 @@ def test_load_subject_mesh_files_preserves_existing_meta_data():
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert meta_data['this_boy'] == 'still_exists'
     assert len(meta_data) == 7
+
 
 def test_load_subject_mesh_files_works_with_left_hemisphere_only():
     lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
@@ -177,6 +180,7 @@ def test_load_subject_mesh_files_works_with_left_hemisphere_only():
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
     assert len(meta_data) == 3
 
+
 def test_load_subject_mesh_files_works_with_right_hemisphere_only():
     rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
     vert_coords, faces, meta_data = fsd.load_subject_mesh_files(None, rh_surf_file, hemi='rh')
@@ -186,6 +190,7 @@ def test_load_subject_mesh_files_works_with_right_hemisphere_only():
     assert vert_coords.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert len(meta_data) == 3
+
 
 def test_load_subject_morphology_data_files():
     lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
@@ -199,6 +204,7 @@ def test_load_subject_morphology_data_files():
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
     assert len(meta_data) == 6
     assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+
 
 def test_load_subject_morphology_data_files_preserves_existing_meta_data():
     lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
@@ -218,6 +224,7 @@ def test_load_subject_morphology_data_files_works_with_left_hemisphere_only():
     assert len(meta_data) == 3
     assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
+
 def test_load_subject_morphology_data_files_works_with_right_hemisphere_only():
     rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
     morphology_data, meta_data = fsd.load_subject_morphology_data_files(None, rh_morphology_file, hemi='rh')
@@ -233,11 +240,13 @@ def test_load_subject_morphology_data_files_raises_on_invalid_format():
     assert 'format must be one of' in str(exc_info.value)
     assert 'invalid_format' in str(exc_info.value)
 
+
 def test_load_subject_morphology_data_files_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
         morphology_data, meta_data = fsd.load_subject_morphology_data_files('some_file', 'some_other_file', hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
+
 
 def test_parse_subject():
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR)
@@ -272,13 +281,14 @@ def test_parse_subject():
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
+
 def test_parse_subject_preserves_existing_meta_data():
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, meta_data={'this_boy': 'still_exists'})
     assert len(meta_data) == 19
     assert meta_data['this_boy'] == 'still_exists'
 
 
-def test_parse_subject_throws_on_invalid_hemisphere():
+def test_parse_subject_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
         vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
@@ -310,6 +320,7 @@ def test_parse_subject_works_with_left_hemisphere_only():
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
     assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
+
 def test_parse_subject_works_with_right_hemisphere_only():
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 12
@@ -334,6 +345,7 @@ def test_parse_subject_works_with_right_hemisphere_only():
     assert vert_coords.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert morphology_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+
 
 def test_parse_subject_does_not_load_surface_when_asked_not_to():
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
@@ -429,3 +441,70 @@ def test_parse_subject_standard_space_data():
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
     assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
+
+
+def test_parse_subject_standard_space_data_raises_on_invalid_hemisphere():
+    with pytest.raises(ValueError) as exc_info:
+        vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
+
+
+def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
+    expected_subjects_dir = TEST_DATA_DIR
+    expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
+    if not os.path.isdir(expected_fsaverage_surf_dir):
+        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running develop/get_test_data_fsaverage.bash if you have FreeSurfer installed." % expected_fsaverage_surf_dir)
+
+    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
+    assert len(meta_data) == 15
+    expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
+    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    assert meta_data['lh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+    assert meta_data['lh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
+    assert meta_data['lh.surf_file'] == expected_lh_surf_file
+
+    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
+    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+
+    assert meta_data['subject_id'] == 'subject1'
+    assert meta_data['subjects_dir'] == expected_subjects_dir
+    assert meta_data['surf'] == 'white'
+    assert meta_data['measure'] == 'area'
+    assert meta_data['space'] == 'standard_space'
+    assert meta_data['hemi'] == 'lh'
+
+    assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 3)
+    assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE, 3)
+    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+
+
+def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
+    expected_subjects_dir = TEST_DATA_DIR
+    expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
+    if not os.path.isdir(expected_fsaverage_surf_dir):
+        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running develop/get_test_data_fsaverage.bash if you have FreeSurfer installed." % expected_fsaverage_surf_dir)
+
+    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
+    assert len(meta_data) == 15
+    expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
+    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    assert meta_data['rh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+    assert meta_data['rh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
+    assert meta_data['rh.surf_file'] == expected_rh_surf_file
+
+    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
+    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+
+    assert meta_data['subject_id'] == 'subject1'
+    assert meta_data['subjects_dir'] == expected_subjects_dir
+    assert meta_data['surf'] == 'white'
+    assert meta_data['measure'] == 'area'
+    assert meta_data['space'] == 'standard_space'
+    assert meta_data['hemi'] == 'rh'
+
+    assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 3)
+    assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE, 3)
+    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
