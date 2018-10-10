@@ -2,7 +2,7 @@ import os
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
-
+from mock import MagicMock
 
 def read_mgh_file(mgh_file_name, collect_meta_data=True):
     """
@@ -140,7 +140,7 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
     return morphology_data, meta_data
 
 
-def parse_subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None):
+def parse_subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
     '''High-level interface to parse FreeSurfer brain data in subject space.
        Uses knowledge on standard file names to find the data.
        Use the low-level interface 'parse_brain_files' if you have non-standard file names.
@@ -157,13 +157,13 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
 
     vert_coords = None
     faces = None
-    if surf is not None:
+    if load_surface_files:
         lh_surf_file = os.path.join(subject_surf_dir, ('lh.' + surf))
         rh_surf_file = os.path.join(subject_surf_dir, ('rh.' + surf))
         vert_coords, faces, meta_data = load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi=hemi, meta_data=meta_data)
 
     morphology_data = None
-    if measure is not None:
+    if load_morhology_data:
         lh_morphology_file = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf)))
         rh_morphology_file = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf)))
         morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file, hemi=hemi, format='curv', meta_data=meta_data)
@@ -171,8 +171,8 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
 
     meta_data['subject_id'] = subject_id
     meta_data['subjects_dir'] = subjects_dir
-    meta_data['surf'] = surf                        # may be None
-    meta_data['measure'] = measure                  # may be None
+    meta_data['surf'] = surf
+    meta_data['measure'] = measure
     meta_data['space'] = 'native_space'
     meta_data['hemi'] = hemi
 
@@ -195,7 +195,7 @@ def merge_meshes(meshes):
     return all_vert_coords, all_faces
 
 
-def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None):
+def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'}")
     if subjects_dir is None:
@@ -209,7 +209,7 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
     # Parse the subject's data, mapped to standard space by FreeSurfer's recon-all.
     morphology_data = None
-    if measure is not None:
+    if load_morhology_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
         lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + '.fwhm' + fwhm + '.' + average_subject + '.mgh'))
         rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + '.fwhm' + fwhm + '.' + average_subject + '.mgh'))
@@ -219,7 +219,7 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     # Now retrieve the surface mesh on which to display the data. This is the average subject's surface.
     vert_coords = None
     faces = None
-    if display_surf is not None:
+    if load_surface_files:
         fsaverage_surf_dir = os.path.join(subjects_dir_for_average_subject, average_subject, 'surf')
         lh_surf = os.path.join(fsaverage_surf_dir, ('lh.' + display_surf))
         rh_surf = os.path.join(fsaverage_surf_dir, ('rh.' + display_surf))
