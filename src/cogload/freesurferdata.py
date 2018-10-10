@@ -123,6 +123,9 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
+    if format not in ('curv', 'mgh'):
+        raise ValueError("ERROR: format must be one of {'curv', 'mgh'} but is '%s'." % format)
+
     if meta_data is None:
         meta_data = {}
 
