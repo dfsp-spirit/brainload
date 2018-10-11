@@ -166,11 +166,15 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
         lh_morphology_file = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf)))
         rh_morphology_file = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf)))
         morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file, hemi=hemi, format='curv', meta_data=meta_data)
+    else:
+        measure = None
 
 
     meta_data['subject_id'] = subject_id
+    meta_data['display_subject'] = subject_id
     meta_data['subjects_dir'] = subjects_dir
     meta_data['surf'] = surf
+    meta_data['display_surf'] = surf
     meta_data['measure'] = measure
     meta_data['space'] = 'native_space'
     meta_data['hemi'] = hemi
@@ -206,7 +210,18 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     if meta_data is None:
         meta_data = {}
 
-    # Parse the subject's data, mapped to standard space by FreeSurfer's recon-all.
+    # Retrieve the surface mesh on which to display the data. This is the average subject's surface.
+    vert_coords = None
+    faces = None
+    if load_surface_files:
+        fsaverage_surf_dir = os.path.join(subjects_dir_for_average_subject, average_subject, 'surf')
+        lh_surf_file = os.path.join(fsaverage_surf_dir, ('lh.' + display_surf))
+        rh_surf_file = os.path.join(fsaverage_surf_dir, ('rh.' + display_surf))
+        vert_coords, faces, meta_data = load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi=hemi, meta_data=meta_data)
+    else:
+        display_surf = None
+
+    # Parse the subject's morphology data, mapped to standard space by FreeSurfer's recon-all.
     morphology_data = None
     if load_morhology_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
@@ -218,20 +233,15 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
         lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
         rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
         morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_data_mapped_to_fsaverage, rh_morphology_data_mapped_to_fsaverage, hemi=hemi, format='mgh', meta_data=meta_data)
-        meta_data['measure'] = measure
+    else:
+        measure = None
 
-    # Now retrieve the surface mesh on which to display the data. This is the average subject's surface.
-    vert_coords = None
-    faces = None
-    if load_surface_files:
-        fsaverage_surf_dir = os.path.join(subjects_dir_for_average_subject, average_subject, 'surf')
-        lh_surf_file = os.path.join(fsaverage_surf_dir, ('lh.' + display_surf))
-        rh_surf_file = os.path.join(fsaverage_surf_dir, ('rh.' + display_surf))
-        vert_coords, faces, meta_data = load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi=hemi, meta_data=meta_data)
-        meta_data['display_surf'] = display_surf
 
+    meta_data['measure'] = measure
     meta_data['subject_id'] = subject_id
     meta_data['subjects_dir'] = subjects_dir
+    meta_data['display_surf'] = display_surf
+    meta_data['display_subject'] = average_subject
     meta_data['average_subjects_dir'] = subjects_dir_for_average_subject
     meta_data['surf'] = surf
     meta_data['space'] = 'standard_space'
