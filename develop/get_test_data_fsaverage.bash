@@ -12,7 +12,7 @@ COGLOAD_TEST_DATA_DIR_FSAVERAGE_SURF="${COGLOAD_TEST_DATA_DIR_FSAVERAGE}/surf"
 MODE="local_then_remote"
 
 ARCHIVE_NAME="fsaverage_min.zip"
-REMOTE_ZIP_URL="https://github.com/dfsp-spirit/neuroimaging_testdata/raw/master/freesurfer/${ARCHIVE_NAME}"
+REMOTE_ZIP_URL="https://github.com/dfsp-spirit/neuroimaging_testdata/raw/master/freesurfer/official/${ARCHIVE_NAME}"
 
 # Check whether we are in correct dir
 if [ ! -d "src/cogload" ]; then
