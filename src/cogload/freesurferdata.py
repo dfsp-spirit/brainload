@@ -210,8 +210,13 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     morphology_data = None
     if load_morhology_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
-        lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + '.fwhm' + fwhm + '.' + average_subject + '.mgh'))
-        rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + '.fwhm' + fwhm + '.' + average_subject + '.mgh'))
+        if fwhm is None:    # If the uses explicitely sets fwmh to None, we use the file without any 'fwhmX' part. This data in this file should be identical to the data on the fwhm='0' case, so we expect that this will be rarely used.
+            fhwm_tag = ''
+        else:
+            fhwm_tag = '.fwhm' + fwhm
+
+        lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+        rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
         morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_data_mapped_to_fsaverage, rh_morphology_data_mapped_to_fsaverage, hemi=hemi, format='mgh', meta_data=meta_data)
         meta_data['measure'] = measure
 
@@ -227,6 +232,7 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
     meta_data['subject_id'] = subject_id
     meta_data['subjects_dir'] = subjects_dir
+    meta_data['average_subjects_dir'] = subjects_dir_for_average_subject
     meta_data['surf'] = surf
     meta_data['space'] = 'standard_space'
     meta_data['average_subject'] = average_subject

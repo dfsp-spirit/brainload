@@ -5,10 +5,13 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
 import cogload as cl
 import cogload.freesurferdata as fsd
-from mock import MagicMock
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
+
+# Respect the environment variable COGLOAD_TEST_DATA_DIR if it is set. If not, fall back to default.
+TEST_DATA_DIR = os.getenv('COGLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
+
 FSAVERAGE_NUM_VERTS_PER_HEMISPHERE = 163842         # number of vertices of the 'fsaverage' subject from FreeSurfer 6.0
 FSAVERAGE_NUM_FACES_PER_HEMISPHERE = 327680
 
@@ -398,21 +401,14 @@ def test_parse_subject_does_not_load_morphology_data_when_asked_not_to():
     assert morphology_data is None
 
 
-#def test_run_mgh_diff_test():
-#    home = os.getenv('HOME')
-#    SUBJECTS_DIR = os.path.join(home, 'data' ,'tim_only')
-#    mgh_data1, mgh_meta_data1 = fsd.read_mgh_file(os.path.join(SUBJECTS_DIR, 'tim', 'surf', 'lh.area.fsaverage.mgh'))
-#    mgh_data2, mgh_meta_data2 = fsd.read_mgh_file(os.path.join(SUBJECTS_DIR, 'tim', 'surf', 'lh.area.fwhm0.fsaverage.mgh'))
-#    assert_allclose(mgh_data1, mgh_data2)
-
 def test_parse_subject_standard_space_data():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running develop/get_test_data_fsaverage.bash if you have FreeSurfer installed." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR)
-    assert len(meta_data) == 21
+    assert len(meta_data) == 22
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
@@ -433,10 +429,14 @@ def test_parse_subject_standard_space_data():
 
     assert meta_data['subject_id'] == 'subject1'
     assert meta_data['subjects_dir'] == expected_subjects_dir
+    assert meta_data['average_subject'] == 'fsaverage'
+    assert meta_data['average_subjects_dir'] == expected_subjects_dir
+    assert meta_data['display_surf'] == 'white'
     assert meta_data['surf'] == 'white'
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'standard_space'
     assert meta_data['hemi'] == 'both'
+    assert meta_data['fwhm'] == '10'
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
@@ -454,10 +454,10 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running develop/get_test_data_fsaverage.bash if you have FreeSurfer installed." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
-    assert len(meta_data) == 15
+    assert len(meta_data) == 16
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     assert meta_data['lh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
@@ -474,6 +474,7 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'standard_space'
     assert meta_data['hemi'] == 'lh'
+    assert meta_data['fwhm'] == '10'
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE, 3)
@@ -484,10 +485,10 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running develop/get_test_data_fsaverage.bash if you have FreeSurfer installed." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
-    assert len(meta_data) == 15
+    assert len(meta_data) == 16
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
     expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     assert meta_data['rh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
@@ -508,3 +509,29 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE, 3)
     assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+
+
+def test_parse_subject_standard_space_data_respects_fwhm_setting_none():
+    expected_subjects_dir = TEST_DATA_DIR
+    expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
+    if not os.path.isdir(expected_fsaverage_surf_dir):
+        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+
+    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, fwhm=None)
+    assert len(meta_data) == 22
+    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')    # No 'fhwmX' in here!
+    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+
+    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
+    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
+    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
+
+
+    assert meta_data['fwhm'] == None
+
+    assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
+    assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
+    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
