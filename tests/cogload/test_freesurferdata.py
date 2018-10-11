@@ -274,8 +274,10 @@ def test_parse_subject():
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
 
     assert meta_data['subject_id'] == 'subject1'
+    assert meta_data['display_subject'] == 'subject1'
     assert meta_data['subjects_dir'] == expected_subjects_dir
     assert meta_data['surf'] == 'white'
+    assert meta_data['display_surf'] == 'white'
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'native_space'
     assert meta_data['hemi'] == 'both'
@@ -318,6 +320,8 @@ def test_parse_subject_works_with_left_hemisphere_only():
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'native_space'
     assert meta_data['hemi'] == 'lh'
+    assert meta_data['display_subject'] == 'subject1'
+    assert meta_data['display_surf'] == 'white'
 
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
@@ -344,6 +348,8 @@ def test_parse_subject_works_with_right_hemisphere_only():
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'native_space'
     assert meta_data['hemi'] == 'rh'
+    assert meta_data['display_subject'] == 'subject1'
+    assert meta_data['display_surf'] == 'white'
 
     assert vert_coords.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
@@ -370,6 +376,8 @@ def test_parse_subject_does_not_load_surface_when_asked_not_to():
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'native_space'
     assert meta_data['hemi'] == 'both'
+    assert meta_data['display_subject'] is None
+    assert meta_data['display_surf'] is None
 
     assert vert_coords == None
     assert faces == None
@@ -395,6 +403,8 @@ def test_parse_subject_does_not_load_morphology_data_when_asked_not_to():
     assert meta_data['measure'] == None
     assert meta_data['space'] == 'native_space'
     assert meta_data['hemi'] == 'both'
+    assert meta_data['display_subject'] == 'subject1'
+    assert meta_data['display_surf'] == 'white'
 
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
@@ -432,6 +442,7 @@ def test_parse_subject_standard_space_data():
     assert meta_data['average_subject'] == 'fsaverage'
     assert meta_data['average_subjects_dir'] == expected_subjects_dir
     assert meta_data['display_surf'] == 'white'
+    assert meta_data['display_subject'] == 'fsaverage'
     assert meta_data['surf'] == 'white'
     assert meta_data['measure'] == 'area'
     assert meta_data['space'] == 'standard_space'
@@ -554,6 +565,10 @@ def test_parse_subject_standard_space_data_does_not_load_surface_when_asked_not_
     assert meta_data['rh.morphology_file_format'] == 'mgh'
     assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
+    assert meta_data['display_subject'] is None
+    assert meta_data['display_surf'] is None
+    assert meta_data['measure'] == 'area'
+
     assert vert_coords is None
     assert faces is None
     assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
@@ -576,6 +591,10 @@ def test_parse_subject_standard_space_data_does_not_load_morphology_data_when_as
     assert meta_data['rh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
     assert meta_data['rh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['rh.surf_file'] == expected_rh_surf_file
+
+    assert meta_data['display_subject'] == 'fsaverage'
+    assert meta_data['display_surf'] == 'white'
+    assert meta_data['measure'] is None
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)

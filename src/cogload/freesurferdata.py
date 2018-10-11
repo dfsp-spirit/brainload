@@ -157,9 +157,14 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
     vert_coords = None
     faces = None
     if load_surface_files:
+        display_subject = subject_id
+        display_surf = surf
         lh_surf_file = os.path.join(subject_surf_dir, ('lh.' + surf))
         rh_surf_file = os.path.join(subject_surf_dir, ('rh.' + surf))
         vert_coords, faces, meta_data = load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi=hemi, meta_data=meta_data)
+    else:
+        display_subject = None
+        display_surf = None
 
     morphology_data = None
     if load_morhology_data:
@@ -171,10 +176,10 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
 
 
     meta_data['subject_id'] = subject_id
-    meta_data['display_subject'] = subject_id
+    meta_data['display_subject'] = display_subject
     meta_data['subjects_dir'] = subjects_dir
     meta_data['surf'] = surf
-    meta_data['display_surf'] = surf
+    meta_data['display_surf'] = display_surf
     meta_data['measure'] = measure
     meta_data['space'] = 'native_space'
     meta_data['hemi'] = hemi
@@ -214,12 +219,14 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     vert_coords = None
     faces = None
     if load_surface_files:
+        display_subject = average_subject
         fsaverage_surf_dir = os.path.join(subjects_dir_for_average_subject, average_subject, 'surf')
         lh_surf_file = os.path.join(fsaverage_surf_dir, ('lh.' + display_surf))
         rh_surf_file = os.path.join(fsaverage_surf_dir, ('rh.' + display_surf))
         vert_coords, faces, meta_data = load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi=hemi, meta_data=meta_data)
     else:
         display_surf = None
+        display_subject = None
 
     # Parse the subject's morphology data, mapped to standard space by FreeSurfer's recon-all.
     morphology_data = None
@@ -241,7 +248,7 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     meta_data['subject_id'] = subject_id
     meta_data['subjects_dir'] = subjects_dir
     meta_data['display_surf'] = display_surf
-    meta_data['display_subject'] = average_subject
+    meta_data['display_subject'] = display_subject
     meta_data['average_subjects_dir'] = subjects_dir_for_average_subject
     meta_data['surf'] = surf
     meta_data['space'] = 'standard_space'
