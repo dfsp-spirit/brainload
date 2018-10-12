@@ -5,15 +5,24 @@
 ## See https://github.com/freesurfer/freesurfer/blob/dev/LICENSE or your local copy at $FREESURFER_HOME/LICENSE if you have FreeSurfer installed.
 ##
 
-COGLOAD_BASE_DIR="."
-COGLOAD_TEST_DATA_DIR="${COGLOAD_BASE_DIR}/tests/test_data"        # This is the level equivalent to SUBJECTS_DIR from FreeSurfer
 
+if [ -z "${COGLOAD_TEST_DATA_DIR}" ]; then
+    # Check whether we are in correct dir
+    if [ ! -d "tests/test_data" ]; then
+        echo "ERROR: Run this script from the repo root or set the environment variable COGLOAD_TEST_DATA_DIR."
+        exit 1
+    else
+        COGLOAD_TEST_DATA_DIR="tests/test_data"        # This is the level equivalent to SUBJECTS_DIR from FreeSurfer
+    fi
+else
+    echo "INFO: Environment variable COGLOAD_TEST_DATA_DIR is set, using test data dir '${COGLOAD_TEST_DATA_DIR}'."
+fi
 
-# Check whether we are in correct dir
-if [ ! -d "src/cogload" ]; then
-    echo "ERROR: Run this script from the repo root."
+if [ ! -d "${COGLOAD_TEST_DATA_DIR}" ]; then
+    echo "ERROR: The test data directory '${COGLOAD_TEST_DATA_DIR}' does not exist. Please fix the environment variable COGLOAD_TEST_DATA_DIR."
     exit 1
 fi
+
 
 if [ -d "${COGLOAD_TEST_DATA_DIR}/subject1" ]; then
 
