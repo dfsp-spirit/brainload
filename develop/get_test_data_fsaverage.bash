@@ -1,9 +1,12 @@
 #!/bin/bash
 ## get_test_data_fsaverage.bash -- Retrieves the fsaverage minimal test data from the internet or a local FreeSurfer installation.
 ##
-## The data is part of the FreeSurfer software (see https://surfer.nmr.mgh.harvard.edu/) and falls under FreeSurfer's license.
-## See https://github.com/freesurfer/freesurfer/blob/dev/LICENSE or your local copy at $FREESURFER_HOME/LICENSE if you have FreeSurfer installed.
+## author: Tim Schäfer
+## This file is part of cogload. Copright Tim Schäfer, 2018. See the LICENSE file for the license.
 ##
+## Note: The data retrieved by this script is part of the FreeSurfer software (see https://surfer.nmr.mgh.harvard.edu/) and falls under FreeSurfer's license.
+## See https://github.com/freesurfer/freesurfer/blob/dev/LICENSE or your local copy at $FREESURFER_HOME/LICENSE if you have FreeSurfer installed.
+## The license will also be available in the generated data directory when the script has finished.
 
 if [ -z "${COGLOAD_TEST_DATA_DIR}" ]; then
     # Check whether we are in correct dir

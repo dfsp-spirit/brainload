@@ -1,9 +1,7 @@
 #!/bin/bash
 ## get_group_data.bash -- Generates the subjects subject2, subject3, ..., subject5 by copying subject1. Also writes a subjects.txt file for these fake subjects.
-##
-## The data is part of the FreeSurfer software (see https://surfer.nmr.mgh.harvard.edu/) and falls under FreeSurfer's license.
-## See https://github.com/freesurfer/freesurfer/blob/dev/LICENSE or your local copy at $FREESURFER_HOME/LICENSE if you have FreeSurfer installed.
-##
+## author: Tim Schäfer
+## This file is part of cogload. Copright Tim Schäfer, 2018. See the LICENSE file for the license.
 
 
 if [ -z "${COGLOAD_TEST_DATA_DIR}" ]; then
