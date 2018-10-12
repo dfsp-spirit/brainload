@@ -607,4 +607,3 @@ def test_load_group_data():
     group_data, group_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
-    

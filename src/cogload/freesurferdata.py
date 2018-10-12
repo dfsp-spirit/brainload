@@ -263,7 +263,9 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
 def read_subjects_file(subjects_file, **kwargs):
     """
-    Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the cosecutive fields on each line, and will be ignored.
+    Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the consecutive fields on each line, and will be ignored. Having nothing but the subject id on the line is also fine, of course.
+
+    Any additional named arguments you pass will be passed on to the csv.reader call.
     """
     subject_ids = []
     with open(subjects_file, 'r') as sfh:
@@ -276,7 +278,7 @@ def read_subjects_file(subjects_file, **kwargs):
 def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None):
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
-        
+
     if subjects_file_dir is None:
         subjects_file_dir = subjects_dir
 
