@@ -598,3 +598,11 @@ def test_parse_subject_standard_space_data_does_not_load_morphology_data_when_as
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
     assert morphology_data is None
+
+def test_load_group_data():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+
+    group_data, group_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+    assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir

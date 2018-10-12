@@ -1,4 +1,5 @@
 import os
+import csv
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
@@ -257,3 +258,41 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     meta_data['hemi'] = hemi
 
     return vert_coords, faces, morphology_data, meta_data
+
+
+
+def read_subjects_file(subjects_file, **kwargs):
+    """
+    Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the cosecutive fields on each line, and will be ignored.
+    """
+    subject_ids = []
+    with open(subjects_file, 'r') as sfh:
+        reader = csv.reader(sfh, **kwargs)
+        for row in reader:
+            subject_ids.append(row[0])
+    return subject_ids
+
+
+def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None):
+    if subjects_dir is None:
+        subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
+        
+    if subjects_file_dir is None:
+        subjects_file_dir = subjects_dir
+
+    if meta_data is None:
+        meta_data = {}
+
+    if subjects_list is None:
+        subjects_file_with_path = os.path.join(subjects_file_dir, subjects_file)
+        subjects_list = read_subjects_file(subjects_file_with_path)
+
+    group_morphology_data = []
+    group_meta_data = {}
+    for subject_id in subjects_list:
+        # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
+        morphology_data, meta_data = parse_subject_standard_space_data(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=meta_data, load_surface_files=False)[2:4]
+        group_meta_data[subject_id] = meta_data
+        group_morphology_data.append(morphology_data)
+    group_morphology_data = np.array(group_morphology_data)
+    return group_morphology_data, group_meta_data
