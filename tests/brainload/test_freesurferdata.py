@@ -8,8 +8,8 @@ import brainload.freesurferdata as fsd
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 
-# Respect the environment variable COGLOAD_TEST_DATA_DIR if it is set. If not, fall back to default.
-TEST_DATA_DIR = os.getenv('COGLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
+# Respect the environment variable BRAINLOAD_TEST_DATA_DIR if it is set. If not, fall back to default.
+TEST_DATA_DIR = os.getenv('BRAINLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
 
 FSAVERAGE_NUM_VERTS_PER_HEMISPHERE = 163842         # number of vertices of the 'fsaverage' subject from FreeSurfer 6.0
 FSAVERAGE_NUM_FACES_PER_HEMISPHERE = 327680
