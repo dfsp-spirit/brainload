@@ -5,9 +5,9 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from cogload.spatial_transform import *
-from cogload.freesurferview import *
-from cogload.freesurferdata import *
+from brainload.spatial_transform import *
+from brainload.freesurferview import *
+from brainload.freesurferdata import *
 
 def run_example():
 

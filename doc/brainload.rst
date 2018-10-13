@@ -1,7 +1,7 @@
-cogload package
+brainlog package
 ===============
 
-.. automodule:: cogload
+.. automodule:: brainlog
     :members:
     :undoc-members:
     :show-inheritance:
@@ -9,26 +9,26 @@ cogload package
 Submodules
 ----------
 
-cogload.freesurferdata module
+brainlog.freesurferdata module
 -----------------------------
 
-.. automodule:: cogload.freesurferdata
+.. automodule:: brainlog.freesurferdata
     :members:
     :undoc-members:
     :show-inheritance:
 
-cogload.freesurferview module
+brainlog.freesurferview module
 -----------------------------
 
-.. automodule:: cogload.freesurferview
+.. automodule:: brainlog.freesurferview
     :members:
     :undoc-members:
     :show-inheritance:
 
-cogload.spatial\_transform module
+brainlog.spatial\_transform module
 ---------------------------------
 
-.. automodule:: cogload.spatial_transform
+.. automodule:: brainlog.spatial_transform
     :members:
     :undoc-members:
     :show-inheritance:

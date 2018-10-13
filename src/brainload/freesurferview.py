@@ -1,6 +1,6 @@
 import mayavi.mlab as mlab
 import numpy as np
-from cogload.spatial_transform import *
+from brainload.spatial_transform import *
 
 def print_mlab_view(view):
     '''See http://docs.enthought.com/mayavi/mayavi/auto/mlab_camera.html#view for details.'''

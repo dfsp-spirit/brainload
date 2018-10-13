@@ -6,7 +6,7 @@
 ##
 ## This script requires sphinx-apidoc, which is provided by sphinx: `pip install sphinx` or see http://www.sphinx-doc.org
 
-PROJECT="cogload"
+PROJECT="brainload"
 PROJECT_SOURCE_DIR="src/${PROJECT}"
 DOC_DIR="doc"
 AUTHOR="Tim Schäfer"

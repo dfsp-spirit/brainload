@@ -1,11 +1,11 @@
-# cogload
+# brainlog
 A python module designed to reduce your cognitive load while accessing FreeSurfer brain data files ;). A thin wrapper around nibabel and mayavi.
 
 ## About
 
-`CogLoad` provides a simple high-level interface to access [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) neuroimaging data in python. It is intended for developers and scientists who need to access neuroimaging data for their research.
+`brainlog` provides a simple high-level interface to access [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) neuroimaging data in python. It is intended for developers and scientists who need to access neuroimaging data for their research.
 
-`CogLoad` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the files and then uses [nibabel](http://nipy.org/nibabel/) to open them in the background. Optionally, it can use [MayaVi](http://code.enthought.com/pages/mayavi-project.html) to create simple 3D plots of morphometry data on meshes representing brain surfaces.
+`brainlog` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the files and then uses [nibabel](http://nipy.org/nibabel/) to open them in the background. Optionally, it can use [MayaVi](http://code.enthought.com/pages/mayavi-project.html) to create simple 3D plots of morphometry data on meshes representing brain surfaces.
 
 
 ## Development stage
@@ -18,7 +18,7 @@ This is pre-alpha and not ready for usage yet. Come back another day.
 Here is an example usage that loads surface data for a subject:
 
 ```python
-from cogload.freesurferdata import parse_subject
+from brainlog.freesurferdata import parse_subject
 subject_id = 'bert'
 vert_coords, faces, per_vertex_data, meta_data = parse_subject(subject_id, surf='pial', measure='area')
 ```
@@ -27,7 +27,7 @@ Now you have the brain surface mesh (defined by `vert_coords` and `faces`) and t
 Note that the data we retrieved in the example above is in native space. You may want to retrieve standard space data, i.e., subject data mapped to an average subject like FreeSurfer's `fsaverage` subject, instead. Here is an example for that:
 
 ```python
-from cogload.freesurferdata import parse_subject_standard_space_data
+from brainlog.freesurferdata import parse_subject_standard_space_data
 subject_id = 'bert'
 vert_coords, faces, per_vertex_data, meta_data = parse_subject_standard_space_data(subject_id, surf='white', display_surf='inflated', measure='area')
 ```
@@ -44,11 +44,11 @@ It's a bit too early for that.
 
 ## Development
 
-It is recommended to use a virtual environment for hacking on `cogload`.
+It is recommended to use a virtual environment for hacking on `brainlog`.
 
 ```console
 pip install --user virtualenv      # unless you already have it
-cd develop/cogload/                # or wherever you cloned the repo
+cd develop/brainlog/                # or wherever you cloned the repo
 python -m virtualenv env/          # creates a virtual python environment in the new directory env/
 ```
 
@@ -64,30 +64,30 @@ deactivate                         # to leave it
 ```
 
 
-To install `cogload` in development mode (you should be in the virtual environment, of course):
+To install `brainlog` in development mode (you should be in the virtual environment, of course):
 
 ```console
-cd develop/cogload/
-pip install --editable .           # installs cogload from the current directory, and grabs its dependencies from PyPI
+cd develop/brainlog/
+pip install --editable .           # installs brainlog from the current directory, and grabs its dependencies from PyPI
 ```
 
-You can now use `cogload` by typing `import cogload` in your application or an interactive python session.
+You can now use `brainlog` by typing `import brainlog` in your application or an interactive python session.
 
 
 See the file `develop/README_DEVELOPMENT.md` for details.
 
 
-## Obtaining suitable pre-processed sMRI input data for cogload
+## Obtaining suitable pre-processed sMRI input data for brainlog
 
-The cogload module is designed to work on structural Magnetic Resonance Imaging (sMRI) data that has been pre-processed with the popular [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) software suite.
+The brainlog module is designed to work on structural Magnetic Resonance Imaging (sMRI) data that has been pre-processed with the popular [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) software suite.
 
-If you do not have your MRI data / FreeSurfer output at hand but still want to try `cogload`, you could use the `bert` example subject that comes with FreeSurfer.
+If you do not have your MRI data / FreeSurfer output at hand but still want to try `brainlog`, you could use the `bert` example subject that comes with FreeSurfer.
 
 ## Tests
 
 ### Running the tests locally
 
-There are several ways to run the tests. The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level cogload directory, just run:
+There are several ways to run the tests. The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level brainlog directory, just run:
 
 ```console
 python setup.py test
@@ -109,15 +109,15 @@ pytest --cov=src/
 
 Build status from travis-ci.org (Linux, branch master):
 
-[![Build Status](https://travis-ci.org/dfsp-spirit/cogload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/cogload)
+[![Build Status](https://travis-ci.org/dfsp-spirit/brainlog.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainlog)
 
 
 ## Alternatives and similar tools (in python)
 
-Alternatives to `CogLoad`:
+Alternatives to `brainlog`:
 
 - If you want a full brain visualization package for python, you may want to have a look at [PySurfer](https://pysurfer.github.io/) instead.
-- You could also use the `freesurfer.io` and `freesurfer.mghformat` modules from [nibabel](http://nipy.org/nibabel/) directly and open the FreeSurfer files yourself. (Most likely you would end up with boilerplate that is pretty similar to `CogLoad`.)
+- You could also use the `freesurfer.io` and `freesurfer.mghformat` modules from [nibabel](http://nipy.org/nibabel/) directly and open the FreeSurfer files yourself. (Most likely you would end up with boilerplate that is pretty similar to `brainlog`.)
 
 Less related but still useful:
 
