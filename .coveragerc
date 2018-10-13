@@ -1,4 +1,4 @@
 [run]
 branch = True
-source = src/cogload
+source = src/brainload
 omit = */*/__init__.py

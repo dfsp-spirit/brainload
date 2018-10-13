@@ -14,7 +14,7 @@
 #
 import os
 import sys
-src_path = os.path.abspath('../src/cogload')
+src_path = os.path.abspath('../src/brainload')
 if not os.path.isdir(src_path):
     print "ERROR: The given source path '%s' for the project does not exist. Autodoc will not be able to find the source code! Adapt the path (see variable 'src_path') in the 'conf.py' file." % src_path
     exit()
@@ -23,7 +23,7 @@ sys.path.insert(0, src_path)
 
 # -- Project information -----------------------------------------------------
 
-project = u'cogload'
+project = u'brainload'
 copyright = u'2018, Tim Schäfer'
 author = u'Tim Schäfer'
 
@@ -116,7 +116,7 @@ html_show_copyright = False
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'cogloaddoc'
+htmlhelp_basename = 'brainloaddoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -143,7 +143,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'cogload.tex', u'cogload Documentation',
+    (master_doc, 'brainload.tex', u'brainload Documentation',
      u'Tim Schäfer', 'manual'),
 ]
 
@@ -153,7 +153,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cogload', u'cogload Documentation',
+    (master_doc, 'brainload', u'brainload Documentation',
      [author], 1)
 ]
 
@@ -164,8 +164,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'cogload', u'cogload Documentation',
-     author, 'cogload', 'One line description of project.',
+    (master_doc, 'brainload', u'brainload Documentation',
+     author, 'brainload', 'One line description of project.',
      'Miscellaneous'),
 ]
 
