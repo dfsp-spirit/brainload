@@ -29,7 +29,7 @@ BRAINLOAD_TEST_DATA_DIR_SUBJECT1="${BRAINLOAD_TEST_DATA_DIR}/subject1"
 
 if [ -d "${BRAINLOAD_TEST_DATA_DIR_SUBJECT1}" ]; then
     echo "${APPTAG} INFO: Test data for subject1 already exists at '${BRAINLOAD_TEST_DATA_DIR_SUBJECT1}'. Refreshing."
-fsi
+fi
 
 ARCHIVE_NAME="subject1_min.zip"
 REMOTE_ZIP_URL="https://github.com/dfsp-spirit/neuroimaging_testdata/raw/master/freesurfer/ts/${ARCHIVE_NAME}"
@@ -41,4 +41,4 @@ if [ -f "${BRAINLOAD_TEST_DATA_DIR}/${ARCHIVE_NAME}" ]; then
     rm "${BRAINLOAD_TEST_DATA_DIR}/${ARCHIVE_NAME}"
 fi
 
-cd "${BRAINLOAD_TEST_DATA_DIR}" && wget "${REMOTE_ZIP_URL}" && unzip -f -o ${ARCHIVE_NAME} && rm ${ARCHIVE_NAME} && echo "${APPTAG} OK."
+cd "${BRAINLOAD_TEST_DATA_DIR}" && wget "${REMOTE_ZIP_URL}" && unzip -f -o "${ARCHIVE_NAME}" && rm "${ARCHIVE_NAME}" && echo "${APPTAG} OK."
