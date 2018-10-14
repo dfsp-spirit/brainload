@@ -20,4 +20,4 @@ else
     done
 fi
 
-Echo "${APPTAG} All done."
+echo "${APPTAG} All done."
