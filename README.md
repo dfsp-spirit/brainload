@@ -1,5 +1,5 @@
 # brainlog
-A python module designed to reduce your cognitive load while accessing FreeSurfer brain data files ;). A thin wrapper around nibabel and mayavi.
+A python module designed to reduce your brain load while accessing FreeSurfer brain surface and morphology data files ;). A wrapper around nibabel.
 
 ## About
 
