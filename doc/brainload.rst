@@ -1,7 +1,7 @@
-brainlog package
+brainload package
 ===============
 
-.. automodule:: brainlog
+.. automodule:: brainload
     :members:
     :undoc-members:
     :show-inheritance:
@@ -9,26 +9,26 @@ brainlog package
 Submodules
 ----------
 
-brainlog.freesurferdata module
+brainload.freesurferdata module
 -----------------------------
 
-.. automodule:: brainlog.freesurferdata
+.. automodule:: brainload.freesurferdata
     :members:
     :undoc-members:
     :show-inheritance:
 
-brainlog.freesurferview module
+brainload.freesurferview module
 -----------------------------
 
-.. automodule:: brainlog.freesurferview
+.. automodule:: brainload.freesurferview
     :members:
     :undoc-members:
     :show-inheritance:
 
-brainlog.spatial\_transform module
+brainload.spatial\_transform module
 ---------------------------------
 
-.. automodule:: brainlog.spatial_transform
+.. automodule:: brainload.spatial_transform
     :members:
     :undoc-members:
     :show-inheritance:

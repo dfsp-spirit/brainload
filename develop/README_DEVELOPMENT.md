@@ -1,6 +1,6 @@
-# brainlog Development information
+# brainload Development information
 
-This is intended for developers who modify `brainlog`.
+This is intended for developers who modify `brainload`.
 
 ## Detailed development instructions
 
@@ -9,31 +9,31 @@ Here is a full interactive example session on how to perform the development bui
 Installation:
 
 ```console
-[ts@box:~/develop/brainlog] $ source env/bin/activate
-(env) [ts@box:~/develop/brainlog] $ pip install --editable .
-Obtaining file:///home/ts/develop/brainlog
-Collecting numpy (from brainlog==0.1.0)
+[ts@box:~/develop/brainload] $ source env/bin/activate
+(env) [ts@box:~/develop/brainload] $ pip install --editable .
+Obtaining file:///home/ts/develop/brainload
+Collecting numpy (from brainload==0.1.0)
   Using cached https://files.pythonhosted.org/packages/40/c5/f1ed15dd931d6667b40f1ab1c2fe1f26805fc2b6c3e25e45664f838de9d0/numpy-1.15.2-cp27-cp27mu-manylinux1_x86_64.whl
-Collecting nibabel (from brainlog==0.1.0)
-Installing collected packages: numpy, nibabel, brainlog
-  Running setup.py develop for brainlog
-Successfully installed brainlog nibabel-2.3.0 numpy-1.15.2
+Collecting nibabel (from brainload==0.1.0)
+Installing collected packages: numpy, nibabel, brainload
+  Running setup.py develop for brainload
+Successfully installed brainload nibabel-2.3.0 numpy-1.15.2
 ```
 
 Using the module:
 
 ```console
-(env) [ts@box:~/develop/brainlog] $ python
+(env) [ts@box:~/develop/brainload] $ python
 Python 2.7.15rc1 (default, Apr 15 2018, 21:51:34)
 [GCC 7.3.0] on linux2
 Type "help", "copyright", "credits" or "license" for more information.
->>> import brainlog
->>> from brainlog.spatial_transform import *
+>>> import brainload
+>>> from brainload.spatial_transform import *
 >>> deg2rad(90)
 1.5707963267948966
 >>> exit()
-(env) [ts@box:~/develop/brainlog] $ deactivate
-[ts@box:~/develop/brainlog] $
+(env) [ts@box:~/develop/brainload] $ deactivate
+[ts@box:~/develop/brainload] $
 ```
 
 ## Building the documentation
