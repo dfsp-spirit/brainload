@@ -33,7 +33,8 @@ def test_get_morphology_data_suffix_for_surface_with_surf_other():
 def test_read_mgh_file_with_valid_fsaverage_file():
     mgh_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
     mgh_data, mgh_meta_data = fsd.read_mgh_file(mgh_file)
-    assert mgh_meta_data['data_bytes_per_voxel'] == 4
+    assert mgh_meta_data['data_bytespervox'] == 4
+    assert len(mgh_meta_data) == 13
     assert mgh_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
 
 
