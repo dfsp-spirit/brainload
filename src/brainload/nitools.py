@@ -1,5 +1,6 @@
 import os
 import csv
+import string
 import numpy as np
 
 
@@ -19,7 +20,7 @@ def read_subjects_file(subjects_file, **kwargs):
 
 def detect_subjects_in_directory(subjects_dir, ignore_dir_names=None, required_subdirs_for_hits=None):
     """
-    Search for directories containing FreeSurfer output in a directory.
+    Search for directories containing FreeSurfer output in a directory and return the subject names.
 
     Given a directory, search its sub directories for FreeSurfer data and return the directory names of all directories in which such data was found. The resulting list can be used
     to create a subjects.txt file. This method searches all direct sub directories of the given subjects_dir for the existance of the typical FreeSurfer output directory structure.
@@ -51,3 +52,7 @@ def detect_subjects_in_directory(subjects_dir, ignore_dir_names=None, required_s
 
         detected_subjects.append(potential_subject_id)
     return detected_subjects
+
+
+def fill_template_filename(template_string, substitution_dict):
+    return string.Template(template_string).substitute(substitution_dict)

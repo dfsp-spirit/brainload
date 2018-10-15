@@ -41,7 +41,15 @@ def test_detect_subjects_in_directory_with_five_subjects():
     assert 'subject4' in subject_ids
     assert 'subject5' in subject_ids
 
+
 def test_detect_subjects_in_directory_without_any_subjects():
     subject1_dir = os.path.join(TEST_DATA_DIR, 'subject1')  # This contains the data for a single subject, so none of its sub directories are valid subject dirs.
     subject_ids = nit.detect_subjects_in_directory(subject1_dir)
     assert len(subject_ids) == 0
+
+
+def test_fill_template_filename():
+    template_string = '${hemi}${surf}.${measure}'
+    substitution_dict = {'hemi': 'lh', 'surf': '.pial', 'measure': 'area'}
+    result = nit.fill_template_filename(template_string, substitution_dict)
+    assert result == 'lh.pial.area'

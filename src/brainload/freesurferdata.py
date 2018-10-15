@@ -207,7 +207,7 @@ def merge_meshes(meshes):
     return all_vert_coords, all_faces
 
 
-def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
+def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphology_files=None):
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'}")
     if subjects_dir is None:
@@ -241,8 +241,13 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
         else:
             fhwm_tag = '.fwhm' + fwhm
 
-        lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
-        rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+        if custom_morphology_files is None:
+            lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+            rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+        else:
+            lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['lh'])
+            rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['rh'])
+
         morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_data_mapped_to_fsaverage, rh_morphology_data_mapped_to_fsaverage, hemi=hemi, format='mgh', meta_data=meta_data)
     else:
         measure = None
@@ -264,7 +269,7 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
 
 
-def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None):
+def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None):
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
 
@@ -281,8 +286,17 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
     group_morphology_data = []
     group_meta_data = {}
     for subject_id in subjects_list:
+
+        custom_morphology_files = None
+        if custom_morphology_file_templates is not None:
+            substitution_dict_lh = {'MEASURE': measure, 'SURF': surf, 'HEMI': 'lh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id }
+            substitution_dict_rh = {'MEASURE': measure, 'SURF': surf, 'HEMI': 'rh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id }
+            custom_morphology_file_lh = nit.fill_template_filename(custom_morphology_file_templates['lh'], substitution_dict_lh)
+            custom_morphology_file_rh = nit.fill_template_filename(custom_morphology_file_templates['rh'], substitution_dict_rh)
+            custom_morphology_files = {'lh': custom_morphology_file_lh, 'rh': custom_morphology_file_rh}
+
         # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
-        morphology_data, meta_data = parse_subject_standard_space_data(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=meta_data, load_surface_files=False)[2:4]
+        morphology_data, meta_data = parse_subject_standard_space_data(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=meta_data, load_surface_files=False, custom_morphology_files=custom_morphology_files)[2:4]
         group_meta_data[subject_id] = meta_data
         group_morphology_data.append(morphology_data)
     group_morphology_data = np.array(group_morphology_data)
