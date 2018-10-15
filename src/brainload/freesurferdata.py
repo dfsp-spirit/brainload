@@ -291,8 +291,8 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         custom_morphology_files = None
         subject_meta_data = {}
         if custom_morphology_file_templates is not None:
-            substitution_dict_lh = {'MEASURE': measure, 'SURF': surf, 'HEMI': 'lh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id }
-            substitution_dict_rh = {'MEASURE': measure, 'SURF': surf, 'HEMI': 'rh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id }
+            substitution_dict_lh = {'MEASURE': measure, 'SURF': surf, 'HEMI': 'lh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id, 'AVERAGE_SUBJECT': average_subject}
+            substitution_dict_rh = {'MEASURE': measure, 'SURF': surf, 'HEMI': 'rh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id, 'AVERAGE_SUBJECT': average_subject}
             custom_morphology_file_lh = nit.fill_template_filename(custom_morphology_file_templates['lh'], substitution_dict_lh)
             custom_morphology_file_rh = nit.fill_template_filename(custom_morphology_file_templates['rh'], substitution_dict_rh)
             custom_morphology_files = {'lh': custom_morphology_file_lh, 'rh': custom_morphology_file_rh}
