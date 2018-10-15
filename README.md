@@ -7,6 +7,7 @@ A python module designed to reduce your brain load while accessing FreeSurfer br
 
 `brainload` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the files and then uses [nibabel](http://nipy.org/nibabel/) to open them in the background. Optionally, it can use [MayaVi](http://code.enthought.com/pages/mayavi-project.html) to create simple 3D plots of morphometry data on meshes representing brain surfaces.
 
+[![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
 
 ## Development stage
 
@@ -41,88 +42,29 @@ You can now use the data for statistical analysis in python, e.g., using Pandas,
 It's a bit too early for that.
 
 
-
-## Development
-
-It is recommended to use a virtual environment for hacking on `brainload`.
-
-```console
-pip install --user virtualenv      # unless you already have it
-cd develop/brainload/                # or wherever you cloned the repo
-python -m virtualenv env/          # creates a virtual python environment in the new directory env/
-```
-
-
-Once you have created the virtual environment, all you have to do is use it:
-
-```console
-source env/bin/activate            # to change into it
-
-some_command...
-
-deactivate                         # to leave it
-```
-
-
-To install `brainload` in development mode (you should be in the virtual environment, of course):
-
-```console
-cd develop/brainload/
-pip install --editable .           # installs brainload from the current directory, and grabs its dependencies from PyPI
-```
-
-You can now use `brainload` by typing `import brainload` in your application or an interactive python session.
-
-
-See the file `develop/README_DEVELOPMENT.md` for details.
-
-
 ## Obtaining suitable pre-processed sMRI input data for brainload
 
-The brainload module is designed to work on structural Magnetic Resonance Imaging (sMRI) data that has been pre-processed with the popular [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) software suite.
+The brainload module is designed to work on Magnetic Resonance Imaging (MRI) data that has been pre-processed with the popular [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) software suite.
 
 If you do not have your MRI data / FreeSurfer output at hand but still want to try `brainload`, you could use the `bert` example subject that comes with FreeSurfer.
 
-## Tests
 
-### Running the tests locally
+## Development and tests
 
-There are several ways to run the tests. The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level brainload directory, just run:
-
-```console
-python setup.py test
-```
-
-If you want to run the tests manually, you need `pytest` and `pytest-cov`, both of which can be installed via `pip`. Then just run:
-
-```console
-pytest
-```
-
-To run the tests with code coverage:
-
-```console
-pytest --cov=src/
-```
-
-### Continuous Integration
-
-Build status from travis-ci.org (Linux, branch master):
-
-[![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
+Tests and test data are not shipped in the releases, see the file [README_DEVELOPMENT file](develop/README_DEVELOPMENT.md) in this repository for instructions on installing the development version and running the tests.
 
 
 ## Alternatives and similar tools (in python)
 
 Alternatives to `brainload`:
 
-- If you want a full brain visualization package for python, you may want to have a look at [PySurfer](https://pysurfer.github.io/) instead.
+- If you want a full brain visualization package for Python that allows you to plot morphometry data in various ways, you may want to have a look at [PySurfer](https://pysurfer.github.io/) instead.
 - You could also use the `freesurfer.io` and `freesurfer.mghformat` modules from [nibabel](http://nipy.org/nibabel/) directly and open the FreeSurfer files yourself. (Most likely you would end up with boilerplate that is pretty similar to `brainload`.)
 
 Less related but still useful:
 
 - If you want a full python interface that wraps the command line utilities of various existing neuroimaging software (FSL, FreeSurfer, ...) and allows you to create a full neuroimaging pipeline, you should definitely have a look at [nipype](http://nipy.org/packages/nipype/index.html).
-- In case you do not yet know it, I highly recommend that you have a look at some of the great neuroimaging tools for python at [nipy.org](http://nipy.org/).
+- I highly recommend that you have a look at some of the great neuroimaging tools for Python at [nipy.org](http://nipy.org/).
 
 
 ## License
