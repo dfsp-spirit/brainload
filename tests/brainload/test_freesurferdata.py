@@ -628,5 +628,33 @@ def test_load_group_data():
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
     group_data, group_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+
+    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
+    assert len(group_meta_data) == 5
+    assert len(group_meta_data['subject1']) == 18
+    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
+    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
+
+    assert group_meta_data['subject1']['display_subject'] is None
+    assert group_meta_data['subject1']['display_surf'] is None
+    assert group_meta_data['subject1']['measure'] == 'area'
+
+    assert len(group_meta_data['subject5']) == 18
+    assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
+    assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
+
+
+
+def test_load_group_data_works_with_left_hemisphere_only():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+
+    group_data, group_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
+    assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
