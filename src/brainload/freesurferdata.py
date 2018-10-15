@@ -242,9 +242,11 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
             fhwm_tag = '.fwhm' + fwhm
 
         if custom_morphology_files is None:
+            meta_data['custom_morphology_files_used'] = False
             lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
             rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
         else:
+            meta_data['custom_morphology_files_used'] = True
             lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['lh'])
             rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['rh'])
 
@@ -294,6 +296,8 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
             custom_morphology_file_lh = nit.fill_template_filename(custom_morphology_file_templates['lh'], substitution_dict_lh)
             custom_morphology_file_rh = nit.fill_template_filename(custom_morphology_file_templates['rh'], substitution_dict_rh)
             custom_morphology_files = {'lh': custom_morphology_file_lh, 'rh': custom_morphology_file_rh}
+            meta_data['lh.custom_morphology_file_template'] = custom_morphology_file_templates['lh']
+            meta_data['rh.custom_morphology_file_template'] = custom_morphology_file_templates['rh']
 
         # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
         morphology_data, meta_data = parse_subject_standard_space_data(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=meta_data, load_surface_files=False, custom_morphology_files=custom_morphology_files)[2:4]
