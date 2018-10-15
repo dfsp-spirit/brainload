@@ -5,6 +5,7 @@ from numpy.testing import assert_array_equal, assert_allclose
 import brainload as bl
 import brainload.freesurferdata as fsd
 
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 

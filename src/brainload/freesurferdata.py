@@ -1,8 +1,8 @@
 import os
-import csv
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
+import brainload.nitools as nit
 
 def read_mgh_file(mgh_file_name, collect_meta_data=True):
     """
@@ -264,20 +264,6 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
 
 
-def read_subjects_file(subjects_file, **kwargs):
-    """
-    Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the consecutive fields on each line, and will be ignored. Having nothing but the subject id on the line is also fine, of course.
-
-    Any additional named arguments you pass will be passed on to the csv.reader call.
-    """
-    subject_ids = []
-    with open(subjects_file, 'r') as sfh:
-        reader = csv.reader(sfh, **kwargs)
-        for row in reader:
-            subject_ids.append(row[0])
-    return subject_ids
-
-
 def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None):
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
@@ -290,7 +276,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
 
     if subjects_list is None:
         subjects_file_with_path = os.path.join(subjects_file_dir, subjects_file)
-        subjects_list = read_subjects_file(subjects_file_with_path)
+        subjects_list = nit.read_subjects_file(subjects_file_with_path)
 
     group_morphology_data = []
     group_meta_data = {}
