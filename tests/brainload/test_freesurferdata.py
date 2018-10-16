@@ -823,16 +823,24 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_file():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6.csv')
 
-    assert len(group_meta_data) == 5
+    assert len(group_meta_data) == 6
     assert len(group_meta_data) == len(group_data_subjects)
 
-    assert group_data_subjects[0] == 'subject1'         # This is the order in which the subjects appear in our test data subjects file.
-    assert group_data_subjects[1] == 'subject2'         # TODO: we should test whether the data in group_data is in this order as well, but that requires additional test data as the data of all 5 subjects is currently identical.
+    assert group_data_subjects[0] == 'subject1'         # This is the order in which the subjects appear in our test data subjects file. So we can use group_data_subjects to access the correct data.
+    assert group_data_subjects[1] == 'subject2'
     assert group_data_subjects[2] == 'subject3'
     assert group_data_subjects[3] == 'subject4'
     assert group_data_subjects[4] == 'subject5'
+    assert group_data_subjects[5] == 'subject6'
+
+    assert group_data[0][100000] == pytest.approx(0.74, 0.1)    # We know this value from loading the MGH file manually.
+    assert group_data[1][100000] == pytest.approx(0.74, 0.1)    # the value is identical for this subject2 because it is a copy of subject1 (see how test data is created)
+    assert group_data[2][100000] == pytest.approx(0.74, 0.1)    # the value is identical for this subject3 because it is a copy of subject1 (see how test data is created)
+    assert group_data[3][100000] == pytest.approx(0.74, 0.1)    # the value is identical for this subject4 because it is a copy of subject1 (see how test data is created)
+    assert group_data[4][100000] == pytest.approx(0.74, 0.1)    # the value is identical for this subject5 because it is a copy of subject1 (see how test data is created)
+    assert group_data[5][100000] == pytest.approx(0.20, 0.1)    # the value is NOT identical for subject6 because we manually edited it in the test data file in the repo. See also the function test_test_data_lh_is_as_expected() in this file. Note that this shows that subject 6 shows up in the correct position.
 
 
 def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
@@ -840,15 +848,25 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    subjects_list = [ 'subject1', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+    subjects_list = [ 'subject1', 'subject6', 'subject3' ]
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
 
-    assert len(group_meta_data) == 2
+    assert len(group_meta_data) == 3
     assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_data_subjects) == len(subjects_list)
 
-    assert group_data_subjects[0] == subjects_list[0]
-    assert group_data_subjects[1] == subjects_list[1]         # TODO: we should test whether the data in group_data is in this order as well, but that requires additional test data as the data of all 5 subjects is currently identical.
+    assert group_data_subjects[0] == 'subject1'
+    assert group_data_subjects[1] == 'subject6'
+    assert group_data_subjects[2] == 'subject3'
+
+    # This is most likely close to real-world usage of the 'group_data_subjects' list:
+    subject6_idx = group_data_subjects.index('subject6')
+    assert group_data[subject6_idx][100000] == pytest.approx(0.20, 0.1)         # The modified value. So subject6 is in the expected position.
+
+    # This is a unit test, so test some more stuff
+    assert subject6_idx == 1
+    assert group_data[0][100000] == pytest.approx(0.74, 0.1)
+    assert group_data[2][100000] == pytest.approx(0.74, 0.1)
 
 
 def test_test_data_lh_is_as_expected():
@@ -878,6 +896,7 @@ def test_test_data_lh_is_as_expected():
     assert per_vertex_data_orig[5000] == pytest.approx(per_vertex_data_mod[5000], 0.1)
     assert per_vertex_data_orig[9000] == pytest.approx(per_vertex_data_mod[9000], 0.1)
     assert per_vertex_data_orig[123000] == pytest.approx(per_vertex_data_mod[123000], 0.1)
+
 
 def test_test_data_rh_is_as_expected():
     # The file rh.area.fwhm11.fsaverage.mgh is an edited version of rh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.60, is replaced with the value 0.2.
