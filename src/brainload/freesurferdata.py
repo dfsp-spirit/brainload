@@ -87,7 +87,7 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
 
     if format == 'mgh':
         full_mgh_data, mgh_meta_data = read_mgh_file(curv_file, collect_meta_data=False)
-        relevant_data_inner_array = full_mgh_data[:,0]        # If this fails, you may need to check mgh_meta_data['data_shape'].
+        relevant_data_inner_array = full_mgh_data[:,0]
         per_vertex_data = relevant_data_inner_array[:,0]
     else:
         per_vertex_data = fsio.read_morph_data(curv_file)
@@ -315,4 +315,4 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         group_meta_data[subject_id] = subject_meta_data
         group_morphology_data.append(subject_morphology_data)
     group_morphology_data = np.array(group_morphology_data)
-    return group_morphology_data, subjects_list, group_meta_data, run_meta_data, 
+    return group_morphology_data, subjects_list, group_meta_data, run_meta_data,

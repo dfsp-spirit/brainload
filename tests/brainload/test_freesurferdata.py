@@ -831,26 +831,55 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
     assert group_data_subjects[1] == subjects_list[1]         # TODO: we should test whether the data in group_data is in this order as well, but that requires additional test data as the data of all 5 subjects is currently identical.
 
 
-def test_test_data_is_as_expected():
+def test_test_data_lh_is_as_expected():
+    # The file lh.area.fwhm11.fsaverage.mgh is an edited version of lh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.74, is replaced with the value 0.2.
     morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm11.fsaverage.mgh')
 
     mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphology_file_value_orig)
-    assert mgh_data_orig.shape == (163842, 1, 1)
+    assert mgh_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
     relevant_data_inner_array_orig = mgh_data_orig[:,0]
-    assert relevant_data_inner_array_orig.shape == (163842, 1)
+    assert relevant_data_inner_array_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
     per_vertex_data_orig = relevant_data_inner_array_orig[:,0]
-    assert per_vertex_data_orig.shape == (163842, )
-    assert per_vertex_data_orig[100000] == pytest.approx(0.74, 0.1)
+    assert per_vertex_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+    assert per_vertex_data_orig[100000] == pytest.approx(0.74, 0.1)                     # lh original value at index 100,000
 
     mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphology_file_value_mod)
-    assert mgh_data_mod.shape == (163842, 1, 1)
+    assert mgh_data_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
     relevant_data_inner_array_mod = mgh_data_mod[:,0]
-    assert relevant_data_inner_array_mod.shape == (163842, 1)
+    assert relevant_data_inner_array_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
     per_vertex_data_mod = relevant_data_inner_array_mod[:,0]
-    assert per_vertex_data_mod.shape == (163842, )
-    assert per_vertex_data_mod[100000] == pytest.approx(0.20, 0.1)
+    assert per_vertex_data_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+    assert per_vertex_data_mod[100000] == pytest.approx(0.20, 0.1)                      # edited value
 
+    # test random other data for equality
+    assert per_vertex_data_orig[50] == pytest.approx(per_vertex_data_mod[50], 0.1)
+    assert per_vertex_data_orig[5000] == pytest.approx(per_vertex_data_mod[5000], 0.1)
+    assert per_vertex_data_orig[9000] == pytest.approx(per_vertex_data_mod[9000], 0.1)
+    assert per_vertex_data_orig[123000] == pytest.approx(per_vertex_data_mod[123000], 0.1)
+
+def test_test_data_rh_is_as_expected():
+    # The file rh.area.fwhm11.fsaverage.mgh is an edited version of rh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.74, is replaced with the value 0.2.
+    morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm11.fsaverage.mgh')
+
+    mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphology_file_value_orig)
+    assert mgh_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
+    relevant_data_inner_array_orig = mgh_data_orig[:,0]
+    assert relevant_data_inner_array_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
+    per_vertex_data_orig = relevant_data_inner_array_orig[:,0]
+    assert per_vertex_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+    assert per_vertex_data_orig[100000] == pytest.approx(0.60, 0.1)                     # rh original value at index 100,000
+
+    mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphology_file_value_mod)
+    assert mgh_data_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
+    relevant_data_inner_array_mod = mgh_data_mod[:,0]
+    assert relevant_data_inner_array_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
+    per_vertex_data_mod = relevant_data_inner_array_mod[:,0]
+    assert per_vertex_data_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+    assert per_vertex_data_mod[100000] == pytest.approx(0.20, 0.1)                      # edited value
+
+    # test random other data for equality
     assert per_vertex_data_orig[50] == pytest.approx(per_vertex_data_mod[50], 0.1)
     assert per_vertex_data_orig[5000] == pytest.approx(per_vertex_data_mod[5000], 0.1)
     assert per_vertex_data_orig[9000] == pytest.approx(per_vertex_data_mod[9000], 0.1)
