@@ -2,7 +2,6 @@ import os
 import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
-import brainload as bl
 import brainload.freesurferdata as fsd
 
 
