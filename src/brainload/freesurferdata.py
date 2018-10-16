@@ -309,8 +309,6 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
             custom_morphology_file_lh = nit.fill_template_filename(custom_morphology_file_templates['lh'], substitution_dict_lh)
             custom_morphology_file_rh = nit.fill_template_filename(custom_morphology_file_templates['rh'], substitution_dict_rh)
             custom_morphology_files = {'lh': custom_morphology_file_lh, 'rh': custom_morphology_file_rh}
-            subject_meta_data['lh.custom_morphology_file_template'] = custom_morphology_file_templates['lh']
-            subject_meta_data['rh.custom_morphology_file_template'] = custom_morphology_file_templates['rh']
 
         # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
         subject_morphology_data, subject_meta_data = parse_subject_standard_space_data(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=subject_meta_data, load_surface_files=False, custom_morphology_files=custom_morphology_files)[2:4]

@@ -720,7 +720,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
-    assert len(group_meta_data['subject1']) == 20
+    assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
     assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
@@ -742,7 +742,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
-    
+
     assert len(run_meta_data) == 5
     assert run_meta_data['custom_morphology_file_templates_used'] == True
     assert run_meta_data['subjects_file_used'] == True
@@ -752,7 +752,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
-    assert len(group_meta_data['subject1']) == 20
+    assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
     assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
