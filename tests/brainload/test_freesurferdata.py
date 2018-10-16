@@ -833,6 +833,7 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
 
 def test_test_data_lh_is_as_expected():
     # The file lh.area.fwhm11.fsaverage.mgh is an edited version of lh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.74, is replaced with the value 0.2.
+    # The MGH file edits were done with the FreeSurfer matlab functions MRIread and MRIwrite.
     morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm11.fsaverage.mgh')
 
@@ -860,6 +861,7 @@ def test_test_data_lh_is_as_expected():
 
 def test_test_data_rh_is_as_expected():
     # The file rh.area.fwhm11.fsaverage.mgh is an edited version of rh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.60, is replaced with the value 0.2.
+    # The MGH file edits were done with the FreeSurfer matlab functions MRIread and MRIwrite.
     morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm11.fsaverage.mgh')
 
