@@ -5,7 +5,7 @@ A python module designed to reduce your brain load while accessing FreeSurfer br
 
 `brainload` provides a simple high-level interface to access [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) neuroimaging data in python. It is intended for developers and scientists who need to access neuroimaging data for their research.
 
-`brainload` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the files and then uses [nibabel](http://nipy.org/nibabel/) to open them in the background. Optionally, it can use [MayaVi](http://code.enthought.com/pages/mayavi-project.html) to create simple 3D plots of morphometry data on meshes representing brain surfaces.
+`brainload` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the respective files and then uses [nibabel](http://nipy.org/nibabel/) to open them. It provides an easy-to-use functional interface to neuroimaging data on multiple levels, from accessing individual files to loading group data for a directory filled with hundreds of subjects.
 
 [![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
 
@@ -16,7 +16,9 @@ This is pre-alpha and not ready for usage yet. Come back another day.
 
 ## Interface (WIP)
 
-Here is an example usage that loads surface data for a subject:
+Here are some example usages that load brain surface data.
+
+### Load the brain mesh and morphometry data for a single subject in subject space
 
 ```python
 from brainload.freesurferdata import parse_subject
@@ -27,6 +29,8 @@ Now you have the brain surface mesh (defined by `vert_coords` and `faces`) and t
 
 Note that the data we retrieved in the example above is in native space. You may want to retrieve standard space data, i.e., subject data mapped to an average subject like FreeSurfer's `fsaverage` subject, instead. Here is an example for that:
 
+### Load the fsaverage brain mesh and morphometry data for a single subject in standard space
+
 ```python
 from brainload.freesurferdata import parse_subject_standard_space_data
 subject_id = 'bert'
@@ -35,7 +39,24 @@ vert_coords, faces, per_vertex_data, meta_data = parse_subject_standard_space_da
 
 This time, the mesh you get is the inflated surface of the `fsaverage` subject (since that is the default for the named parameter `average_subject`, which we omitted in the example above). The `per_vertex_data` represents the area data for the white matter surface of your subject, mapped to the vertices of the average subject and ready for group comparison.
 
-You can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
+### Load standard space for all subjects in your SUBJECTS_DIR
+
+```python
+from brainload.freesurferdata import load_group_data
+
+group_data, group_meta_data, run_meta_data = load_group_data('area', fwhm='15', surf='pial', hemi='lh')
+print group_data.shape          # will print '(260, 163842)' if your SUBJECTS_DIR contains 260 subjects. Note that 163842 is the number of vertices of the left hemisphere of the 'fsaverage' subject in FreeSurfer.
+```
+
+This will load the standard space area data for all subjects in the SUBJECTS_DIR. Of course, you could specify more settings instead of using the defaults, e.g., if you used an average subject that is not fsaverage. And you can always see which files and settings were used under the hood:
+
+```python
+# continued from last code sample
+print group_meta_data['subject1']['lh.morphology_file']             # will print SUBJECTS_DIR/subject1/surf/lh.area.pial.fwhm15.fsaverage.mgh
+print group_meta_data['subject1']['hemi']                           # will print 'lh'
+```
+
+Whatever function you used, you can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
 
 ## API Documentation
 
