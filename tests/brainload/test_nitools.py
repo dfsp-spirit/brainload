@@ -79,13 +79,24 @@ def test_detect_subjects_in_directory_does_not_ignores_subjects_when_asked_to_vi
     assert not 'subject_files_tab_separated' in subject_ids     # this dir exists, but it has no sub dir 'surf' and should thus not be listed
 
 
-def test_detect_subjects_in_directory_does_not_match_anything_when_adding_weird_required_sub_dirs():
+def test_detect_subjects_in_directory_does_not_match_anything_when_adding_nonexistant_required_sub_dirs():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running the 'get_test_data_all.bash' script." % expected_subject2_dir)
 
     subject_ids = nit.detect_subjects_in_directory(TEST_DATA_DIR, required_subdirs_for_hits=['not_there'])
     assert len(subject_ids) == 0
+
+
+def test_detect_subjects_in_directory_does_match_when_adding_existant_required_sub_dirs():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running the 'get_test_data_all.bash' script." % expected_subject2_dir)
+
+    subject_ids = nit.detect_subjects_in_directory(TEST_DATA_DIR, required_subdirs_for_hits=['this_dir_exists_for_a_unit_test'])
+    assert len(subject_ids) == 1
+    assert 'subject6' in subject_ids
+
 
 
 def test_detect_subjects_in_directory_without_any_subjects():
