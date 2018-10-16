@@ -315,4 +315,4 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         group_meta_data[subject_id] = subject_meta_data
         group_morphology_data.append(subject_morphology_data)
     group_morphology_data = np.array(group_morphology_data)
-    return group_morphology_data, group_meta_data, run_meta_data
+    return group_morphology_data, subjects_list, group_meta_data, run_meta_data, 

@@ -625,7 +625,7 @@ def test_load_group_data():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -642,6 +642,8 @@ def test_load_group_data():
     assert run_meta_data['subjects_file'] == expected_subjects_file
 
     assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
+
     assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
@@ -660,7 +662,7 @@ def test_load_group_data_works_with_left_hemisphere_only():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
@@ -668,6 +670,7 @@ def test_load_group_data_works_with_left_hemisphere_only():
     assert len(run_meta_data) == 3
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 15
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
@@ -680,7 +683,7 @@ def test_load_group_data_works_with_right_hemisphere_only():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
 
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -688,6 +691,7 @@ def test_load_group_data_works_with_right_hemisphere_only():
     assert len(run_meta_data) == 3
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 15
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
     assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
@@ -702,7 +706,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
 
     morphology_template = '${HEMI}.${MEASURE}.${AVERAGE_SUBJECT}.mgh'
     custom_morphology_file_templates = {'lh': morphology_template, 'rh': morphology_template}
-    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
@@ -719,6 +723,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
@@ -734,7 +739,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     template_lh = 'lh.area.fsaverage.mgh'   # nobody forces you to use any variables
     template_rh = 'rh.area.fsaverage.mgh'
     custom_morphology_file_templates = {'lh': template_lh, 'rh': template_rh}
-    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
@@ -751,6 +756,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
@@ -764,7 +770,7 @@ def test_load_group_data_works_with_subjects_list():
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject3' ]
-    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -777,6 +783,7 @@ def test_load_group_data_works_with_subjects_list():
 
     assert group_data.shape == (2, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)
     assert len(group_meta_data) == 2
+    assert len(group_meta_data) == len(group_data_subjects)
     assert not 'subject2' in group_meta_data
     assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
@@ -789,3 +796,36 @@ def test_load_group_data_works_with_subjects_list():
     assert len(group_meta_data['subject3']) == 18
     assert group_meta_data['subject3']['lh.morphology_file'] == expected_lh_morphology_file_subject3
     assert group_meta_data['subject3']['rh.morphology_file'] == expected_rh_morphology_file_subject3
+
+
+def test_load_group_data_subject_order_in_data_is_correct_from_subjects_file():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+
+    assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
+
+    assert group_data_subjects[0] == 'subject1'         # This is the order in which the subjects appear in our test data subjects file.
+    assert group_data_subjects[1] == 'subject2'         # TODO: we should test whether the data in group_data is in this order as well, but that requires additional test data as the data of all 5 subjects is currently identical.
+    assert group_data_subjects[2] == 'subject3'
+    assert group_data_subjects[3] == 'subject4'
+    assert group_data_subjects[4] == 'subject5'
+
+
+def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+
+    subjects_list = [ 'subject1', 'subject3' ]
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+
+    assert len(group_meta_data) == 2
+    assert len(group_meta_data) == len(group_data_subjects)
+    assert len(group_data_subjects) == len(subjects_list)
+
+    assert group_data_subjects[0] == subjects_list[0]         # This is the order in which the subjects appear in our test data subjects file.
+    assert group_data_subjects[1] == subjects_list[1]         # TODO: we should test whether the data in group_data is in this order as well, but that requires additional test data as the data of all 5 subjects is currently identical.
