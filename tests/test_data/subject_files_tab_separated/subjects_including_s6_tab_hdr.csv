@@ -1,0 +1,7 @@
+subject name	IQ	sex	 group	site
+subject1	123	male	control	center_1
+subject2	126	female	case	center_1
+subject3	98	male	control	center_2
+subject4	103	male	control	center_1
+subject5	108	female	case	center_2
+subject6	87	male	case	center_2
