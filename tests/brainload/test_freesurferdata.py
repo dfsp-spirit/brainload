@@ -859,7 +859,7 @@ def test_test_data_lh_is_as_expected():
     assert per_vertex_data_orig[123000] == pytest.approx(per_vertex_data_mod[123000], 0.1)
 
 def test_test_data_rh_is_as_expected():
-    # The file rh.area.fwhm11.fsaverage.mgh is an edited version of rh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.74, is replaced with the value 0.2.
+    # The file rh.area.fwhm11.fsaverage.mgh is an edited version of rh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.60, is replaced with the value 0.2.
     morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm11.fsaverage.mgh')
 
