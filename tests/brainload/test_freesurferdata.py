@@ -827,5 +827,31 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
     assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_data_subjects) == len(subjects_list)
 
-    assert group_data_subjects[0] == subjects_list[0]         # This is the order in which the subjects appear in our test data subjects file.
+    assert group_data_subjects[0] == subjects_list[0]
     assert group_data_subjects[1] == subjects_list[1]         # TODO: we should test whether the data in group_data is in this order as well, but that requires additional test data as the data of all 5 subjects is currently identical.
+
+
+def test_test_data_is_as_expected():
+    morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm11.fsaverage.mgh')
+
+    mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphology_file_value_orig)
+    assert mgh_data_orig.shape == (163842, 1, 1)
+    relevant_data_inner_array_orig = mgh_data_orig[:,0]
+    assert relevant_data_inner_array_orig.shape == (163842, 1)
+    per_vertex_data_orig = relevant_data_inner_array_orig[:,0]
+    assert per_vertex_data_orig.shape == (163842, )
+    assert per_vertex_data_orig[100000] == pytest.approx(0.74, 0.1)
+
+    mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphology_file_value_mod)
+    assert mgh_data_mod.shape == (163842, 1, 1)
+    relevant_data_inner_array_mod = mgh_data_mod[:,0]
+    assert relevant_data_inner_array_mod.shape == (163842, 1)
+    per_vertex_data_mod = relevant_data_inner_array_mod[:,0]
+    assert per_vertex_data_mod.shape == (163842, )
+    assert per_vertex_data_mod[100000] == pytest.approx(0.20, 0.1)
+
+    assert per_vertex_data_orig[50] == pytest.approx(per_vertex_data_mod[50], 0.1)
+    assert per_vertex_data_orig[5000] == pytest.approx(per_vertex_data_mod[5000], 0.1)
+    assert per_vertex_data_orig[9000] == pytest.approx(per_vertex_data_mod[9000], 0.1)
+    assert per_vertex_data_orig[123000] == pytest.approx(per_vertex_data_mod[123000], 0.1)
