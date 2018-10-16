@@ -29,6 +29,31 @@ def test_read_subjects_file_one_subject():
     assert 'subject1' in subject_ids
 
 
+def test_read_subjects_file_csv_format_comma_separated_no_header():
+    subjects_file = os.path.join(TEST_DATA_DIR, 'subjects_including_s6.csv')
+    subject_ids = nit.read_subjects_file(subjects_file)
+    assert len(subject_ids) == 6
+    assert 'subject1' in subject_ids
+    assert 'subject2' in subject_ids
+    assert 'subject3' in subject_ids
+    assert 'subject4' in subject_ids
+    assert 'subject5' in subject_ids
+    assert 'subject6' in subject_ids
+
+
+def test_read_subjects_file_csv_format_tab_separated_with_header():
+    subjects_file = os.path.join(TEST_DATA_DIR, 'subject_files_tab_separated', 'subjects_including_s6_tab_hdr.csv')
+    subject_ids = nit.read_subjects_file(subjects_file, has_header_line=True, delimiter='\t')  # the name arg 'delimiter' should be passed on to csv.reader by the function. This is tested here.
+    assert len(subject_ids) == 6
+    assert 'subject1' in subject_ids
+    assert 'subject2' in subject_ids
+    assert 'subject3' in subject_ids
+    assert 'subject4' in subject_ids
+    assert 'subject5' in subject_ids
+    assert 'subject6' in subject_ids
+
+
+
 def test_detect_subjects_in_directory_with_six_subjects():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):

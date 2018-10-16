@@ -4,7 +4,7 @@ import string
 import numpy as np
 
 
-def read_subjects_file(subjects_file, **kwargs):
+def read_subjects_file(subjects_file, has_header_line=False, **kwargs):
     """
     Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the consecutive fields on each line, and will be ignored. Having nothing but the subject id on the line is also fine, of course.
 
@@ -13,8 +13,10 @@ def read_subjects_file(subjects_file, **kwargs):
     subject_ids = []
     with open(subjects_file, 'r') as sfh:
         reader = csv.reader(sfh, **kwargs)
+        if has_header_line:
+            next(reader)
         for row in reader:
-            subject_ids.append(row[0])
+            subject_ids.append(row[0])  # we assume that the subject id is always the first field on each line. This is a requirement of the function.
     return subject_ids
 
 
