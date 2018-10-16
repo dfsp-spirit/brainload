@@ -44,7 +44,7 @@ This time, the mesh you get is the inflated surface of the `fsaverage` subject (
 ```python
 from brainload.freesurferdata import load_group_data
 
-group_data, group_meta_data, run_meta_data = load_group_data('area', fwhm='15', surf='pial', hemi='lh')
+group_data, group_data_subjects, group_meta_data, run_meta_data = load_group_data('area', fwhm='15', surf='pial', hemi='lh')
 print group_data.shape          # will print '(260, 163842)' if your SUBJECTS_DIR contains 260 subjects. Note that 163842 is the number of vertices of the left hemisphere of the 'fsaverage' subject in FreeSurfer.
 ```
 
