@@ -281,9 +281,22 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
     if group_meta_data is None:
         group_meta_data = {}
 
+    run_meta_data = {}
+
     if subjects_list is None:
         subjects_file_with_path = os.path.join(subjects_file_dir, subjects_file)
         subjects_list = nit.read_subjects_file(subjects_file_with_path)
+        run_meta_data['subjects_file_used'] = True
+        run_meta_data['subjects_file'] = subjects_file_with_path
+    else:
+        run_meta_data['subjects_file_used'] = False
+
+    if custom_morphology_file_templates is not None:
+        run_meta_data['custom_morphology_file_templates_used'] = True
+        run_meta_data['lh.custom_morphology_file_template'] = custom_morphology_file_templates['lh']
+        run_meta_data['rh.custom_morphology_file_template'] = custom_morphology_file_templates['rh']
+    else:
+        run_meta_data['custom_morphology_file_templates_used'] = False
 
     group_morphology_data = []
     for subject_id in subjects_list:
@@ -304,4 +317,4 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         group_meta_data[subject_id] = subject_meta_data
         group_morphology_data.append(subject_morphology_data)
     group_morphology_data = np.array(group_morphology_data)
-    return group_morphology_data, group_meta_data
+    return group_morphology_data, group_meta_data, run_meta_data

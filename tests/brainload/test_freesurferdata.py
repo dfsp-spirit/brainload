@@ -626,14 +626,22 @@ def test_load_group_data():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
+    expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
+
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
+
+    assert len(run_meta_data) == 3
+    assert run_meta_data['custom_morphology_file_templates_used'] == False
+    assert run_meta_data['subjects_file_used'] == True
+    assert run_meta_data['subjects_file'] == expected_subjects_file
+
     assert len(group_meta_data) == 5
     assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
@@ -653,11 +661,12 @@ def test_load_group_data_works_with_left_hemisphere_only():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
+    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
 
+    assert len(run_meta_data) == 3
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
     assert len(group_meta_data['subject1']) == 15
@@ -672,11 +681,12 @@ def test_load_group_data_works_with_right_hemisphere_only():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_meta_data = fsd.load_group_data('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
+    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
 
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
+    assert len(run_meta_data) == 3
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
     assert len(group_meta_data['subject1']) == 15
@@ -693,12 +703,20 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
 
     morphology_template = '${HEMI}.${MEASURE}.${AVERAGE_SUBJECT}.mgh'
     custom_morphology_file_templates = {'lh': morphology_template, 'rh': morphology_template}
-    group_data, group_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
+    expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
+
+    assert len(run_meta_data) == 5
+    assert run_meta_data['custom_morphology_file_templates_used'] == True
+    assert run_meta_data['subjects_file_used'] == True
+    assert run_meta_data['subjects_file'] == expected_subjects_file
+    assert run_meta_data['lh.custom_morphology_file_template'] == morphology_template
+    assert run_meta_data['rh.custom_morphology_file_template'] == morphology_template
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
@@ -714,13 +732,23 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
-    custom_morphology_file_templates = {'lh': 'lh.area.fsaverage.mgh', 'rh': 'rh.area.fsaverage.mgh'}     # nobody forces you to use any variables
-    group_data, group_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    template_lh = 'lh.area.fsaverage.mgh'   # nobody forces you to use any variables
+    template_rh = 'rh.area.fsaverage.mgh'
+    custom_morphology_file_templates = {'lh': template_lh, 'rh': template_rh}
+    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
+    expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
+    
+    assert len(run_meta_data) == 5
+    assert run_meta_data['custom_morphology_file_templates_used'] == True
+    assert run_meta_data['subjects_file_used'] == True
+    assert run_meta_data['subjects_file'] == expected_subjects_file
+    assert run_meta_data['lh.custom_morphology_file_template'] == template_lh
+    assert run_meta_data['rh.custom_morphology_file_template'] == template_rh
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
@@ -729,3 +757,35 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
     assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
     assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
+
+
+def test_load_group_data_works_with_subjects_list():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+
+    subjects_list = [ 'subject1', 'subject3' ]
+    group_data, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+
+    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphology_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphology_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+
+    assert len(run_meta_data) == 2
+    assert run_meta_data['custom_morphology_file_templates_used'] == False
+    assert run_meta_data['subjects_file_used'] == False
+
+    assert group_data.shape == (2, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)
+    assert len(group_meta_data) == 2
+    assert len(group_meta_data['subject1']) == 18
+    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
+    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
+
+    assert group_meta_data['subject1']['display_subject'] is None
+    assert group_meta_data['subject1']['display_surf'] is None
+    assert group_meta_data['subject1']['measure'] == 'area'
+
+    assert len(group_meta_data['subject3']) == 18
+    assert group_meta_data['subject3']['lh.morphology_file'] == expected_lh_morphology_file_subject3
+    assert group_meta_data['subject3']['rh.morphology_file'] == expected_rh_morphology_file_subject3
