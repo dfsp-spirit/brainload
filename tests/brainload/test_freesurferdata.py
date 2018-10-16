@@ -778,6 +778,7 @@ def test_load_group_data_works_with_subjects_list():
 
     assert group_data.shape == (2, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)
     assert len(group_meta_data) == 2
+    assert not 'subject2' in group_meta_data
     assert len(group_meta_data['subject1']) == 18
     assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
     assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
