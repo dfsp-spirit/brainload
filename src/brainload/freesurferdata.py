@@ -142,7 +142,7 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
     else:
         lh_vert_coords, lh_faces, meta_data = read_fs_surface_file_and_record_meta_data(lh_surf_file, 'lh', meta_data=meta_data)
         rh_vert_coords, rh_faces, meta_data = read_fs_surface_file_and_record_meta_data(rh_surf_file, 'rh', meta_data=meta_data)
-        vert_coords, faces = merge_meshes(np.array([[lh_vert_coords, lh_faces], [rh_vert_coords, rh_faces]]))
+        vert_coords, faces = _merge_meshes(np.array([[lh_vert_coords, lh_faces], [rh_vert_coords, rh_faces]]))
     return vert_coords, faces, meta_data
 
 
@@ -220,7 +220,10 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
     return vert_coords, faces, morphology_data, meta_data
 
 
-def merge_meshes(meshes):
+def _merge_meshes(meshes):
+    """
+    Merge several meshes into a single one.
+    """
     all_vert_coords = np.empty((0, 3), dtype=float)
     all_faces = np.empty((0, 3), dtype=int)
 

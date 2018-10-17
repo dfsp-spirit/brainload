@@ -45,7 +45,7 @@ def test_merge_meshes():
     m2_vertex_coords = np.array([[0, 0, 0], [10, -10, 0], [10, 10, 0], [15, 10, 0]])
     m2_faces = np.array([[0, 2, 1], [1, 3, 2]])
 
-    merged_verts, merged_faces = fsd.merge_meshes(np.array([[m1_vertex_coords, m1_faces], [m2_vertex_coords, m2_faces]]))
+    merged_verts, merged_faces = fsd._merge_meshes(np.array([[m1_vertex_coords, m1_faces], [m2_vertex_coords, m2_faces]]))
     assert merged_verts.shape == (8, 3)
     assert merged_faces.shape == (4, 3)
 

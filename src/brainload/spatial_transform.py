@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+Functions for spatial tranformation of 3-dimensional coordinates.
+
+These functions are helpful if you want to rotate, translate, mirror, or scale (brain) meshes.
+"""
 
 import numpy as np
 
 def rotate_3D_coordinates_around_axes(x, y, z, rotx, roty, rotz):
-    '''Rotate coordinates around the axes. Rotation must be given in radians.'''
+    """
+    Rotate coordinates around the axes. Rotation must be given in radians.
+    """
     xr, yr, zr = _rotate_3D_coordinates_around_x_axis(x, y, z, rotx)
     xr, yr, zr = _rotate_3D_coordinates_around_y_axis(xr, yr, zr, roty)
     xr, yr, zr = _rotate_3D_coordinates_around_z_axis(xr, yr, zr, rotz)
@@ -11,6 +18,9 @@ def rotate_3D_coordinates_around_axes(x, y, z, rotx, roty, rotz):
 
 
 def _rotate_3D_coordinates_around_x_axis(x, y, z, rot):
+    """
+    Rotate coordinates around the x axis. Rotation must be given in radians.
+    """
     y_rotated  = np.cos(rot) * y - np.sin(rot) * z
     z_rotated  = np.sin(rot) * y + np.cos(rot) * z
     x_rotated  = x
@@ -18,6 +28,9 @@ def _rotate_3D_coordinates_around_x_axis(x, y, z, rot):
 
 
 def _rotate_3D_coordinates_around_y_axis(x, y, z, rot):
+    """
+    Rotate coordinates around the y axis. Rotation must be given in radians.
+    """
     z_rotated = np.cos(rot) * z - np.sin(rot) * x
     x_rotated = np.sin(rot) * z + np.cos(rot) * x
     y_rotated = y
@@ -25,6 +38,9 @@ def _rotate_3D_coordinates_around_y_axis(x, y, z, rot):
 
 
 def _rotate_3D_coordinates_around_z_axis(x, y, z, rot):
+    """
+    Rotate coordinates around the z axis. Rotation must be given in radians.
+    """
     x_rotated = np.cos(rot) * x - np.sin(rot) * y
     y_rotated = np.sin(rot) * x + np.cos(rot) * y
     z_rotated = z
@@ -33,7 +49,7 @@ def _rotate_3D_coordinates_around_z_axis(x, y, z, rot):
 
 def coords_a2s(coords):
     """
-    Splits a 3xn array of coordinates (x, y, z values) into 3 separate arrays of length n.
+    Split a 3xn array of coordinates (x, y, z values) into 3 separate arrays of length n.
     """
     x = coords[:,0]
     y = coords[:,1]
@@ -42,7 +58,7 @@ def coords_a2s(coords):
 
 def coords_s2a(x, y, z):
     """
-    Merges 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape 3xn.
+    Merge 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape (3, n).
     """
     if np.isscalar(x) and np.isscalar(y) and np.isscalar(z):
         x = np.array([x])
@@ -52,7 +68,9 @@ def coords_s2a(x, y, z):
 
 
 def translate_3D_coordinates_along_axes(x, y, z, shift_x, shift_y, shift_z):
-    '''Translates coordinates along one or more axes'''
+    """
+    Translate coordinates along one or more axes.
+    """
     x_shifted = x + shift_x
     y_shifted = y + shift_y
     z_shifted = z + shift_z
@@ -60,7 +78,9 @@ def translate_3D_coordinates_along_axes(x, y, z, shift_x, shift_y, shift_z):
 
 
 def scale_3D_coordinates(x, y, z, x_scale_factor, y_scale_factor=None, z_scale_factor=None):
-    '''Scales the given coordinates by the given scale factor.'''
+    """
+    Scale the given coordinates by the given scale factor.
+    """
     if y_scale_factor is None:
         y_scale_factor = x_scale_factor
     if z_scale_factor is None:
@@ -71,7 +91,11 @@ def scale_3D_coordinates(x, y, z, x_scale_factor, y_scale_factor=None, z_scale_f
     return x_scaled, y_scaled, z_scaled
 
 def mirror_3D_coordinates_at_axis(x, y, z, axis, mirror_at_axis_coordinate=None):
-    '''Mirrors or reflects the given 3D coordinates on a plane (perpendicular to the axis) at axis coordinate x at the given axis. If mirror_at_axis_coordinate is not given, the smallest coordinate along the mirror axis is used.'''
+    """
+    Mirror the given 3D coordinates on the given mirror plane.
+
+    Mirror or reflect the given 3D coordinates on a plane (perpendicular to the axis) at axis coordinate `mirror_at_axis_coordinate` at the given axis. If `mirror_at_axis_coordinate` is not given, the smallest coordinate along the mirror axis in the data is used.
+    """
     if axis not in ('x', 'y', 'z'):
         raise ValueError("ERROR: axis must be one of {'x', 'y', 'z'}")
 
@@ -83,7 +107,11 @@ def mirror_3D_coordinates_at_axis(x, y, z, axis, mirror_at_axis_coordinate=None)
         return np.copy(x), np.copy(y), _mirror_coordinates_at_axis(z, mirror_at_axis_coordinate)
 
 def _mirror_coordinates_at_axis(c, mirror_at_axis_coordinate=None):
-    '''Mirrors or reflects a 1-dimensional array of coordinates on a plane (perpendicular to the axis) at the given axis coordinate. If no coordinate is given, the minimum value of the coordinates is used.'''
+    """
+    Mirror or reflect a 1-dimensional array of coordinates on a mirror plane.
+    
+    Mirror or reflect a 1-dimensional array of coordinates on a plane (perpendicular to the axis) at the given axis coordinate. If no coordinate is given, the minimum value of the coordinates is used.
+    """
     if mirror_at_axis_coordinate is None:
         mirror_at_axis_coordinate = np.min(c)
     c_mirrored = mirror_at_axis_coordinate - (c - mirror_at_axis_coordinate)
@@ -91,7 +119,9 @@ def _mirror_coordinates_at_axis(c, mirror_at_axis_coordinate=None):
 
 
 def point_mirror_3D_coordinates(x, y, z, point_x, point_y, point_z):
-    '''Point-mirrors or reflects the given coordinates at the given point.'''
+    """
+    Point-mirror or reflect the given coordinates at the given point.
+    """
     return _mirror_coordinates_at_axis(x, point_x), _mirror_coordinates_at_axis(y, point_y), _mirror_coordinates_at_axis(z, point_z)
 
 
