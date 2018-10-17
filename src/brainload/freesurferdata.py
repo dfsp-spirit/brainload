@@ -208,6 +208,86 @@ def merge_meshes(meshes):
 
 
 def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphology_files=None):
+    """
+    Load morphometry data for a subjects that has been mapped to an average subject.
+
+    Load for a single subject that has been mapped to an average subject like the `fsaverage` subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject's data. Example: 'subject33'. See also `subjects_dir` below.
+
+    measure : string, optional
+        The measure to load, e.g., 'area' or 'curv'. Defaults to 'area'.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}, optional
+        The hemisphere that should be loaded. Defaults to 'both'.
+
+    fwhm : string or None, optional
+        Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. Defaults to '10'. If None is passed, the `.fwhmX` part is omitted from the file name completely. Set this to '0' to get the unsmoothed version.
+
+    subjects_dir: string, optional
+        A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.
+
+    average_subject: string, optional
+        The name of the average subject to which the data was mapped. Defaults to 'fsaverage'.
+
+    display_surf: string, optional
+        The surface of the average subject for which the mesh should be loaded, e.g., 'white', 'pial', 'inflated', or 'sphere'. Defaults to 'white'. Ignored if `load_surface_files` is `False`.
+
+    subjects_dir_for_average_subject: string, optional
+        A string representing the full path to a directory. This can be used if the average subject is not in the same directory as all your study subjects. Defaults to the setting of `subjects_dir`.
+
+    meta_data: dictionary, optional
+        A dictionary that should be merged into the return value `meta_data`. Defaults to the empty dictionary if omitted.
+
+    load_surface_files: boolean, optional
+        Whether to load mesh data. If set to `False`, the first return values `vert_coords` and `faces` will be `None`. Defaults to `True`.
+
+    load_morphology_data: boolean, optional
+        Whether to load morphology data. If set to `False`, the first return value `morphology_data` will be `None`. Defaults to `True`.
+
+    custom_morphology_files: dictionary, optional
+        Cutom filenames for the left and right hemispjere data files that should be loaded. A dictionary of strings with exactly the following two keys: `lh` and `rh`. The value strings must contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the `surf/` directory of the respective subject. Example: `{'lh': 'lefthemi.nonstandard.mymeasure44.mgh', 'rh': 'righthemi.nonstandard.mymeasure44.mgh'}`.
+
+    Returns
+    -------
+    vert_coords: numpy array
+        A 2-dimensional array containing the vertices of the mesh. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., 'lh.white'), as returned by the `nibabel` function `nibabel.freesurfer.io.read_geometry`.
+
+    faces: numpy array
+        A 2-dimensional array containing the 3-faces of the mesh. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
+
+    morphology_data: numpy array
+        A numpy array with as many entries as there are vertices in the average subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. In many cases, your average subject will have the same number of vertices for both hemispheres and you will know this number beforehand, so you may not have to worry about this at all.
+
+    meta_data: dictionary
+        A dictionary containing detailed information on all files that were loaded and used settings.
+
+    Raises
+    ------
+    ValueError
+        If one of the parameters with a fixed set of values receives a value that is not allowed.
+
+    Examples
+    --------
+    Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR, mapped to fsaverage:
+
+    >>> v, f, data, md = parse_subject_standard_space_data('subject1')
+
+    Here, we are a bit more explicit about what we want to load:
+
+    >>> v, f, data, md = parse_subject_standard_space_data('subject1', hemi='lh', measure='curv', fwhm='15', display_surf='inflated')
+
+    Sometime we do not care for the mesh, e.g., we only want the morphometry data:
+
+    >>> data, md = parse_subject_standard_space_data('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
+
+    """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
@@ -282,10 +362,10 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
     Parameters
     ----------
     measure : string
-        The measure to load, e.g., 'area' or 'curv'. Data files for this measure have to exist for all subjects. This will become part of the file name that is loaded.
+        The measure to load, e.g., 'area' or 'curv'. Data files for this measure have to exist for all subjects.
 
     surf : string, optional
-        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. Defaults to 'white'.
 
     hemi : {'both', 'lh', 'rh'}, optional
         The hemisphere that should be loaded. Defaults to 'both'.
@@ -328,6 +408,11 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
 
     run_meta_data: dictionary
         A dictionary containing general information on the settings used when executing the function and determining which subjects to load.
+
+    Raises
+    ------
+    ValueError
+        If one of the parameters with a fixed set of values receives a value that is not allowed.
 
     Examples
     --------
