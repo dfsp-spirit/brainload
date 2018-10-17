@@ -1,5 +1,5 @@
 brainload package
-===============
+=================
 
 .. automodule:: brainload
     :members:
@@ -10,7 +10,7 @@ Submodules
 ----------
 
 brainload.freesurferdata module
------------------------------
+-------------------------------
 
 .. automodule:: brainload.freesurferdata
     :members:
@@ -18,7 +18,7 @@ brainload.freesurferdata module
     :show-inheritance:
 
 brainload.nitools module
------------------------------
+------------------------
 
 .. automodule:: brainload.nitools
     :members:
@@ -26,7 +26,7 @@ brainload.nitools module
     :show-inheritance:
 
 brainload.freesurferview module
------------------------------
+-------------------------------
 
 .. automodule:: brainload.freesurferview
     :members:
@@ -34,7 +34,7 @@ brainload.freesurferview module
     :show-inheritance:
 
 brainload.spatial\_transform module
----------------------------------
+-----------------------------------
 
 .. automodule:: brainload.spatial_transform
     :members:
