@@ -1,8 +1,13 @@
+"""
+Functions for loading FreeSurfer data on different levels.
+"""
+
 import os
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 import brainload.nitools as nit
+
 
 def read_mgh_file(mgh_file_name, collect_meta_data=True):
     """
