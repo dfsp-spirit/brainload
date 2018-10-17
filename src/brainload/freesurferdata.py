@@ -52,14 +52,23 @@ def merge_morphology_data(morphology_data_arrays, dtype=float):
     return merged_data
 
 
-def get_morphology_data_suffix_for_surface(surf):
-    '''Determines the substring representing the given surface in a FreeSurfer output curv file.'''
+def _get_morphology_data_suffix_for_surface(surf):
+    """
+    Determine FreeSurfer surface representation string.
+
+    Determine the substring representing the given surface in a FreeSurfer output curv file. For FreeSurfer's default surface 'white', the surface is not represented in the output file name pattern. For all others, it is.
+    """
     if surf == 'white':
         return ''
     return '.' + surf
 
 
 def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_data=None):
+    """
+    Read a surface file and record meta data on it.
+
+    Read a surface file and record meta data on it. A surface file is a mesh file in FreeSurfer format, e.g., 'lh.white'. It contains vertices and 3-faces made out of them.
+    """
     if hemisphere_label not in ('lh', 'rh'):
         raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'} but is '%s'." % hemisphere_label)
 
@@ -81,6 +90,11 @@ def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_
 
 
 def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_label, meta_data=None, format='curv'):
+    """
+    Read a morphology file and record meta data on it.
+
+    Read a morphology file and record meta data on it. A morphology file is file containing a scalar value for each vertex on the surface of a FreeSurfer mesh. An example is the file 'lh.area', which contains the area values for all vertices of the left hemisphere of the white surface. Such a file can be in two different formats: 'curv' or 'mgh'. The former is used when the data refers to the surface mesh of the original subject, the latter when it has been mapped to a standard subject like fsaverage.
+    """
     if format not in ('curv', 'mgh'):
         raise ValueError("ERROR: format must be one of {'curv', 'mgh'} but is '%s'." % format)
 
@@ -110,6 +124,11 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
 
 
 def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=None):
+    """
+    Load mesh files for a subject.
+
+    Load one or two mesh files for a subject. Which of the two files `lh_surf_file` and `rh_surf_file` are actually loaded is determined by the `hemi` parameter.
+    """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
@@ -128,6 +147,11 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
 
 
 def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_data_file, hemi='both', format='curv', meta_data=None):
+    """
+    Load morphology data files for a subject.
+
+    Load one or two morphology data files for a subject. Which of the two files `lh_morphology_data_file` and `rh_morphology_data_file` are actually loaded is determined by the `hemi` parameter.
+    """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
@@ -177,8 +201,8 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
 
     morphology_data = None
     if load_morhology_data:
-        lh_morphology_file = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf)))
-        rh_morphology_file = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf)))
+        lh_morphology_file = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphology_data_suffix_for_surface(surf)))
+        rh_morphology_file = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphology_data_suffix_for_surface(surf)))
         morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file, hemi=hemi, format='curv', meta_data=meta_data)
     else:
         measure = None
@@ -329,8 +353,8 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
         if custom_morphology_files is None:
             meta_data['custom_morphology_files_used'] = False
-            lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
-            rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+            lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+            rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
         else:
             meta_data['custom_morphology_files_used'] = True
             lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['lh'])
