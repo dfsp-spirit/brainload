@@ -1,5 +1,5 @@
 #!/bin/bash
-## get_test_data_group.bash -- Generates the subjects subject2, subject3, ..., subject5 by copying subject1. Also writes a subjects.txt file for these fake subjects.
+## get_test_data_group.bash -- Generates the subjects subject2, subject3, ..., subject5 by copying subject1. Also writes a subjects.txt file for these fake subjects. Creates dir 'extra_subjects' without subjects file that holds subject2x and subject3x.
 ## author: Tim Schäfer
 ## This file is part of brainload. Copright Tim Schäfer, 2018. See the LICENSE file for the license.
 
@@ -37,6 +37,15 @@ if [ -d "${BRAINLOAD_TEST_DATA_DIR}/subject1" ]; then
         NEW_SUBJECT_ID="subject${SUBJECT_NUMBER}"
         cp -r subject1 "${NEW_SUBJECT_ID}" && echo "${NEW_SUBJECT_ID}" >> "${SUBJECTS_FILE}" && echo "${APPTAG}  * ${NEW_SUBJECT_ID}"
     done
+
+    EXTRA_SUBJECTS_DIR="extra_subjects"
+    echo "${APPTAG} Creating extra test subjects in directory '${EXTRA_SUBJECTS_DIR}' ..."
+    mkdir ${EXTRA_SUBJECTS_DIR}
+    for SUBJECT_NUMBER in {2..3}; do
+        NEW_SUBJECT_ID="subject${SUBJECT_NUMBER}x"
+        cp -r subject1 "${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}" && echo "${APPTAG}  * ${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}"
+    done
+
 else
     echo "${APPTAG} ERROR: Data for subject1 not found at '${BRAINLOAD_TEST_DATA_DIR}/subject1'. Exiting."
     exit 1
