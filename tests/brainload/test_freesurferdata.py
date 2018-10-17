@@ -1012,17 +1012,34 @@ def test_load_group_data_auto_mode_prefers_list_over_default_subjects_file_and_s
     assert run_meta_data['subjects_detection_mode'] == 'auto'
     assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
 
+
 def test_load_group_data_auto_mode_searches_dir_as_last_resort():
-    expected_extra_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
-    if not os.path.isdir(expected_extra_subjects_dir):
-        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_extra_subjects_dir)
+    extra_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
+    if not os.path.isdir(extra_subjects_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % extra_subjects_dir)
 
-    subjects_list = [ 'subject1', 'subject6', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=extra_subjects_dir)
 
-    assert len(group_meta_data) == 3
+    assert len(group_meta_data) == 2
     assert len(group_meta_data) == len(group_data_subjects)
-    assert len(group_data_subjects) == len(subjects_list)
+    assert 'subject2x' in group_data_subjects       # relying on order would be dangerous when the files are read from a file system
+    assert 'subject3x' in group_data_subjects
 
     assert run_meta_data['subjects_detection_mode'] == 'auto'
-    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'search_dir'
+
+
+def test_load_group_data_search_dir_mode_searches_dir():
+    extra_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
+    if not os.path.isdir(extra_subjects_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % extra_subjects_dir)
+
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=extra_subjects_dir, subjects_detection_mode='search_dir')
+
+    assert len(group_meta_data) == 2
+    assert len(group_meta_data) == len(group_data_subjects)
+    assert 'subject2x' in group_data_subjects       # relying on order would be dangerous when the files are read from a file system
+    assert 'subject3x' in group_data_subjects
+
+    assert run_meta_data['subjects_detection_mode'] == 'search_dir'
+    assert not 'subjects_detection_mode_auto_used_method' in run_meta_data

@@ -303,7 +303,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         if subjects_list is None:
             raise ValueError("ERROR: subjects_detection_mode is set to 'list' but the subjects_list parameter was not given.")
     elif subjects_detection_mode == 'search_dir':
-        subjects_list = detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
+        subjects_list = nit.detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
     else:
         # we are in modes 'auto' or 'file'
         subjects_file_with_path = os.path.join(subjects_file_dir, subjects_file)
@@ -324,7 +324,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
 
         if subjects_detection_mode == 'auto' and not auto_mode_done:            # last chance in auto mode: try to detect subjects from the contents of the subjects dir.
             run_meta_data['subjects_detection_mode_auto_used_method'] = 'search_dir'
-            subjects_list = detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
+            subjects_list = nit.detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
 
     if custom_morphology_file_templates is not None:
         run_meta_data['custom_morphology_file_templates_used'] = True
