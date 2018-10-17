@@ -209,7 +209,8 @@ def merge_meshes(meshes):
 
 def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphology_files=None):
     if hemi not in ('lh', 'rh', 'both'):
-        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'}")
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
+
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
 
@@ -271,7 +272,21 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
 
 
-def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None):
+def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None, subjects_detection_mode='auto'):
+    if hemi not in ('lh', 'rh', 'both'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
+
+    run_meta_data = {}
+
+    if subjects_detection_mode not in ('auto', 'file', 'list', 'search_dir'):
+        raise ValueError("ERROR: subjects_detection_mode must be one of {'auto', 'file', 'list', 'search_dir'} but is '%s'." % subjects_detection_mode)
+    else:
+        run_meta_data['subjects_detection_mode'] = subjects_detection_mode
+
+    # supplying a list is only valid in modes 'auto' and 'list'
+    if subjects_detection_mode in ('file', 'search_dir') and subjects_list is not None:
+        raise ValueError("ERROR: subjects_detection_mode is set to '%s' but a subjects_list was given. Not supported in subjects_detection_mode 'file' and 'search_dir'.")
+
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
 
@@ -281,15 +296,35 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
     if group_meta_data is None:
         group_meta_data = {}
 
-    run_meta_data = {}
-
-    if subjects_list is None:
-        subjects_file_with_path = os.path.join(subjects_file_dir, subjects_file)
-        subjects_list = nit.read_subjects_file(subjects_file_with_path)
-        run_meta_data['subjects_file_used'] = True
-        run_meta_data['subjects_file'] = subjects_file_with_path
+    run_meta_data['subjects_file_used'] = False
+    if subjects_detection_mode == 'auto' and subjects_list is not None:
+        run_meta_data['subjects_detection_mode_auto_used_method'] = 'list'  # just use the existing list
+    elif subjects_detection_mode == 'list':
+        if subjects_list is None:
+            raise ValueError("ERROR: subjects_detection_mode is set to 'list' but the subjects_list parameter was not given.")
+    elif subjects_detection_mode == 'search_dir':
+        subjects_list = detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
     else:
-        run_meta_data['subjects_file_used'] = False
+        # we are in modes 'auto' or 'file'
+        subjects_file_with_path = os.path.join(subjects_file_dir, subjects_file)
+        assumed_subjects_file_exists = os.path.isfile(subjects_file_with_path)
+
+        # in file mode, the file has to exist.
+        if subjects_detection_mode == 'file' and not assumed_subjects_file_exists:
+            raise ValueError("ERROR: subjects_detection_mode is set to 'file' but the subjects_file '%s' does not exist." % subjects_file_with_path)
+
+        auto_mode_done = False
+        if assumed_subjects_file_exists:    # we are still in modes 'auto' or 'file', and the file exists.
+            subjects_list = nit.read_subjects_file(subjects_file_with_path)
+            run_meta_data['subjects_file_used'] = True
+            run_meta_data['subjects_file'] = subjects_file_with_path
+            if subjects_detection_mode == 'auto':   # in auto mode, we prefer/use the subject file if it exists. If it does not exist, we try to guess the list from the directory later.
+                auto_mode_done = True
+                run_meta_data['subjects_detection_mode_auto_used_method'] = 'file'
+
+        if subjects_detection_mode == 'auto' and not auto_mode_done:            # last chance in auto mode: try to detect subjects from the contents of the subjects dir.
+            run_meta_data['subjects_detection_mode_auto_used_method'] = 'search_dir'
+            subjects_list = detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
 
     if custom_morphology_file_templates is not None:
         run_meta_data['custom_morphology_file_templates_used'] = True

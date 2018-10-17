@@ -636,10 +636,12 @@ def test_load_group_data():
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
 
-    assert len(run_meta_data) == 3
+    assert len(run_meta_data) == 5
     assert run_meta_data['custom_morphology_file_templates_used'] == False
     assert run_meta_data['subjects_file_used'] == True
     assert run_meta_data['subjects_file'] == expected_subjects_file
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
 
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
@@ -687,7 +689,9 @@ def test_load_group_data_works_with_left_hemisphere_only():
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
 
-    assert len(run_meta_data) == 3
+    assert len(run_meta_data) == 5
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
@@ -708,7 +712,9 @@ def test_load_group_data_works_with_right_hemisphere_only():
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
-    assert len(run_meta_data) == 3
+    assert len(run_meta_data) == 5
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
@@ -734,12 +740,14 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
 
-    assert len(run_meta_data) == 5
+    assert len(run_meta_data) == 7
     assert run_meta_data['custom_morphology_file_templates_used'] == True
     assert run_meta_data['subjects_file_used'] == True
     assert run_meta_data['subjects_file'] == expected_subjects_file
     assert run_meta_data['lh.custom_morphology_file_template'] == morphology_template
     assert run_meta_data['rh.custom_morphology_file_template'] == morphology_template
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
@@ -767,12 +775,14 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
 
-    assert len(run_meta_data) == 5
+    assert len(run_meta_data) == 7
     assert run_meta_data['custom_morphology_file_templates_used'] == True
     assert run_meta_data['subjects_file_used'] == True
     assert run_meta_data['subjects_file'] == expected_subjects_file
     assert run_meta_data['lh.custom_morphology_file_template'] == template_lh
     assert run_meta_data['rh.custom_morphology_file_template'] == template_rh
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
@@ -797,9 +807,11 @@ def test_load_group_data_works_with_subjects_list():
     expected_lh_morphology_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
-    assert len(run_meta_data) == 2
+    assert len(run_meta_data) == 4
     assert run_meta_data['custom_morphology_file_templates_used'] == False
     assert run_meta_data['subjects_file_used'] == False
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
 
     assert group_data.shape == (2, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)
     assert len(group_meta_data) == 2
