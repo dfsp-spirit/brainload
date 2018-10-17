@@ -273,6 +273,73 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
 
 def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None, subjects_detection_mode='auto'):
+    """
+    Load morphometry data for a number of subjects.
+
+    Load group data, i.e., morphometry data for all subjects in a study that has already been mapped to standard space and is ready for group analysis.
+    The information given in the parameters `measure`, `surf`, `hemi`, and `fwhm` are used to construct the file name that will be loaded by default.
+
+    Parameters
+    ----------
+    measure : string
+        The measure to load, e.g., 'area' or 'curv'. Data files for this measure have to exist for all subjects. This will become part of the file name that is loaded.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}, optional
+        The hemisphere that should be loaded. Defaults to 'both'.
+
+    fwhm : string or None, optional
+        Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. Defaults to '10'. If None is passed, the `.fwhmX` part is omitted from the file name completely. Set this to '0' to get the unsmoothed version.
+
+    subjects_dir: string, optional
+        A string representing the full path to a directory. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.
+
+    average_subject: string, optional
+        The name of the average subject to which the data was mapped. Defaults to 'fsaverage'.
+
+    group_meta_data: dictionary, optional
+        A dictionary that should be merged into the return value `group_meta_data`. Defaults to the empty dictionary if omitted.
+
+    subjects_list: list of strings, optional (unless `subjects_detection_mode` is set to `list`)
+        A list of subject identifiers or directory names that should be loaded from the `subjects_dir`. Example list: `['subject1', 'subject2']`. Defaults to None. Only allowed if `subjects_detection_mode` is `auto` or `list`. In `auto` mode, this takes
+        precedence over all other options, i.e., if a `subjects_list` *and* the (default or custom) `subjects_file` are given, the `subjects_list` will be used.
+
+    subjects_file_dir: string, optional
+        A string representing the full path to a directory. This directory must contain the `subjects_file` (see below). Defaults to the `subjects_dir`.
+
+    subjects_file: string, optional
+        The name of the subjects file, relative to the `subjects_file_dir`. Defaults to 'subjects.txt'. The file must be a simple text file that contains one `subject_id` per line. It can be a CSV file that has other data following, but the `subject_id` has to be the first item on each line and the separator must be a comma. So a line is allowed to look like this: `subject1, 35, center1, 147`. No header is allowed. If you have a different format, consider reading the file yourself and pass the result as `subjects_list` instead.
+
+    custom_morphology_file_templates: dictionary, optional
+        Cutom filenames for the left and right hemispjere data files that should be loaded. A dictionary of strings with exactly the following two keys: `lh` and `rh`. The value strings can contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the `surf/` directory of the respective subject. Example for hard-coded files: `{'lh': 'lefthemi.nonstandard.mymeasure44.mgh', 'rh': 'righthemi.nonstandard.mymeasure44.mgh'}`. The strings may contain any of the following variabes, which will be replaced by what you supplied to the other arguments of this function: `${MEASURE}` will be replaced with the value of `measure`. `${SURF}` will be replaced with the value of `surf`. `${HEMI}` will be replaced with 'lh' for the left hemisphere, and with 'rh' for the right hemisphere. `${FWHM}` will be replaced with the value of `fwhm`, so something like '10'. `${SUBJECT_ID}` will be replaced by the id of the subject that is being loaded, e.g., 'subject3'. `${AVERAGE_SUBJECT}` will be replaced by the value of `average_subject`. Example template string: `subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh`. Complete example for template strings in dictionary: `{'lh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh', 'rh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh'}`.
+
+    Returns
+    -------
+    group_morphology_data: numpy array
+        An array filled with the morphology data for the subjects. The array has shape `(n, m)` where `n` is the number of subjects, and `m` is the number of vertices of the standard subject. (If you load both hemispheres instead of one, m doubles.) To get the subject id for the entries, look at the respective index in the returned `subjects_list`.
+
+    subjects_list: list of strings
+        A list containing the subject identifiers in the same order as the data in `group_morphology_data`.
+
+    group_meta_data: dictionary
+        A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the `parse_subject_standard_space_data` function.
+
+    run_meta_data: dictionary
+        A dictionary containing general information on the settings used when executing the function and determining which subjects to load.
+
+    Examples
+    --------
+    Load area data for all subjects in the directory defined by the environment variable SUBJECTS_DIR:
+
+    >>> data, subjects, group_md, run_md = load_group_data('area')
+
+    Here, we load curv data for the right hemisphere, computed on the pial surface with smooting of 20:
+
+    >>> data, subjects, group_md, run_md = load_group_data('curv', hemi='rh', surf='pial', fwhm='20')
+
+    """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
@@ -350,4 +417,4 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         group_meta_data[subject_id] = subject_meta_data
         group_morphology_data.append(subject_morphology_data)
     group_morphology_data = np.array(group_morphology_data)
-    return group_morphology_data, subjects_list, group_meta_data, run_meta_data,
+    return group_morphology_data, subjects_list, group_meta_data, run_meta_data
