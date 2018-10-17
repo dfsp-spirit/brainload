@@ -285,7 +285,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
 
     # supplying a list is only valid in modes 'auto' and 'list'
     if subjects_detection_mode in ('file', 'search_dir') and subjects_list is not None:
-        raise ValueError("ERROR: subjects_detection_mode is set to '%s' but a subjects_list was given. Not supported in subjects_detection_mode 'file' and 'search_dir'.")
+        raise ValueError("ERROR: subjects_detection_mode is set to '%s' but a subjects_list was given. Not supported in subjects_detection_mode 'file' and 'search_dir'." % subjects_detection_mode)
 
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())

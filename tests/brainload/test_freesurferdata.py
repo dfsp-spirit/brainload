@@ -415,7 +415,7 @@ def test_parse_subject_standard_space_data():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR)
     assert len(meta_data) == 24
@@ -465,7 +465,7 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
     assert len(meta_data) == 18
@@ -496,7 +496,7 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 18
@@ -526,7 +526,7 @@ def test_parse_subject_standard_space_data_respects_fwhm_setting_none():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, fwhm=None)
     assert len(meta_data) == 24
@@ -551,7 +551,7 @@ def test_parse_subject_standard_space_data_does_not_load_surface_when_asked_not_
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
     assert len(meta_data) == 18
@@ -579,7 +579,7 @@ def test_parse_subject_standard_space_data_does_not_load_morphology_data_when_as
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
     assert len(meta_data) == 17
@@ -606,7 +606,7 @@ def test_parse_subject_standard_space_data_accepts_custom_morphology_files():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
-        pytest.skip("Test data for average subject not available: directory '%s' does not exist. You can get it by running './develop/get_test_data_fsaverage.bash' in the repo root." % expected_fsaverage_surf_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     custom_morphology_files = { 'lh': 'lh.area.fsaverage.mgh', 'rh': 'rh.area.fsaverage.mgh' }  # You could access these files without the custom_morphology_files argument (by setting fwhm to None explicitely), but using this custom name is convenient because we already have test data named like this.
     vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, custom_morphology_files=custom_morphology_files)
@@ -623,7 +623,7 @@ def test_parse_subject_standard_space_data_accepts_custom_morphology_files():
 def test_load_group_data():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
 
@@ -662,7 +662,7 @@ def test_load_group_data():
 def test_load_group_data_works_with_subjects_file_in_custom_dir():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     custom_subjects_file_dir = os.path.join(TEST_DATA_DIR, 'subject_files_in_extra_dir')
     group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6_in_subdir.csv', subjects_file_dir=custom_subjects_file_dir)
@@ -682,7 +682,7 @@ def test_load_group_data_works_with_subjects_file_in_custom_dir():
 def test_load_group_data_works_with_left_hemisphere_only():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
 
@@ -705,7 +705,7 @@ def test_load_group_data_works_with_left_hemisphere_only():
 def test_load_group_data_works_with_right_hemisphere_only():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
 
@@ -728,7 +728,7 @@ def test_load_group_data_works_with_right_hemisphere_only():
 def test_load_group_data_works_with_custom_morphology_file_templates_using_variables():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     morphology_template = '${HEMI}.${MEASURE}.${AVERAGE_SUBJECT}.mgh'
     custom_morphology_file_templates = {'lh': morphology_template, 'rh': morphology_template}
@@ -762,7 +762,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
 def test_load_group_data_works_with_custom_morphology_file_templates_using_hardcoded_filenames():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     template_lh = 'lh.area.fsaverage.mgh'   # nobody forces you to use any variables
     template_rh = 'rh.area.fsaverage.mgh'
@@ -797,7 +797,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
 def test_load_group_data_works_with_subjects_list():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject3' ]
     group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
@@ -833,7 +833,7 @@ def test_load_group_data_works_with_subjects_list():
 def test_load_group_data_subject_order_in_data_is_correct_from_subjects_file():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
-        pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6.csv')
 
@@ -937,3 +937,92 @@ def test_test_data_rh_is_as_expected():
     assert per_vertex_data_orig[5000] == pytest.approx(per_vertex_data_mod[5000], 0.1)
     assert per_vertex_data_orig[9000] == pytest.approx(per_vertex_data_mod[9000], 0.1)
     assert per_vertex_data_orig[123000] == pytest.approx(per_vertex_data_mod[123000], 0.1)
+
+
+def test_load_group_data_raises_on_invalid_hemisphere():
+    with pytest.raises(ValueError) as exc_info:
+        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='invalid_hemisphere', subjects_dir=TEST_DATA_DIR)
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
+
+
+def test_load_group_data_raises_on_invalid_subjects_detection_mode():
+    with pytest.raises(ValueError) as exc_info:
+        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='invalid_subjects_detection_mode', subjects_dir=TEST_DATA_DIR)
+    assert 'subjects_detection_mode must be one of' in str(exc_info.value)
+    assert 'invalid_subjects_detection_mode' in str(exc_info.value)
+
+
+def test_load_group_data_raises_with_subjects_list_in_mode_file():
+    with pytest.raises(ValueError) as exc_info:
+        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='file', subjects_list=['bert', 'tim'], subjects_dir=TEST_DATA_DIR)
+    assert 'subjects_detection_mode is set to \'file\'' in str(exc_info.value)
+    assert 'but a subjects_list was given' in str(exc_info.value)
+
+
+def test_load_group_data_raises_without_subjects_list_in_mode_list():
+    with pytest.raises(ValueError) as exc_info:
+        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='list', subjects_dir=TEST_DATA_DIR)
+    assert 'subjects_detection_mode is set to \'list\'' in str(exc_info.value)
+    assert 'but the subjects_list parameter was not given' in str(exc_info.value)
+
+
+def test_load_group_data_raises_with_subjects_list_in_mode_search_dir():
+    with pytest.raises(ValueError) as exc_info:
+        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='search_dir', subjects_list=['bert', 'tim'], subjects_dir=TEST_DATA_DIR)
+    assert 'subjects_detection_mode is set to \'search_dir\'' in str(exc_info.value)
+    assert 'but a subjects_list was given' in str(exc_info.value)
+
+
+def test_load_group_data_raises_with_nonexistant_subjects_file_in_mode_file():
+    with pytest.raises(ValueError) as exc_info:
+        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='file', subjects_file='no_such_file', subjects_dir=TEST_DATA_DIR)
+    assert 'no_such_file' in str(exc_info.value)
+    assert 'subjects_detection_mode is set to \'file\' but the subjects_file' in str(exc_info.value)
+
+
+def test_load_group_data_auto_mode_prefers_list_over_explicitely_given_subjects_file():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
+
+    subjects_list = [ 'subject1', 'subject6', 'subject3' ]
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list, subjects_file='no_such_file')
+
+    assert len(group_meta_data) == 3
+    assert len(group_meta_data) == len(group_data_subjects)
+    assert len(group_data_subjects) == len(subjects_list)
+
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
+
+
+def test_load_group_data_auto_mode_prefers_list_over_default_subjects_file_and_search_dir():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
+
+    subjects_list = [ 'subject1', 'subject6', 'subject3' ]
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+
+    assert len(group_meta_data) == 3
+    assert len(group_meta_data) == len(group_data_subjects)
+    assert len(group_data_subjects) == len(subjects_list)
+
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
+
+def test_load_group_data_auto_mode_searches_dir_as_last_resort():
+    expected_extra_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
+    if not os.path.isdir(expected_extra_subjects_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_extra_subjects_dir)
+
+    subjects_list = [ 'subject1', 'subject6', 'subject3' ]
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+
+    assert len(group_meta_data) == 3
+    assert len(group_meta_data) == len(group_data_subjects)
+    assert len(group_data_subjects) == len(subjects_list)
+
+    assert run_meta_data['subjects_detection_mode'] == 'auto'
+    assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
