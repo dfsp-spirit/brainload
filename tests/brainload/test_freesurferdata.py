@@ -1029,7 +1029,7 @@ def test_load_group_data_auto_mode_searches_dir_as_last_resort():
     assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'search_dir'
 
 
-def test_load_group_data_search_dir_mode_searches_dir():
+def test_load_group_data_search_dir_mode_works():
     extra_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
     if not os.path.isdir(extra_subjects_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % extra_subjects_dir)
@@ -1042,4 +1042,37 @@ def test_load_group_data_search_dir_mode_searches_dir():
     assert 'subject3x' in group_data_subjects
 
     assert run_meta_data['subjects_detection_mode'] == 'search_dir'
+    assert run_meta_data['subjects_file_used'] == False
+    assert not 'subjects_detection_mode_auto_used_method' in run_meta_data
+
+
+def test_load_group_data_file_mode_works():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
+
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_detection_mode='file')
+
+    assert len(group_meta_data) == 5
+    assert len(group_meta_data) == len(group_data_subjects)
+
+    assert run_meta_data['subjects_detection_mode'] == 'file'
+    assert run_meta_data['subjects_file_used'] == True
+    assert not 'subjects_detection_mode_auto_used_method' in run_meta_data
+
+
+def test_load_group_data_list_mode_works():
+    expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
+
+    subjects_list = [ 'subject1', 'subject6', 'subject3' ]
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list, subjects_detection_mode='list')
+
+    assert len(group_meta_data) == 3
+    assert len(group_meta_data) == len(group_data_subjects)
+    assert len(group_meta_data) == len(subjects_list)
+
+    assert run_meta_data['subjects_detection_mode'] == 'list'
+    assert run_meta_data['subjects_file_used'] == False
     assert not 'subjects_detection_mode_auto_used_method' in run_meta_data
