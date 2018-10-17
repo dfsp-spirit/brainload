@@ -8,8 +8,5 @@ install:
   - pip install .
 
 # command to run tests
-before_script: 
-  - ./develop/get_test_data_all.bash
-  - echo "contents of tests/test_data/: " && ls tests/test_data/ 
-  - echo "contents of tests/test_data/fsaverage/: " && ls tests/test_data/fsaverage/
+before_script: ./develop/get_test_data_all.bash && echo "contents of tests/test_data/: " && ls tests/test_data/ && echo "contents of tests/test_data/fsaverage/: " && ls tests/test_data/fsaverage/
 script: pytest
