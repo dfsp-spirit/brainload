@@ -110,8 +110,8 @@ cd ~/develop/cogload/                       # repo root
 git checkout master
 git pull
 
-vim setup.py
-vim src/brainload/__init__.py
+vim setup.py                                # update version
+vim src/brainload/__init__.py               # update version
 
 git add setup.py src/brainload/__init__.py
 git commit -m "Update version to 0.0.2."
@@ -127,19 +127,22 @@ twine upload dist/*
 git tag -a v0.0.2 -m "Some annotation for this release."
 git push origin --tags
 ```
-TODO: Add the documentation to this workflow.
+
+TODO: Add the generation and distribution of the documentation to this workflow.
 
 ### Details
 
 #### Building the `brainload` documentation
 
-We use sphinx to generate the documentation. In the virtual environment:
+We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
 
 ```console
-pip install sphinx
+pip install sphinx sphinx_rtd_theme
 cd doc/
 make html
 ```
+
+This will build the documentation in HTML format and place it in `_build/html/` (relative to the `doc/` directory).
 
 We will put the documentation online later (maybe on a GitHub page), but that does not make any sense yet.
 
