@@ -183,8 +183,24 @@ If it looks good, upload it to the real one:
 twine upload dist/*                           # will ask for your PyPI credentials for brainload
 ```
 
-#### Anaconda
+#### Anaconda (build and distribution)
 
 Not yet. This is WIP, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html for instructions.
 
 Some work has already been done, see the files in `development/anaconda_dist`.
+
+Get the tools: install `conda` on your system and fire it up, then use it to get the build tools:
+
+```console
+conda install conda-build anaconda-client
+```
+
+Now, update the `meta.yaml` file with the build information, e.g., the files to include. This is the main step.
+
+When that is done, build and upload the package:
+
+```console
+conda build .                    # will output `full/path/to/package.tar.bz2`, e.g., `.../conda-bld/osx-64/brainload-0.1.1-py27_0.tar.bz2`
+anaconda login                   # will ask for your credentials
+anaconda upload full/path/to/package.tar.bz2
+```
