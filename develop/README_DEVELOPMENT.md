@@ -101,7 +101,7 @@ The tests are run automatically when you push to master and devs get results by 
 
 ## Packaging
 
-### Overview: preparing a release
+### Creating the release package
 
 Set the new version in `setup.py` and `src/brainload/__init__.py`:
 
@@ -120,6 +120,7 @@ git commit -m "Update version to 0.0.2."
 Then make the release:
 
 ```console
+pip install --upgrade setuptools wheel              # just make sure we have the latest versions
 rm -rf dist
 python setup.py sdist bdist_wheel --universal
 twine upload dist/*
@@ -130,9 +131,8 @@ git push origin --tags
 
 TODO: Add the generation and distribution of the documentation to this workflow.
 
-### Details
 
-#### Building the `brainload` documentation
+### Building the `brainload` documentation
 
 We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
 
@@ -151,23 +151,34 @@ you will have to tell autodoc about the paths to the new directories by adding t
 at the top of the `doc/conf.py` file.
 
 
-#### Building distribution packages of the `brainload` module
+### Distributing the package
 
-We are following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here.
 
-You can use the `setup.py` file to generate a wheel package. This should be done in the virtual environment.
-
-IMPORTANT: Be sure to adapt the meta data in the `setup.py` file before packaging, especially the version information.
+We are following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here. First make sure you have the required tools:
 
 ```console
-pip install --upgrade setuptools wheel              # just make sure we have the latest versions
-python setup.py sdist bdist_wheel                   # will create the packages in the sub directory dist/
+pip install --upgrade twine            # in the virtual env. Add `--user` if you prefer to do it outside.
 ```
 
-Then deactivate the virtual environment and upload the packages to PiPy:
+#### PyPI testing
 
 ```console
-deactivate                                    # only if you were in the virtual environment
-pip install --user --upgrade twine            # just to be sure
-twine upload dist/*                           # will ask for your PyPI credentials
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*     # will ask for your PyPI test credentials for brainload
+```
+
+Now try it in a fresh virtual environment (you may have to wait a sec for it to become available):
+
+```console
+deactivate                                  # leave current virtual env
+python -m virtualenv env_for_v2             # create a fresh one
+source env_for_v2/bin/activate              # activate it
+pip install --index-url https://test.pypi.org/simple/ brainload     # install it. now try the example client.
+```
+
+If it looks good, upload it to the real one:
+
+#### PyPI
+
+```console
+twine upload dist/*                           # will ask for your PyPI credentials for brainload
 ```
