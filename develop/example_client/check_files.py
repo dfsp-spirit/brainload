@@ -4,6 +4,7 @@ import os
 import brainload.freesurferdata as fsd
 import brainload.errors as ble
 import brainload.nitools as nit
+from datetime import datetime
 
 def gen_result_measures(measures):
     new_measures = []
@@ -14,6 +15,7 @@ def gen_result_measures(measures):
 
 def check_files():
     print "-------------------- Checking ----------------------"
+    print datetime.now()
     user_home = os.getenv('HOME')
     subjects_dir = os.path.join(user_home, 'data', 'euaims_curvature')
     subjects_file = os.path.join(subjects_dir, 'subjects_analysis.txt')
