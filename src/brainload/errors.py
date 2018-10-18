@@ -12,3 +12,6 @@ class HemiFileIOError(IOError):
         self.message = message
         self.hemi = hemi
         super(HemiFileIOError, self).__init__(errno, message, filename, *args)
+
+    def __str__(self):
+        return '[Errno ' + str(self.errno) + '] ' + self.message + ': \'' + self.filename + '\'' + ' for hemi \'' + self.hemi + '\''

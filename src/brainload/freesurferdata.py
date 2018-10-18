@@ -59,7 +59,12 @@ def _get_morphology_data_suffix_for_surface(surf):
     """
     Determine FreeSurfer surface representation string.
 
-    Determine the substring representing the given surface in a FreeSurfer output curv file. For FreeSurfer's default surface 'white', the surface is not represented in the output file name pattern. For all others, it is.
+    Determine the substring representing the given surface in a FreeSurfer output curv file. For FreeSurfer's default surface 'white', the surface is not represented in the output file name pattern. For all others, it is represented by a dot followed by the name.
+
+    Returns
+    -------
+    string
+        The empty string if `surf` is 'white'. A dot followed by the string in the input argument `surf` otherwise.
     """
     if surf == 'white':
         return ''
@@ -168,13 +173,24 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
         try:
             morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
         except IOError as e:
-            cutom_msg = 'lh File not found'
-            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'lh')
+            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'lh'), None, sys.exc_info()[-1]       # catch the exception, add information on the hemisphere, and re-raise it.
+
     elif hemi == 'rh':
-        morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
+        try:
+            morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
+        except IOError as e:
+            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'rh'), None, sys.exc_info()[-1]
     else:
-        lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
-        rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
+        try:
+            lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
+        except IOError as e:
+            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'lh'), None, sys.exc_info()[-1]
+
+        try:
+            rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
+        except IOError as e:
+            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'rh'), None, sys.exc_info()[-1]
+
         morphology_data = merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
     return morphology_data, meta_data
 
