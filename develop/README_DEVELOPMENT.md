@@ -182,3 +182,9 @@ If it looks good, upload it to the real one:
 ```console
 twine upload dist/*                           # will ask for your PyPI credentials for brainload
 ```
+
+#### Anaconda
+
+Not yet. This is WIP, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html for instructions.
+
+Some work has already been done, see the files in `development/anaconda_dist`.
