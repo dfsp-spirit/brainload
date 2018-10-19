@@ -25,14 +25,6 @@ brainload.nitools module
     :undoc-members:
     :show-inheritance:
 
-brainload.freesurferview module
--------------------------------
-
-.. automodule:: brainload.freesurferview
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 brainload.spatial\_transform module
 -----------------------------------
 
