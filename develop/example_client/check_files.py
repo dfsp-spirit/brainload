@@ -23,15 +23,29 @@ def check_files():
 
     curv_measures_str = "principal_curvature_k1 principal_curvature_k2 principal_curvature_k_major principal_curvature_k_minor mean_curvature gaussian_curvature intrinsic_curvature_index negative_intrinsic_curvature_index gaussian_l2_norm absolute_intrinsic_curvature_index mean_curvature_index negative_mean_curvature_index mean_l2_norm absolute_mean_curvature_index folding_index curvedness_index shape_index shape_type area_fraction_of_intrinsic_curvature_index area_fraction_of_negative_intrinsic_curvature_index area_fraction_of_mean_curvature_index area_fraction_of_negative_mean_curvature_index sh2sh sk2sk"
     measures = curv_measures_str.split()
-    surfaces = ['white', 'pial']
+    surfaces = ['white']
+    print "------- subject space -------"
     check_subject_morph_files(subjects, subjects_dir, measures, surfaces)
+    print "------- common fsaverage space fwhm 0 -------"
+    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='0', write_missing_subjects_file=True, delete_missing_subjects_files_no_longer_missing=True)
+    print "------- common fsaverage space fwhm 10 -------"
     check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10')
 
+    # just do it again without details printing for a better overview.
+    print "+++++++++++++++++++++ Overview +++++++++++++++++++++++"
+    check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_details=False)
+    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='0', print_details=False)
+    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10', print_details=False)
 
-def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10'):
+
+def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10', print_details=True, write_missing_subjects_file=False, delete_missing_subjects_files_no_longer_missing=False):
     """
     Checks for the existance of the output files that contain the morph data mapped to fsaverage.
     """
+    if write_missing_subjects_file and len(surfaces) > 1:
+        print "ERROR: More than one surface given, the missing subjects files for the last surface one will overwrite all the others."
+        exit(1)
+
     # generate our special measures
     measures = gen_result_measures(measures)
     num_missing_files_total = 0
@@ -55,13 +69,27 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
                 if not os.path.isfile(rh_file):
                     missing_rh[subject_id] = rh_file
                     #print "[fsaverage surf=%s] subject %s rh: missing %s" % (surf, subject_id, rh_file)
+            missing_subjects_filename = 'missing_%s.txt' % measure
+            missing_subjects_file = os.path.join(subjects_dir, missing_subjects_filename)
             if len(missing_lh) > 0 or len(missing_rh) > 0:
-                if len(missing_lh) == len(missing_rh):
-                    print "[fsaverage surf=%s] Measure '%s': There were %d subjects which were missing both lh and rh files." % (surf, measure, len(missing_lh))
-                else:
-                    print "[fsaverage surf=%s] Measure '%s': There were %d subjects with missing files for lh and %d with missing files for rh." % (surf, measure, len(missing_lh), len(missing_rh))
+                if write_missing_subjects_file:
+                    with open(missing_subjects_file, "w") as text_file:
+                        for subject_id in missing_lh:
+                            text_file.write("%s\n" % subject_id)
+                    #print "NOTE: Created missing subjects file containing %d subjects at location '%s'." % (len(missing_lh), missing_subjects_file)
+
+                if print_details:
+                    if len(missing_lh) == len(missing_rh):
+                        print "[fsaverage surf=%s fwhm=%s] Measure '%s': There were %d subjects which were missing both lh and rh files." % (surf, fwhm, measure, len(missing_lh))
+                    else:
+                        print "[fsaverage surf=%s fwhm=%s] Measure '%s': There were %d subjects with missing files for lh and %d with missing files for rh." % (surf, fwhm, measure, len(missing_lh), len(missing_rh))
             else:
                 num_measures_ok += 1
+                if delete_missing_subjects_files_no_longer_missing:
+                    if os.path.isfile(missing_subjects_file):
+                        os.remove(missing_subjects_file)
+                        print "NOTE: Deleted file '%s', all subjects now have data for that measure." % missing_subjects_file
+
             num_missing_files_this_measure = len(missing_lh) + len(missing_rh)
             num_missing_files_total_this_surf += num_missing_files_this_measure
         print "[fsaverage surf=%s fwhm=%s] %d of %d measures OK." % (surf, fwhm, num_measures_ok, len(measures))
@@ -73,10 +101,11 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
 
 
 
-def check_subject_morph_files(subjects, subjects_dir, measures, surfaces):
+def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_details=True):
     """
     Checks for the existance of the output files that contain the morph data of the subject.
     """
+
     # generate our special measures
     measures = gen_result_measures(measures)
     num_missing_files_total = 0
@@ -103,10 +132,11 @@ def check_subject_morph_files(subjects, subjects_dir, measures, surfaces):
                     #print "subject %s: missing %s" % (subject_id, rh_file)
 
             if len(missing_lh) > 0 or len(missing_rh) > 0:
-                if len(missing_lh) == len(missing_rh):
-                    print "[subject surf=%s] Measure '%s': There were %d subjects which were missing both lh and rh files." % (surf, measure, len(missing_lh))
-                else:
-                    print "[subject surf=%s] Measure '%s': There were %d subjects with missing files for lh and %d with missing files for rh." % (surf, measure, len(missing_lh), len(missing_rh))
+                if print_details:
+                    if len(missing_lh) == len(missing_rh):
+                        print "[subject surf=%s] Measure '%s': There were %d subjects which were missing both lh and rh files." % (surf, measure, len(missing_lh))
+                    else:
+                        print "[subject surf=%s] Measure '%s': There were %d subjects with missing files for lh and %d with missing files for rh." % (surf, measure, len(missing_lh), len(missing_rh))
             else:
                 num_measures_ok += 1
             num_missing_files_this_measure = len(missing_lh) + len(missing_rh)
