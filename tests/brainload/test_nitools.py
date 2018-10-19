@@ -167,6 +167,11 @@ def test_check_hemi_dict_fail_with_right_not_both_needed():
 
 
 def test_do_subject_files_exist_lh_area():
+    expected_subjects_dir = TEST_DATA_DIR
+    expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
+    if not os.path.isdir(expected_fsaverage_surf_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
+        
     subjects_dir = TEST_DATA_DIR
     subjects_file = os.path.join(subjects_dir, 'subjects.txt')
     subjects_list = nit.read_subjects_file(subjects_file)
