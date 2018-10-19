@@ -662,6 +662,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
             - `${FWHM}` will be replaced with the value of `fwhm`, so something like '10'.
             - `${SUBJECT_ID}` will be replaced by the id of the subject that is being loaded, e.g., 'subject3'.
             - `${AVERAGE_SUBJECT}` will be replaced by the value of `average_subject`.
+            
             Note that only `${SURF}` and `${HEMI}` are usually needed, everything else can be hardcoded (or is not part of typical FreeSurfer file names at all, like `${SUBJECT_ID}`).
             Example template string: `subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh`. Complete example for template strings in dictionary: `{'lh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh', 'rh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh'}`.
 
