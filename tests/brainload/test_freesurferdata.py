@@ -725,16 +725,16 @@ def test_load_group_data_works_with_right_hemisphere_only():
     assert not 'lh.morphology_file' in group_meta_data['subject5']
 
 
-def test_load_group_data_works_with_custom_morphology_file_templates_using_variables():
+def test_load_group_data_works_with_custom_morphology_file_templates_using_variables_surf_white():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    morphology_template = '${HEMI}.${MEASURE}.${AVERAGE_SUBJECT}.mgh'
+    morphology_template = '${HEMI}.${SURF}${MEASURE}.${AVERAGE_SUBJECT}.mgh'
     custom_morphology_file_templates = {'lh': morphology_template, 'rh': morphology_template}
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', surf='white', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
+    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')     # for surface 'white', the surface must NOT show up in the result.
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
