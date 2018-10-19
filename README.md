@@ -62,6 +62,11 @@ Whatever function you used, you can now use the data for statistical analysis in
 
 It's a bit too early for that.
 
+## What about visualization?
+
+While `brainload` itself does not care about visualization, I am working on the [brainview](https://github.com/dfsp-spirit/brainview) package that is designed to visualize morphometry data in 3D on brain surfaces. The goal is to provide an easy-to-use interface to quickly visualize data loaded with `brainload` or any other tool.
+
+The module will only provide basic visualization functions intended for live inspection of your data. If you are interesting in a full solution that can provide output in publication quality, I suggest you have a look at [PySurfer](https://pysurfer.github.io/) instead.
 
 ## Obtaining suitable pre-processed sMRI input data for brainload
 

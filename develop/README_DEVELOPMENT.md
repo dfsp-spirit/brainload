@@ -106,7 +106,7 @@ The tests are run automatically when you push to master and devs get results by 
 Set the new version in `setup.py` and `src/brainload/__init__.py`:
 
 ```console
-cd ~/develop/cogload/                       # repo root
+cd ~/develop/brainload/                       # repo root
 git checkout master
 git pull
 
