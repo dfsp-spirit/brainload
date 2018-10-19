@@ -317,10 +317,74 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
 
 
 def parse_subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
-    '''High-level interface to parse FreeSurfer brain data in subject space.
-       Uses knowledge on standard file names to find the data.
-       Use the low-level interface 'parse_brain_files' if you have non-standard file names.
-    '''
+    """
+    Parse FreeSurfer brain data for a single subject.
+
+    High-level interface to parse FreeSurfer brain data for a single space. This parses the data for the surfaces of this subject. If you want to load data that has been mapped to an average subject like 'fsaverage', use `parse_subject_standard_space_data` instead.
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject's data, relative to `subjects_dir`. Example: 'subject33'.
+
+    measure : string, optional
+        The measure to load, e.g., 'area' or 'curv'. Defaults to 'area'.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}, optional
+        The hemisphere that should be loaded. Defaults to 'both'.
+
+    subjects_dir: string, optional
+        A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.
+
+    meta_data: dictionary, optional
+        A dictionary that should be merged into the return value `meta_data`. Defaults to the empty dictionary if omitted.
+
+    load_surface_files: boolean, optional
+        Whether to load mesh data. If set to `False`, the first return values `vert_coords` and `faces` will be `None`. Defaults to `True`.
+
+    load_morphology_data: boolean, optional
+        Whether to load morphology data. If set to `False`, the first return value `morphology_data` will be `None`. Defaults to `True`.
+
+    Returns
+    -------
+    vert_coords: numpy array
+        A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., 'lh.white'), as returned by the `nibabel` function `nibabel.freesurfer.io.read_geometry`.
+
+    faces: numpy array
+        A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
+
+    morphology_data: numpy array
+        A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. Note that the two hemispheres do in general NOT have the same number of vertices.
+
+    meta_data: dictionary
+        A dictionary containing detailed information on all files that were loaded and used settings.
+
+    Raises
+    ------
+    ValueError
+        If one of the parameters with a fixed set of values receives a value that is not allowed.
+
+    Examples
+    --------
+    Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:
+
+    >>> v, f, data, md = parse_subject('subject1')
+
+    Here, we are a bit more explicit about what we want to load:
+
+    >>> import os
+    >>> user_home = os.getenv('HOME')
+    >>> subjects_dir = os.path.join(user_home, 'data', 'my_study_x')
+    >>> v, f, data, md = parse_subject('subject1', hemi='lh', measure='curv', subjects_dir=subjects_dir)
+
+    Sometime we do not care for the mesh, e.g., we only want the morphometry data:
+
+    >>> data, md = parse_subject('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
+
+    """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
@@ -402,12 +466,12 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     """
     Load morphometry data for a subjects that has been mapped to an average subject.
 
-    Load for a single subject that has been mapped to an average subject like the `fsaverage` subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.
+    Load data for a single subject that has been mapped to an average subject like the `fsaverage` subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.
 
     Parameters
     ----------
     subject_id: string
-        The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject's data. Example: 'subject33'. See also `subjects_dir` below.
+        The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject's data, relative to `subjects_dir`. Example: 'subject33'.
 
     measure : string, optional
         The measure to load, e.g., 'area' or 'curv'. Defaults to 'area'.
@@ -448,10 +512,10 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     Returns
     -------
     vert_coords: numpy array
-        A 2-dimensional array containing the vertices of the mesh. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., 'lh.white'), as returned by the `nibabel` function `nibabel.freesurfer.io.read_geometry`.
+        A 2-dimensional array containing the vertices of the mesh(es) of the average subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., 'lh.white'), as returned by the `nibabel` function `nibabel.freesurfer.io.read_geometry`.
 
     faces: numpy array
-        A 2-dimensional array containing the 3-faces of the mesh. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
+        A 2-dimensional array containing the 3-faces of the mesh(es) of the average subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
 
     morphology_data: numpy array
         A numpy array with as many entries as there are vertices in the average subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. In many cases, your average subject will have the same number of vertices for both hemispheres and you will know this number beforehand, so you may not have to worry about this at all.
@@ -468,15 +532,21 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     --------
     Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR, mapped to fsaverage:
 
-    >>> v, f, data, md = parse_subject_standard_space_data('subject1')
+    >>> import brainload.freesurferdata as fsd
+    >>> v, f, data, md = fsd.parse_subject_standard_space_data('subject1')
 
     Here, we are a bit more explicit about what we want to load:
 
-    >>> v, f, data, md = parse_subject_standard_space_data('subject1', hemi='lh', measure='curv', fwhm='15', display_surf='inflated')
+    >>> import os
+    >>> import brainload.freesurferdata as fsd
+    >>> user_home = os.getenv('HOME')
+    >>> subjects_dir = os.path.join(user_home, 'data', 'my_study_x')
+    >>> v, f, data, md = fsd.parse_subject_standard_space_data('subject1', hemi='lh', measure='curv', fwhm='15', display_surf='inflated', subjects_dir=subjects_dir)
 
     Sometime we do not care for the mesh, e.g., we only want the morphometry data:
 
-    >>> data, md = parse_subject_standard_space_data('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
+    >>> import brainload.freesurferdata as fsd
+    >>> data, md = fsd.parse_subject_standard_space_data('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
 
     """
     if hemi not in ('lh', 'rh', 'both'):
@@ -584,7 +654,26 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         The name of the subjects file, relative to the `subjects_file_dir`. Defaults to 'subjects.txt'. The file must be a simple text file that contains one `subject_id` per line. It can be a CSV file that has other data following, but the `subject_id` has to be the first item on each line and the separator must be a comma. So a line is allowed to look like this: `subject1, 35, center1, 147`. No header is allowed. If you have a different format, consider reading the file yourself and pass the result as `subjects_list` instead.
 
     custom_morphology_file_templates: dictionary, optional
-        Cutom filenames for the left and right hemispjere data files that should be loaded. A dictionary of strings with exactly the following two keys: `lh` and `rh`. The value strings can contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the `surf/` directory of the respective subject. Example for hard-coded files: `{'lh': 'lefthemi.nonstandard.mymeasure44.mgh', 'rh': 'righthemi.nonstandard.mymeasure44.mgh'}`. The strings may contain any of the following variabes, which will be replaced by what you supplied to the other arguments of this function: `${MEASURE}` will be replaced with the value of `measure`. `${SURF}` will be replaced with the value of `surf`. `${HEMI}` will be replaced with 'lh' for the left hemisphere, and with 'rh' for the right hemisphere. `${FWHM}` will be replaced with the value of `fwhm`, so something like '10'. `${SUBJECT_ID}` will be replaced by the id of the subject that is being loaded, e.g., 'subject3'. `${AVERAGE_SUBJECT}` will be replaced by the value of `average_subject`. Example template string: `subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh`. Complete example for template strings in dictionary: `{'lh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh', 'rh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh'}`.
+        Cutom filenames for the left and right hemisphere data files that should be loaded. A dictionary of strings with exactly the following two keys: `lh` and `rh`. The value strings can contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the `surf/` directory of the respective subject. Example for hard-coded files: `{'lh': 'lefthemi.nonstandard.mymeasure44.mgh', 'rh': 'righthemi.nonstandard.mymeasure44.mgh'}`. The strings may contain any of the following variabes, which will be replaced by what you supplied to the other arguments of this function:
+            - `${MEASURE}` will be replaced with the value of `measure`.
+            - `${SURF}` will be replaced with the FreeSurfer file name part for the surface `surf`. This is the empty string if `surf` is 'white', and a dot followed by the value of `surf` for all other settings of surf. Examples: when `surf` is 'pial', this will be replaced with '.pial' (Note the dot!). If `surf` is 'white', this will be replaced with the empty string.
+            - `${SURF_RAW}` will be replaced with the value of `surf`.
+            - `${HEMI}` will be replaced with 'lh' for the left hemisphere, and with 'rh' for the right hemisphere.
+            - `${FWHM}` will be replaced with the value of `fwhm`, so something like '10'.
+            - `${SUBJECT_ID}` will be replaced by the id of the subject that is being loaded, e.g., 'subject3'.
+            - `${AVERAGE_SUBJECT}` will be replaced by the value of `average_subject`.
+            Note that only `${SURF}` and `${HEMI}` are usually needed, everything else can be hardcoded (or is not part of typical FreeSurfer file names at all, like `${SUBJECT_ID}`).
+            Example template string: `subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh`. Complete example for template strings in dictionary: `{'lh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh', 'rh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh'}`.
+
+    subjects_detection_mode: {'auto', 'list', 'file', 'search_dir'}, optional
+        The method used to determine the subjects that should be loaded. Defaults to 'auto'. You can always see which mode was used by looking at the returned `run_meta_data`, see `run_meta_data['subjects_detection_mode']`.
+            - 'auto': In this mode, all available methods will be tried in the following order: If a `subjects_list` is given, it is used. Then, the `subjects_file` is used if it exists. Note that this may be the default file, '$SUBJECTS_DIR/subject_surf_dir.txt', or another if one has explicitely been defined by setting `subjects_file` and/or `subjects_file_dir`. If the file does not exist, the directory is searched for directories containing FreeSurfer data as defined in the section for 'search_dir' mode below. You can always see which method was used in auto mode by looking at the returned `run_meta_data`, see `run_meta_data['subjects_detection_mode_auto_used_method']`.
+
+            - 'list': In this mode, the given `subjects_list` is used, and you have to supply one. If not, an error is raised. You are not allowed to supply a `subjects_file` in this mode, or an error will be raised.
+
+            - 'file': In this mode, the subjects file is used. Note that this may be the default file, '$SUBJECTS_DIR/subjects.txt', or another if one has explicitely been defined by setting `subjects_file` and/or `subjects_file_dir`. If the file does not exist, an error is raised. You can see which file was used by looking at the returned `run_meta_data`, see `run_meta_data['subjects_file']`. You are not allowed to supply a `subjects_list` in this mode, or an error will be raised.
+
+            - 'search_dir': In this mode, the `subjects_dir` (default or explicitely given) is searched for sub directories which look as if they could contain FreeSurfer data. The latter means that they contain a sub directory named 'surf'. There is one exception though: if the name of one such directory equals the name of the `average_subject`, the directory is skipped. You are not allowed to supply a `subjects_list` in this mode, or an error will be raised.
 
     Returns
     -------
@@ -592,7 +681,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         An array filled with the morphology data for the subjects. The array has shape `(n, m)` where `n` is the number of subjects, and `m` is the number of vertices of the standard subject. (If you load both hemispheres instead of one, m doubles.) To get the subject id for the entries, look at the respective index in the returned `subjects_list`.
 
     subjects_list: list of strings
-        A list containing the subject identifiers in the same order as the data in `group_morphology_data`.
+        A list containing the subject identifiers in the same order as the data in `group_morphology_data`. (If `subjects_detection_mode` is 'list' or 'file', the order in these is guaranteed to be preserved. But in mode 'search_dir' or 'auto' which may have chosen to fall back to 'search_dir' as a last resort, this is helpful: You can use the index of a subject in this list to find its data in `group_morphology_data`, as it will have the same index. See the examples below.)
 
     group_meta_data: dictionary
         A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the `parse_subject_standard_space_data` function.
@@ -609,11 +698,26 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
     --------
     Load area data for all subjects in the directory defined by the environment variable SUBJECTS_DIR:
 
-    >>> data, subjects, group_md, run_md = load_group_data('area')
+    >>> import brainload.freesurferdata as fsd
+    >>> data, subjects, group_md, run_md = fsd.load_group_data('area')
 
     Here, we load curv data for the right hemisphere, computed on the pial surface with smooting of 20:
 
-    >>> data, subjects, group_md, run_md = load_group_data('curv', hemi='rh', surf='pial', fwhm='20')
+    >>> import brainload.freesurferdata as fsd
+    >>> data, subjects, group_md, run_md = fsd.load_group_data('curv', hemi='rh', surf='pial', fwhm='20')
+
+    We may want to be a but more explicit on which subjects are loaded from where:
+
+    >>> import os
+    >>> import brainload.freesurferdata as fsd
+    >>> subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
+    >>> subjects_list = ['subject1', 'subject4', 'subject8']
+    >>> data, subjects, group_md, run_md = fsd.load_group_data('curv', fwhm='20', subjects_dir=subjects_dir, subjects_list=subjects_list)
+
+    Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject 'subject4':
+
+    >>> subject4_idx = subjects.index('subject4')   # Will be 1, as the order of the subjects_list is preserved. But if you load from a file s
+    >>> print group_data[subject4_idx][100000]
 
     """
     if hemi not in ('lh', 'rh', 'both'):

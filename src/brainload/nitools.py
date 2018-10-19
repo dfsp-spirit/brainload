@@ -1,3 +1,7 @@
+"""
+Utility functions for loading neuroimaging data.
+"""
+
 import os
 import csv
 import string

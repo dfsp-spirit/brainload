@@ -1,3 +1,7 @@
+"""
+Functions to display morphology data on brain meshes. Require matplotlib, mayavi and vtk. Not part of brainload. Will be removed (or moved to a separate package) soon.
+"""
+
 import mayavi.mlab as mlab
 import numpy as np
 from brainload.spatial_transform import *
