@@ -9,7 +9,6 @@ import numpy as np
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 import brainload.nitools as nit
-import brainload.errors as ble
 
 
 def read_mgh_file(mgh_file_name, collect_meta_data=True):
@@ -170,27 +169,12 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
         meta_data = {}
 
     if hemi == 'lh':
-        try:
-            morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
-        except IOError as e:
-            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'lh'), None, sys.exc_info()[-1]       # catch the exception, add information on the hemisphere, and re-raise it.
-
+        morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
     elif hemi == 'rh':
-        try:
-            morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
-        except IOError as e:
-            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'rh'), None, sys.exc_info()[-1]
+        morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
     else:
-        try:
-            lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
-        except IOError as e:
-            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'lh'), None, sys.exc_info()[-1]
-
-        try:
-            rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
-        except IOError as e:
-            raise ble.HemiFileIOError(e.args[0], e.args[1], e.filename, 'rh'), None, sys.exc_info()[-1]
-
+        lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
+        rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
         morphology_data = merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
     return morphology_data, meta_data
 

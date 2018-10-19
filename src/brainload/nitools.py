@@ -57,4 +57,80 @@ def detect_subjects_in_directory(subjects_dir, ignore_dir_names=None, required_s
 
 
 def fill_template_filename(template_string, substitution_dict):
+    """
+    Replace variables in the template with the respective substitution dict entries.
+
+    Checks the `template_string` for variables (i.e., something like '${VAR_NAME}') that are listed as keys in `substitution_dict`. If such entries are found, they are replaced with the respective values in the `substitution_dict`.
+    """
     return string.Template(template_string).substitute(substitution_dict)
+
+
+def _check_hemi_dict(hemi_dict, both_required=True):
+    """
+    Checks whether the given `hemi_dict` variable is a dictionary with the required format.
+
+    If `both_required` is True, checks whether `hemi_dict` is a dictionary containing exactly 2 keys named 'lh' and 'rh'. Otherwise, checks whether at least one of these two keys exists and the length is exactly 1. It does not check the values in the dictionary in any way.
+
+    Returns
+    -------
+    bool
+        Whether the dict is well-formed accordin to the definition given above.
+    """
+    if not isinstance(hemi_dict, collections.Mapping):
+        return False
+    if both_required:
+        if not length(hemi_dict) == 2 or not ( 'lh' in hemi_dict and 'rh' in hemi_dict ):
+            return False
+    else:
+        if not length(hemi_dict) == 1 or not ( 'lh' in hemi_dict or 'rh' in hemi_dict ):
+            return False
+    return True
+
+
+def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_template=None):
+    """
+    Checks for the existance of files in each subject directory.
+
+    Checks for the existance of files in each subject directory. This is useful to see whether data you intend to work on exists for all subjects you are interested in.
+
+    Returns
+    -------
+    dictionary
+        A dictionary. The keys are subjects that are missing the respective file, and the value is the absolute path of the file that is missing. If no files are missing, the dictionary is empty. If none of the subjects have the file, the length of the dictionary is equal to the length of the input `subjects_list`.
+    """
+    if filename is None and filename_template is None:
+        raise ValueError("(Exactly) one of 'filename' or 'filename_template' must be given.")
+
+    if filename is not None and filename_template is not None:
+        raise ValueError("Only one of 'filename' or 'filename_template' is allowed.")
+
+    missing_files_by_subject = {}
+    for subject_id in subjects_list:
+        if filename_template is not None:
+            substitution_dict = {'SUBJECT_ID': subject_id}
+            filename = fill_template_filename(filename_template, substitution_dict)
+
+        full_file = os.path.join(subjects_dir, subject_id, 'surf', filename)
+        if not os.path.isfile(full_file):
+            missing_files_by_subject[subject_id] = full_file
+    return missing_files_by_subject
+
+
+def do_subject_files_exist_hl(subjects_list, subjects_dir, filename_template, hemispheres=None):
+    """
+    High-level interface to check for the existance of subject files.
+
+    Check for the existance of subject files for different surfaces and hemispheres.
+    """
+
+    if hemispheres is None:
+        hemispheres = ['lh', 'rh']
+
+    missing_surf = {}
+
+    for hemi in hemispheres:
+        substitution_dict = {'SURF': surf, 'HEMI': hemi}
+        filename = fill_template_filename(filename_template, substitution_dict)
+        missing_surf[hemi] = do_subject_files_exist(subjects_list, subjects_dir, filename=filename)
+
+    return missing_surf
