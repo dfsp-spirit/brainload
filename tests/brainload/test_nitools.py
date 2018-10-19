@@ -123,7 +123,6 @@ def test_detect_subjects_in_directory_does_match_when_adding_existant_required_s
     assert 'subject6' in subject_ids
 
 
-
 def test_detect_subjects_in_directory_without_any_subjects():
     subject1_dir = os.path.join(TEST_DATA_DIR, 'subject1')  # This contains the data for a single subject, so none of its sub directories are valid subject dirs.
     subject_ids = nit.detect_subjects_in_directory(subject1_dir)
@@ -135,3 +134,100 @@ def test_fill_template_filename():
     substitution_dict = {'hemi': 'lh', 'surf': '.pial', 'measure': 'area'}
     result = nit.fill_template_filename(template_string, substitution_dict)
     assert result == 'lh.pial.area'
+
+
+def test_check_hemi_dict_ok_with_both():
+    hemi_dict = {'lh': 'string', 'rh': 'string'}
+    assert nit._check_hemi_dict(hemi_dict) == True
+
+
+def test_check_hemi_dict_ok_with_both_None():
+    hemi_dict = {'lh': None, 'rh': None}
+    assert nit._check_hemi_dict(hemi_dict) == True
+
+
+def test_check_hemi_dict_fail_with_left():
+    hemi_dict = {'lh': None }
+    assert nit._check_hemi_dict(hemi_dict) == False
+
+
+def test_check_hemi_dict_fail_with_right():
+    hemi_dict = {'rh': None }
+    assert nit._check_hemi_dict(hemi_dict) == False
+
+
+def test_check_hemi_dict_ok_with_left_not_both_needed():
+    hemi_dict = {'lh': None }
+    assert nit._check_hemi_dict(hemi_dict, both_required=False) == True
+
+
+def test_check_hemi_dict_fail_with_right_not_both_needed():
+    hemi_dict = {'rh': None }
+    assert nit._check_hemi_dict(hemi_dict, both_required=False) == True
+
+
+def test_do_subject_files_exist_lh_area():
+    subjects_dir = TEST_DATA_DIR
+    subjects_file = os.path.join(subjects_dir, 'subjects.txt')
+    subjects_list = nit.read_subjects_file(subjects_file)
+    assert len(subjects_list) == 5
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='lh.area')
+    assert len(missing) == 0
+
+
+def test_do_subject_files_exist_not_there():
+    subjects_dir = TEST_DATA_DIR
+    subjects_file = os.path.join(subjects_dir, 'subjects.txt')
+    subjects_list = nit.read_subjects_file(subjects_file)
+    assert len(subjects_list) == 5
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='not_there')
+    assert len(missing) == 5
+    assert 'subject1' in missing
+    assert 'subject2' in missing
+    assert 'subject3' in missing
+    assert 'subject4' in missing
+    assert 'subject5' in missing
+
+
+def test_do_subject_files_exist_raises_on_no_fileinfo():
+    subjects_dir = TEST_DATA_DIR
+    subjects_file = os.path.join(subjects_dir, 'subjects.txt')
+    subjects_list = nit.read_subjects_file(subjects_file)
+    assert len(subjects_list) == 5
+    with pytest.raises(ValueError) as exc_info:
+        missing = nit.do_subject_files_exist(subjects_list, subjects_dir)
+    assert 'Exactly one of' in str(exc_info.value)
+
+
+def test_do_subject_files_exist_raises_on_too_much_fileinfo():
+    subjects_dir = TEST_DATA_DIR
+    subjects_file = os.path.join(subjects_dir, 'subjects.txt')
+    subjects_list = nit.read_subjects_file(subjects_file)
+    assert len(subjects_list) == 5
+    with pytest.raises(ValueError) as exc_info:
+        missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='not_there', filename_template='not_there')
+    assert 'Exactly one of' in str(exc_info.value)
+
+
+def test_do_subject_files_exist_template_for_existing_files():
+    subjects_dir = os.path.join(TEST_DATA_DIR, 'empty_subjects')
+    subjects_file = os.path.join(subjects_dir, 'subjects_empty.txt')
+    subjects_list = nit.read_subjects_file(subjects_file)
+    assert len(subjects_list) == 3
+    expected_missing_file1 = os.path.join(subjects_dir, 'empty1', 'surf', 'empty1_not_there.txt')
+    expected_missing_file2 = os.path.join(subjects_dir, 'empty2', 'surf', 'empty2_not_there.txt')
+    expected_missing_file3 = os.path.join(subjects_dir, 'empty3', 'surf', 'empty3_not_there.txt')
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename_template='${SUBJECT_ID}_not_there.txt')
+    assert len(missing) == 3
+    assert missing['empty1'] == expected_missing_file1
+    assert missing['empty2'] == expected_missing_file2
+    assert missing['empty3'] == expected_missing_file3
+
+
+def test_do_subject_files_exist_template_for_existing_files_exist():
+    subjects_dir = os.path.join(TEST_DATA_DIR, 'empty_subjects')
+    subjects_file = os.path.join(subjects_dir, 'subjects_empty.txt')
+    subjects_list = nit.read_subjects_file(subjects_file)
+    assert len(subjects_list) == 3
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename_template='${SUBJECT_ID}.txt')
+    assert len(missing) == 0

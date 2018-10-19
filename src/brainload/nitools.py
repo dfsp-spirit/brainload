@@ -1,6 +1,7 @@
 import os
 import csv
 import string
+import collections
 import numpy as np
 
 
@@ -79,10 +80,10 @@ def _check_hemi_dict(hemi_dict, both_required=True):
     if not isinstance(hemi_dict, collections.Mapping):
         return False
     if both_required:
-        if not length(hemi_dict) == 2 or not ( 'lh' in hemi_dict and 'rh' in hemi_dict ):
+        if not len(hemi_dict) == 2 or not ( 'lh' in hemi_dict and 'rh' in hemi_dict ):
             return False
     else:
-        if not length(hemi_dict) == 1 or not ( 'lh' in hemi_dict or 'rh' in hemi_dict ):
+        if not len(hemi_dict) == 1 or not ( 'lh' in hemi_dict or 'rh' in hemi_dict ):
             return False
     return True
 
@@ -99,10 +100,10 @@ def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_
         A dictionary. The keys are subjects that are missing the respective file, and the value is the absolute path of the file that is missing. If no files are missing, the dictionary is empty. If none of the subjects have the file, the length of the dictionary is equal to the length of the input `subjects_list`.
     """
     if filename is None and filename_template is None:
-        raise ValueError("(Exactly) one of 'filename' or 'filename_template' must be given.")
+        raise ValueError("Exactly one of 'filename' or 'filename_template' must be given.")
 
     if filename is not None and filename_template is not None:
-        raise ValueError("Only one of 'filename' or 'filename_template' is allowed.")
+        raise ValueError("Exactly one of 'filename' or 'filename_template' must be given.")
 
     missing_files_by_subject = {}
     for subject_id in subjects_list:
@@ -114,23 +115,3 @@ def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_
         if not os.path.isfile(full_file):
             missing_files_by_subject[subject_id] = full_file
     return missing_files_by_subject
-
-
-def do_subject_files_exist_hl(subjects_list, subjects_dir, filename_template, hemispheres=None):
-    """
-    High-level interface to check for the existance of subject files.
-
-    Check for the existance of subject files for different surfaces and hemispheres.
-    """
-
-    if hemispheres is None:
-        hemispheres = ['lh', 'rh']
-
-    missing_surf = {}
-
-    for hemi in hemispheres:
-        substitution_dict = {'SURF': surf, 'HEMI': hemi}
-        filename = fill_template_filename(filename_template, substitution_dict)
-        missing_surf[hemi] = do_subject_files_exist(subjects_list, subjects_dir, filename=filename)
-
-    return missing_surf
