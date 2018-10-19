@@ -2,7 +2,6 @@
 
 import os
 import brainload.freesurferdata as fsd
-import brainload.errors as ble
 import brainload.nitools as nit
 from datetime import datetime
 
