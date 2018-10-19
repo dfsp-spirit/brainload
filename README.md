@@ -77,7 +77,7 @@ If you do not have your MRI data / FreeSurfer output at hand but still want to t
 
 ## Development and tests
 
-Tests and test data are not shipped in the releases, see the file [README_DEVELOPMENT file](develop/README_DEVELOPMENT.md) in this repository for instructions on installing the development version and running the tests.
+Tests and test data are not shipped in the releases, see the file [README_DEVELOPMENT](develop/README_DEVELOPMENT.md) in this repository for instructions on installing the development version and running the tests.
 
 
 ## Alternatives and similar tools (in python)
