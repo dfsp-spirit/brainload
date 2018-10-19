@@ -17,10 +17,27 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
 
     Read all data from the MGH file and return it as a numpy array. Optionally, collect meta data from the mgh file header.
 
+    Parameters
+    ----------
+    mgh_file_name: string
+        A string representing a full path to a file in FreeSurfer MGH file format.
+
+    collect_meta_data: bool, optional
+        Whether or not to collect meta data from the MGH file header. Defaults to True.
+
+    Returns
+    -------
+    mgh_data: numpy array
+        The data from the MGH file, usually one scalar value per voxel.
+
+    mgh_meta_data: dictionary
+        The meta data collected from the header, or an empty dictionary if the argument `collect_meta_data` was 'False'. The keys correspond to the names of the respective nibabel function used to retrieve the data. The values are the data as returned by nibabel.
+
     See also
     --------
         - https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems
         - https://github.com/nipy/nibabel/blob/master/nibabel/freesurfer/mghformat.py
+        - https://surfer.nmr.mgh.harvard.edu/fswiki/FileFormats
     """
     mgh_meta_data = {}
     with open(mgh_file_name, 'r') as mgh_file_handle:
@@ -48,6 +65,24 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
 
 
 def merge_morphology_data(morphology_data_arrays, dtype=float):
+    """
+    Merge morphology data horizontally.
+
+    Merge morphology data read from several meshes of the same subject horizontally. This is used to merge data from the left and right hemispheres.
+
+    Parameters
+    ----------
+    morphology_data_arrays: 2D array
+        An array of arrays, each of which represents morphology data from different hemispheres of the same subject.
+
+    dtype: data type, optional
+        Data type for the output numpy array. Defaults to float.
+
+    Returns
+    -------
+    numpy array
+        Horizontally stacked array containing the data from all arrays in the input array.
+    """
     merged_data = np.empty((0), dtype=dtype)
     for morphology_data in morphology_data_arrays:
         merged_data = np.hstack((merged_data, morphology_data))
@@ -59,6 +94,11 @@ def _get_morphology_data_suffix_for_surface(surf):
     Determine FreeSurfer surface representation string.
 
     Determine the substring representing the given surface in a FreeSurfer output curv file. For FreeSurfer's default surface 'white', the surface is not represented in the output file name pattern. For all others, it is represented by a dot followed by the name.
+
+    Parameters
+    ----------
+    surf: string
+        A string representing a FreeSurfer surface, e.g., 'white' or 'pial'.
 
     Returns
     -------
@@ -75,6 +115,28 @@ def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_
     Read a surface file and record meta data on it.
 
     Read a surface file and record meta data on it. A surface file is a mesh file in FreeSurfer format, e.g., 'lh.white'. It contains vertices and 3-faces made out of them.
+
+    Parameters
+    ----------
+    surf_file: string
+        A string representing an absolute path to a surface (or 'mesh') file (e.g., the path to 'lh.white').
+
+    hemisphere_label: {'lh' or 'rh'}
+        A string representing the hemisphere this file belongs to. This is used to write the correct meta data.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    Returns
+    -------
+    vert_coords: numpy array
+        A 2D array containing 3 coordinates for each vertex in the `surf_file`.
+
+    faces: numpy array
+        A 2D array containing 3 vertex indices per face. Look at the respective indices in `vert_coords` to get the vertex coordinates.
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded.
     """
     if hemisphere_label not in ('lh', 'rh'):
         raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'} but is '%s'." % hemisphere_label)
@@ -101,6 +163,31 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
     Read a morphology file and record meta data on it.
 
     Read a morphology file and record meta data on it. A morphology file is file containing a scalar value for each vertex on the surface of a FreeSurfer mesh. An example is the file 'lh.area', which contains the area values for all vertices of the left hemisphere of the white surface. Such a file can be in two different formats: 'curv' or 'mgh'. The former is used when the data refers to the surface mesh of the original subject, the latter when it has been mapped to a standard subject like fsaverage.
+
+    Parameters
+    ----------
+    curv_file: string
+        A string representing an absolute path to a morphology file (e.g., the path to 'lh.area').
+
+    hemisphere_label: {'lh' or 'rh'}
+        A string representing the hemisphere this file belongs to. This is used to write the correct meta data.
+
+    hemi: {'both', 'lh', 'rh'}, optional
+        The hemisphere for which data should actually be loaded. Defaults to 'both'.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    format: {'curv', 'mgh'}, optional
+        The file format for the files that are to be loaded. Defaults to 'curv'.
+
+    Returns
+    -------
+    per_vertex_data: numpy array
+        A 1D array containing one scalar value per vertex.
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded.
     """
     if format not in ('curv', 'mgh'):
         raise ValueError("ERROR: format must be one of {'curv', 'mgh'} but is '%s'." % format)
@@ -135,6 +222,31 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
     Load mesh files for a subject.
 
     Load one or two mesh files for a subject. Which of the two files `lh_surf_file` and `rh_surf_file` are actually loaded is determined by the `hemi` parameter.
+
+    Parameters
+    ----------
+    lh_surf_file: string | None
+        A string representing an absolute path to a mesh file for the left hemisphere (e.g., the path to 'lh.white'). If `hemi` is 'rh', this will be ignored and can thus be None.
+
+    rh_surf_file: string | None
+        A string representing an absolute path to a mesh file for the right hemisphere (e.g., the path to 'rh.white'). If `hemi` is 'lh', this will be ignored and can thus be None.
+
+    hemi: {'both', 'lh', 'rh'}, optional
+        The hemisphere for which data should actually be loaded. Defaults to 'both'.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    Returns
+    -------
+    vert_coords: numpy array
+        A 2D array containing 3 coordinates for each vertex. If the argument `hemi` was 'both', this includes vertices from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_vertices']` and  `meta_data['rh.num_vertices']`.
+
+    faces: numpy array
+        A 2D array containing 3 vertex indices per face. Look at the respective indices in `vert_coords` to get the vertex coordinates. If the argument `hemi` was 'both', this includes faces from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_faces']` and  `meta_data['rh.num_faces']`.
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded.
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -158,6 +270,31 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
     Load morphology data files for a subject.
 
     Load one or two morphology data files for a subject. Which of the two files `lh_morphology_data_file` and `rh_morphology_data_file` are actually loaded is determined by the `hemi` parameter.
+
+    Parameters
+    ----------
+    lh_morphology_data_file: string | None
+        A string representing an absolute path to a morphology data file for the left hemisphere. If `hemi` is 'rh', this will be ignored and can thus be None.
+
+    rh_morphology_data_file: string | None
+        A string representing an absolute path to a morphology data file for the right hemisphere. If `hemi` is 'lh', this will be ignored and can thus be None.
+
+    hemi: {'both', 'lh', 'rh'}, optional
+        The hemisphere for which data should actually be loaded. Defaults to 'both'.
+
+    format: {'curv', 'mgh'}, optional
+        The file format for the files that are to be loaded. Defaults to 'curv'.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    Returns
+    -------
+    morphology_data: numpy array
+        An array containing the scalar per-vertex data loaded from the file(s).
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded.
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -230,6 +367,21 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
 def _merge_meshes(meshes):
     """
     Merge several meshes into a single one.
+
+    Merge a list of meshes into a single one. Each mesh is given by a vertex list and a face list. The merged vertex list is just a vstack of the individual lists, and the vertex coordinates are not altered in any way. As a face id defined by the indices of its 3 vertices, these indices get adjusted for all meshes but the first one.
+
+    Parameters
+    ----------
+    meshes: array-like
+        A array of meshes. Each mesh is represented as an array of length 2, where the entry at index 0 is the vertex list, and the one at index 2 is the face list.
+
+    Returns
+    -------
+    all_vert_coords: numpy array
+        An array of vertex coordinates with shape(3, n), where n is the sum of the vertex counts of all input meshes.
+
+    all_faces: numpy_array (2d)
+        An array of faces with shape(3, m), where m is the sum of the face counts of all input meshes. For each face, each of its 3 values represent the vertex at the respective index in the `all_vert_coords` array.
     """
     all_vert_coords = np.empty((0, 3), dtype=float)
     all_faces = np.empty((0, 3), dtype=int)
