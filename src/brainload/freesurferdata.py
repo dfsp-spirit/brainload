@@ -316,6 +316,63 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
     return morphology_data, meta_data
 
 
+def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_dir=None, use_freesurfer_home_if_missing=True):
+    """
+    Load a surface mesh of the fsaverage subject.
+
+    Convenience function to load a FreeSurfer surface mesh of the fsaverage subject. You could also use this function to load the mesh of any other subject, but in that case, you may want to set `use_freesurfer_home_if_missing` to False (see below). This function calls `subject` in the background and shares the relevant arguments and return values with that function.
+
+    Parameters
+    ----------
+    subject_id: string, optional
+        The subject identifier of the subject. Defaults to 'fsaverage'.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}, optional
+        The hemisphere that should be loaded. Defaults to 'both'.
+
+    subjects_dir: string, optional
+        A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.
+
+    use_freesurfer_home_if_missing: boolean, optional
+        If set to True, first checks whether the directory for the given subject exists in the `subjects_dir`. If it does not, it will reset the `subjects_dir` to '${FREESURFER_HOME}/subjects' before proceeding.
+
+    Returns
+    -------
+    vert_coords: numpy array
+        A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., 'lh.white'), as returned by the `nibabel` function `nibabel.freesurfer.io.read_geometry`.
+
+    faces: numpy array
+        A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
+
+    meta_data: dictionary
+        A dictionary containing detailed information on all files that were loaded and used settings.
+
+    Raises
+    ------
+    ValueError
+        If one of the parameters with a fixed set of values receives a value that is not allowed.
+
+    Examples
+    --------
+    Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:
+
+    >>> import brainload as bl
+    >>> verts, faced, meta = bl.fsaverage_mesh()
+    """
+    if subjects_dir is None:
+        subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
+
+    if use_freesurfer_home_if_missing and not os.path.isdir(os.path.join(subjects_dir, subject_id)):
+        freesurfer_home = os.getenv('FREESURFER_HOME', os.getcwd())
+        subjects_dir = os.path.join(freesurfer_home, 'subjects')
+
+    vert_coords, faces, morphology_data, meta_data = subject(subject_id, surf=surf, hemi=hemi, subjects_dir=subjects_dir, measure=None, load_morphology_data=False)
+    return vert_coords, faces, meta_data
+
+
 def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
     """
     Load FreeSurfer brain morphology and/or mesh data for a single subject.
