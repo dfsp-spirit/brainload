@@ -2,6 +2,7 @@ import os
 import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
+import brainload as bl
 import brainload.freesurferdata as fsd
 
 
@@ -252,7 +253,7 @@ def test_load_subject_morphology_data_files_raises_on_invalid_hemisphere():
 
 
 def test_parse_subject():
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR)
+    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR)
     assert len(meta_data) == 20
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
@@ -288,20 +289,20 @@ def test_parse_subject():
 
 
 def test_parse_subject_preserves_existing_meta_data():
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, meta_data={'this_boy': 'still_exists'})
+    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, meta_data={'this_boy': 'still_exists'})
     assert len(meta_data) == 21
     assert meta_data['this_boy'] == 'still_exists'
 
 
 def test_parse_subject_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
+        vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
 
 def test_parse_subject_works_with_left_hemisphere_only():
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
+    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
@@ -329,7 +330,7 @@ def test_parse_subject_works_with_left_hemisphere_only():
 
 
 def test_parse_subject_works_with_right_hemisphere_only():
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
+    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
@@ -357,7 +358,7 @@ def test_parse_subject_works_with_right_hemisphere_only():
 
 
 def test_parse_subject_does_not_load_surface_when_asked_not_to():
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
+    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
@@ -385,7 +386,7 @@ def test_parse_subject_does_not_load_surface_when_asked_not_to():
 
 
 def test_parse_subject_does_not_load_morphology_data_when_asked_not_to():
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
+    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
@@ -417,7 +418,7 @@ def test_parse_subject_standard_space_data():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR)
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR)
     assert len(meta_data) == 24
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
@@ -456,7 +457,7 @@ def test_parse_subject_standard_space_data():
 
 def test_parse_subject_standard_space_data_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        vert_coords, faces, morphology_data, meta_data = fsd.parse_subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
+        vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
@@ -467,7 +468,7 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
     assert len(meta_data) == 18
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
@@ -498,7 +499,7 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 18
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
     expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -528,7 +529,7 @@ def test_parse_subject_standard_space_data_respects_fwhm_setting_none():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, fwhm=None)
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, fwhm=None)
     assert len(meta_data) == 24
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')    # No 'fhwmX' in here!
     expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
@@ -553,7 +554,7 @@ def test_parse_subject_standard_space_data_does_not_load_surface_when_asked_not_
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
     assert len(meta_data) == 18
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -581,7 +582,7 @@ def test_parse_subject_standard_space_data_does_not_load_morphology_data_when_as
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
     assert len(meta_data) == 17
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
@@ -609,7 +610,7 @@ def test_parse_subject_standard_space_data_accepts_custom_morphology_files():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     custom_morphology_files = { 'lh': 'lh.area.fsaverage.mgh', 'rh': 'rh.area.fsaverage.mgh' }  # You could access these files without the custom_morphology_files argument (by setting fwhm to None explicitely), but using this custom name is convenient because we already have test data named like this.
-    vert_coords, faces, morphology_data, meta_data = fsd.parse_subject_standard_space_data('subject1', subjects_dir=TEST_DATA_DIR, custom_morphology_files=custom_morphology_files)
+    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, custom_morphology_files=custom_morphology_files)
     assert len(meta_data) == 24
     expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
@@ -625,7 +626,7 @@ def test_load_group_data():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -665,7 +666,7 @@ def test_load_group_data_works_with_subjects_file_in_custom_dir():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     custom_subjects_file_dir = os.path.join(TEST_DATA_DIR, 'subject_files_in_extra_dir')
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6_in_subdir.csv', subjects_file_dir=custom_subjects_file_dir)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6_in_subdir.csv', subjects_file_dir=custom_subjects_file_dir)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -684,7 +685,7 @@ def test_load_group_data_works_with_left_hemisphere_only():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
@@ -707,7 +708,7 @@ def test_load_group_data_works_with_right_hemisphere_only():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
 
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -732,7 +733,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
 
     morphology_template = '${HEMI}.${SURF}${MEASURE}.${AVERAGE_SUBJECT}.mgh'
     custom_morphology_file_templates = {'lh': morphology_template, 'rh': morphology_template}
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', surf='white', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='both', surf='white', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')     # for surface 'white', the surface must NOT show up in the result.
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
@@ -767,7 +768,7 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     template_lh = 'lh.area.fsaverage.mgh'   # nobody forces you to use any variables
     template_rh = 'rh.area.fsaverage.mgh'
     custom_morphology_file_templates = {'lh': template_lh, 'rh': template_rh}
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
@@ -800,7 +801,7 @@ def test_load_group_data_works_with_subjects_list():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
 
     expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
@@ -835,7 +836,7 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_file():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6.csv')
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6.csv')
 
     assert len(group_meta_data) == 6
     assert len(group_meta_data) == len(group_data_subjects)
@@ -861,7 +862,7 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
         pytest.skip("Test data for subject2 .. subject5 not available: e.g., directory '%s' does not exist. You can get it by running './develop/get_group_data.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject6', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
 
     assert len(group_meta_data) == 3
     assert len(group_meta_data) == len(group_data_subjects)
@@ -941,42 +942,42 @@ def test_test_data_rh_is_as_expected():
 
 def test_load_group_data_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', hemi='invalid_hemisphere', subjects_dir=TEST_DATA_DIR)
+        group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='invalid_hemisphere', subjects_dir=TEST_DATA_DIR)
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
 
 def test_load_group_data_raises_on_invalid_subjects_detection_mode():
     with pytest.raises(ValueError) as exc_info:
-        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='invalid_subjects_detection_mode', subjects_dir=TEST_DATA_DIR)
+        group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_detection_mode='invalid_subjects_detection_mode', subjects_dir=TEST_DATA_DIR)
     assert 'subjects_detection_mode must be one of' in str(exc_info.value)
     assert 'invalid_subjects_detection_mode' in str(exc_info.value)
 
 
 def test_load_group_data_raises_with_subjects_list_in_mode_file():
     with pytest.raises(ValueError) as exc_info:
-        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='file', subjects_list=['bert', 'tim'], subjects_dir=TEST_DATA_DIR)
+        group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_detection_mode='file', subjects_list=['bert', 'tim'], subjects_dir=TEST_DATA_DIR)
     assert 'subjects_detection_mode is set to \'file\'' in str(exc_info.value)
     assert 'but a subjects_list was given' in str(exc_info.value)
 
 
 def test_load_group_data_raises_without_subjects_list_in_mode_list():
     with pytest.raises(ValueError) as exc_info:
-        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='list', subjects_dir=TEST_DATA_DIR)
+        group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_detection_mode='list', subjects_dir=TEST_DATA_DIR)
     assert 'subjects_detection_mode is set to \'list\'' in str(exc_info.value)
     assert 'but the subjects_list parameter was not given' in str(exc_info.value)
 
 
 def test_load_group_data_raises_with_subjects_list_in_mode_search_dir():
     with pytest.raises(ValueError) as exc_info:
-        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='search_dir', subjects_list=['bert', 'tim'], subjects_dir=TEST_DATA_DIR)
+        group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_detection_mode='search_dir', subjects_list=['bert', 'tim'], subjects_dir=TEST_DATA_DIR)
     assert 'subjects_detection_mode is set to \'search_dir\'' in str(exc_info.value)
     assert 'but a subjects_list was given' in str(exc_info.value)
 
 
 def test_load_group_data_raises_with_nonexistant_subjects_file_in_mode_file():
     with pytest.raises(ValueError) as exc_info:
-        group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_detection_mode='file', subjects_file='no_such_file', subjects_dir=TEST_DATA_DIR)
+        group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_detection_mode='file', subjects_file='no_such_file', subjects_dir=TEST_DATA_DIR)
     assert 'no_such_file' in str(exc_info.value)
     assert 'subjects_detection_mode is set to \'file\' but the subjects_file' in str(exc_info.value)
 
@@ -987,7 +988,7 @@ def test_load_group_data_auto_mode_prefers_list_over_explicitely_given_subjects_
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject6', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list, subjects_file='no_such_file')
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list, subjects_file='no_such_file')
 
     assert len(group_meta_data) == 3
     assert len(group_meta_data) == len(group_data_subjects)
@@ -1003,7 +1004,7 @@ def test_load_group_data_auto_mode_prefers_list_over_default_subjects_file_and_s
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject6', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', fwhm='10', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
 
     assert len(group_meta_data) == 3
     assert len(group_meta_data) == len(group_data_subjects)
@@ -1018,7 +1019,7 @@ def test_load_group_data_auto_mode_searches_dir_as_last_resort():
     if not os.path.isdir(extra_subjects_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % extra_subjects_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=extra_subjects_dir)
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', fwhm='10', subjects_dir=extra_subjects_dir)
 
     assert len(group_meta_data) == 2
     assert len(group_meta_data) == len(group_data_subjects)
@@ -1034,7 +1035,7 @@ def test_load_group_data_search_dir_mode_works():
     if not os.path.isdir(extra_subjects_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % extra_subjects_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', fwhm='10', subjects_dir=extra_subjects_dir, subjects_detection_mode='search_dir')
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', fwhm='10', subjects_dir=extra_subjects_dir, subjects_detection_mode='search_dir')
 
     assert len(group_meta_data) == 2
     assert len(group_meta_data) == len(group_data_subjects)
@@ -1051,7 +1052,7 @@ def test_load_group_data_file_mode_works():
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_detection_mode='file')
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_detection_mode='file')
 
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
@@ -1067,7 +1068,7 @@ def test_load_group_data_list_mode_works():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     subjects_list = [ 'subject1', 'subject6', 'subject3' ]
-    group_data, group_data_subjects, group_meta_data, run_meta_data = fsd.load_group_data('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list, subjects_detection_mode='list')
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list, subjects_detection_mode='list')
 
     assert len(group_meta_data) == 3
     assert len(group_meta_data) == len(group_data_subjects)

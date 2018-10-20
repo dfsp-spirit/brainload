@@ -316,11 +316,11 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
     return morphology_data, meta_data
 
 
-def parse_subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
+def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
     """
-    Parse FreeSurfer brain data for a single subject.
+    Load FreeSurfer brain morphology and/or mesh data for a single subject.
 
-    High-level interface to parse FreeSurfer brain data for a single space. This parses the data for the surfaces of this subject. If you want to load data that has been mapped to an average subject like 'fsaverage', use `parse_subject_standard_space_data` instead.
+    High-level interface to load FreeSurfer brain data for a single space. This parses the data for the surfaces of this subject. If you want to load data that has been mapped to an average subject like 'fsaverage', use `subject_avg` instead.
 
     Parameters
     ----------
@@ -371,18 +371,19 @@ def parse_subject(subject_id, surf='white', measure='area', hemi='both', subject
     --------
     Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:
 
-    >>> v, f, data, md = parse_subject('subject1')
+    >>> import brainload as bl
+    >>> v, f, data, md = bl.subject('subject1')
 
     Here, we are a bit more explicit about what we want to load:
 
     >>> import os
     >>> user_home = os.getenv('HOME')
     >>> subjects_dir = os.path.join(user_home, 'data', 'my_study_x')
-    >>> v, f, data, md = parse_subject('subject1', hemi='lh', measure='curv', subjects_dir=subjects_dir)
+    >>> v, f, data, md = bl.subject('subject1', hemi='lh', measure='curv', subjects_dir=subjects_dir)
 
     Sometime we do not care for the mesh, e.g., we only want the morphometry data:
 
-    >>> data, md = parse_subject('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
+    >>> data, md = bl.subject('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
 
     """
     if hemi not in ('lh', 'rh', 'both'):
@@ -462,9 +463,9 @@ def _merge_meshes(meshes):
     return all_vert_coords, all_faces
 
 
-def parse_subject_standard_space_data(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphology_files=None):
+def subject_avg(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphology_files=None):
     """
-    Load morphometry data for a subjects that has been mapped to an average subject.
+    Load morphometry data that has been mapped to an average subject for a subject.
 
     Load data for a single subject that has been mapped to an average subject like the `fsaverage` subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.
 
@@ -532,21 +533,21 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
     --------
     Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR, mapped to fsaverage:
 
-    >>> import brainload.freesurferdata as fsd
-    >>> v, f, data, md = fsd.parse_subject_standard_space_data('subject1')
+    >>> import brainload as bl
+    >>> v, f, data, md = bl.subject_avg('subject1')
 
     Here, we are a bit more explicit about what we want to load:
 
     >>> import os
-    >>> import brainload.freesurferdata as fsd
+    >>> import brainload as bl
     >>> user_home = os.getenv('HOME')
     >>> subjects_dir = os.path.join(user_home, 'data', 'my_study_x')
-    >>> v, f, data, md = fsd.parse_subject_standard_space_data('subject1', hemi='lh', measure='curv', fwhm='15', display_surf='inflated', subjects_dir=subjects_dir)
+    >>> v, f, data, md = bl.subject_avg('subject1', hemi='lh', measure='curv', fwhm='15', display_surf='inflated', subjects_dir=subjects_dir)
 
     Sometime we do not care for the mesh, e.g., we only want the morphometry data:
 
-    >>> import brainload.freesurferdata as fsd
-    >>> data, md = fsd.parse_subject_standard_space_data('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
+    >>> import brainload as bl
+    >>> data, md = bl.subject_avg('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
 
     """
     if hemi not in ('lh', 'rh', 'both'):
@@ -613,12 +614,12 @@ def parse_subject_standard_space_data(subject_id, measure='area', surf='white', 
 
 
 
-def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None, subjects_detection_mode='auto'):
+def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None, subjects_detection_mode='auto'):
     """
     Load morphometry data for a number of subjects.
 
     Load group data, i.e., morphometry data for all subjects in a study that has already been mapped to standard space and is ready for group analysis.
-    The information given in the parameters `measure`, `surf`, `hemi`, and `fwhm` are used to construct the file name that will be loaded by default.
+    The information given in the parameters `measure`, `surf`, `hemi`, and `fwhm` are used to construct the file name that will be loaded by default. This function will NOT load the meshes.
 
     Parameters
     ----------
@@ -662,7 +663,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
             - `${FWHM}` will be replaced with the value of `fwhm`, so something like '10'.
             - `${SUBJECT_ID}` will be replaced by the id of the subject that is being loaded, e.g., 'subject3'.
             - `${AVERAGE_SUBJECT}` will be replaced by the value of `average_subject`.
-            
+
             Note that only `${SURF}` and `${HEMI}` are usually needed, everything else can be hardcoded (or is not part of typical FreeSurfer file names at all, like `${SUBJECT_ID}`).
             Example template string: `subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh`. Complete example for template strings in dictionary: `{'lh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh', 'rh': 'subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh'}`.
 
@@ -685,7 +686,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
         A list containing the subject identifiers in the same order as the data in `group_morphology_data`. (If `subjects_detection_mode` is 'list' or 'file', the order in these is guaranteed to be preserved. But in mode 'search_dir' or 'auto' which may have chosen to fall back to 'search_dir' as a last resort, this is helpful: You can use the index of a subject in this list to find its data in `group_morphology_data`, as it will have the same index. See the examples below.)
 
     group_meta_data: dictionary
-        A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the `parse_subject_standard_space_data` function.
+        A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the `subject_avg` function.
 
     run_meta_data: dictionary
         A dictionary containing general information on the settings used when executing the function and determining which subjects to load.
@@ -795,7 +796,7 @@ def load_group_data(measure, surf='white', hemi='both', fwhm='10', subjects_dir=
             custom_morphology_files = {'lh': custom_morphology_file_lh, 'rh': custom_morphology_file_rh}
 
         # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
-        subject_morphology_data, subject_meta_data = parse_subject_standard_space_data(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=subject_meta_data, load_surface_files=False, custom_morphology_files=custom_morphology_files)[2:4]
+        subject_morphology_data, subject_meta_data = subject_avg(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=subject_meta_data, load_surface_files=False, custom_morphology_files=custom_morphology_files)[2:4]
         group_meta_data[subject_id] = subject_meta_data
         group_morphology_data.append(subject_morphology_data)
     group_morphology_data = np.array(group_morphology_data)
