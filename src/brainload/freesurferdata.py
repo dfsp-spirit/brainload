@@ -593,7 +593,7 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     >>> import brainload as bl
     >>> v, f, data, md = bl.subject_avg('subject1')
 
-    Here, we are a bit more explicit about what we want to load:
+    Here, we are a bit more picky and explicit about what we want to load:
 
     >>> import os
     >>> import brainload as bl
@@ -757,26 +757,25 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
     --------
     Load area data for all subjects in the directory defined by the environment variable SUBJECTS_DIR:
 
-    >>> import brainload.freesurferdata as fsd
-    >>> data, subjects, group_md, run_md = fsd.load_group_data('area')
+    >>> import brainload as bl
+    >>> data, subjects, group_md, run_md = bl.group('area')
 
     Here, we load curv data for the right hemisphere, computed on the pial surface with smooting of 20:
 
-    >>> import brainload.freesurferdata as fsd
-    >>> data, subjects, group_md, run_md = fsd.load_group_data('curv', hemi='rh', surf='pial', fwhm='20')
+    >>> data, subjects, group_md, run_md = bl.group('curv', hemi='rh', surf='pial', fwhm='20')
 
     We may want to be a but more explicit on which subjects are loaded from where:
 
     >>> import os
-    >>> import brainload.freesurferdata as fsd
+    >>> import brainload as bl
     >>> subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
     >>> subjects_list = ['subject1', 'subject4', 'subject8']
-    >>> data, subjects, group_md, run_md = fsd.load_group_data('curv', fwhm='20', subjects_dir=subjects_dir, subjects_list=subjects_list)
+    >>> data, subjects, group_md, run_md = bl.group('curv', fwhm='20', subjects_dir=subjects_dir, subjects_list=subjects_list)
 
     Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject 'subject4':
 
-    >>> subject4_idx = subjects.index('subject4')   # Will be 1, as the order of the subjects_list is preserved. But if you load from a file s
-    >>> print group_data[subject4_idx][100000]
+    >>> subject4_idx = subjects.index('subject4')
+    >>> print data[subject4_idx][100000]
 
     """
     if hemi not in ('lh', 'rh', 'both'):

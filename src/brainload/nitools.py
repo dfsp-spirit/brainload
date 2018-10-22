@@ -132,6 +132,16 @@ def fill_template_filename(template_string, substitution_dict):
     -------
     string
         The result of the replacement.
+
+    Examples
+    --------
+    Fill in a template string:
+
+    >>> import brainload.nitools as nit
+    >>> template_str = '${HEMI}.white'
+    >>> substitution_dict = {'HEMI' : 'lh'}
+    >>> print nit.fill_template_filename(template_str, substitution_dict)
+    lh.white
     """
     return string.Template(template_string).substitute(substitution_dict)
 
@@ -153,6 +163,15 @@ def _check_hemi_dict(hemi_dict, both_required=True):
     -------
     bool
         Whether the dict is well-formed according to the definition given above.
+
+    Examples
+    --------
+    Check whether a dict is fine:
+
+    >>> import brainload.nitools as nit
+    >>> my_dict = {'lh' : 'lh.area', 'rh': 'rh.area'}
+    >>> print nit._check_hemi_dict(my_dict)
+    True
     """
     if not isinstance(hemi_dict, collections.Mapping):
         return False
@@ -192,6 +211,17 @@ def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_
     -------
     dictionary
         A dictionary. The keys are subjects that are missing the respective file, and the value is the absolute path of the file that is missing. If no files are missing, the dictionary is empty. If none of the subjects have the file, the length of the dictionary is equal to the length of the input `subjects_list`.
+
+    Examples
+    --------
+    Check whether a file exists for all subjects:
+
+    >>> import brainload.nitools as nit
+    >>> subjects_list = ['subject1', 'subject4', 'subject7']
+    >>> subjects_dir = subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
+    >>> searched_file = 'lh.area'
+    >>> missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename=searched_file)
+    >>> print "The file '%s' exists for %d of the %d subjects." % (searched_file, len(missing), len(subjects_list))
     """
     if filename is None and filename_template is None:
         raise ValueError("Exactly one of 'filename' or 'filename_template' must be given.")
