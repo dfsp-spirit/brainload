@@ -1,5 +1,7 @@
 """
 Utility functions for loading neuroimaging data.
+
+Most of these functions interact with the filesystem to find data.
 """
 
 import os
@@ -163,11 +165,11 @@ def _check_hemi_dict(hemi_dict, both_required=True):
     return True
 
 
-def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_template=None):
+def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_template=None, sub_dir='surf'):
     """
     Checks for the existance of certain files in each subject directory for a group of subjects.
 
-    Checks for the existance of certain files in each subject directory for a group of subjects. This is useful to see whether data you intend to work on exists for all subjects you are interested in.
+    Checks for the existance of certain files in the each subject directory for a group of subjects. This is useful to see whether data you intend to work on exists for all subjects you are interested in.
 
     Parameters
     ----------
@@ -178,10 +180,13 @@ def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_
         Path to a directory that contains the subject data.
 
     filename: string
-        A string representing the file name within the 'surf' sub directory of each subject, hardcoded. You must supply this or a `filename_template`.
+        A string representing the file name within the `sub_dir` sub directory of each subject, hardcoded. You must supply this or a `filename_template`.
 
     filename_template: string
         A string representing the file name within the 'surf' sub directory of each subject as a template. You must supply this or a `filename`, but not both. You can use the variable `${SUBJECT_ID}` in the template.
+
+    sub_dir: string | None, optional
+        The sub directory to look in. You could set any value, but the typical ones are the default FreeSurfer directories, e.g., 'surf', 'mri', 'scripts' and so on. You can set this to `None` if you want to look directly in the subjct's dir, but FreeSurfer does not seem to store any data there by default. Defaults to 'surf'.
 
     Returns
     -------
@@ -200,7 +205,10 @@ def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_
             substitution_dict = {'SUBJECT_ID': subject_id}
             filename = fill_template_filename(filename_template, substitution_dict)
 
-        full_file = os.path.join(subjects_dir, subject_id, 'surf', filename)
+        if sub_dir is None:
+            full_file = os.path.join(subjects_dir, subject_id, filename)
+        else:
+            full_file = os.path.join(subjects_dir, subject_id, sub_dir, filename)
         if not os.path.isfile(full_file):
             missing_files_by_subject[subject_id] = full_file
     return missing_files_by_subject

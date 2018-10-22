@@ -46,6 +46,11 @@ if [ -d "${BRAINLOAD_TEST_DATA_DIR}/subject1" ]; then
         cp -r subject1 "${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}" && echo "${APPTAG}  * ${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}"
     done
 
+    touch ${EXTRA_SUBJECTS_DIR}/subject2x/subject2x.txt
+    mkdir ${EXTRA_SUBJECTS_DIR}/subject2x/mri
+    touch ${EXTRA_SUBJECTS_DIR}/subject2x/subject2x_mri.txt
+    mkdir ${EXTRA_SUBJECTS_DIR}/subject2x/scripts
+
 else
     echo "${APPTAG} ERROR: Data for subject1 not found at '${BRAINLOAD_TEST_DATA_DIR}/subject1'. Exiting."
     exit 1

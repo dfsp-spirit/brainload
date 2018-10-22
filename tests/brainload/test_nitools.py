@@ -171,7 +171,7 @@ def test_do_subject_files_exist_lh_area():
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
-        
+
     subjects_dir = TEST_DATA_DIR
     subjects_file = os.path.join(subjects_dir, 'subjects.txt')
     subjects_list = nit.read_subjects_file(subjects_file)
@@ -236,3 +236,38 @@ def test_do_subject_files_exist_template_for_existing_files_exist():
     assert len(subjects_list) == 3
     missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename_template='${SUBJECT_ID}.txt')
     assert len(missing) == 0
+
+
+def test_do_subject_files_exist_with_custom_dir_surf():
+    expected_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
+    if not os.path.isdir(expected_subjects_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subjects_dir)
+
+    subjects_dir = expected_subjects_dir
+    subjects_list = ['subject2x', 'subject3x']
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='lh.area', sub_dir='surf')
+    assert len(missing) == 0
+
+
+def test_do_subject_files_exist_with_custom_dir_mri():
+    expected_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
+    if not os.path.isdir(expected_subjects_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subjects_dir)
+
+    subjects_dir = expected_subjects_dir
+    subjects_list = ['subject2x', 'subject3x']
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='info.txt', sub_dir='mri')
+    assert len(missing) == 1
+    assert 'subject3x' in missing
+
+
+def test_do_subject_files_exist_with_custom_dir_None():
+    expected_subjects_dir = os.path.join(TEST_DATA_DIR, 'extra_subjects')
+    if not os.path.isdir(expected_subjects_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subjects_dir)
+
+    subjects_dir = expected_subjects_dir
+    subjects_list = ['subject2x', 'subject3x']
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='subject2x.txt', sub_dir=None)
+    assert len(missing) == 1
+    assert 'subject3x' in missing
