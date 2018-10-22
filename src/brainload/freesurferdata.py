@@ -1,5 +1,7 @@
 """
 Functions for loading FreeSurfer data on different levels.
+
+The high-level functions are available directly in the package namespace. Using the functions in here should not be necessary.
 """
 
 import os
@@ -32,6 +34,15 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
 
     mgh_meta_data: dictionary
         The meta data collected from the header, or an empty dictionary if the argument `collect_meta_data` was 'False'. The keys correspond to the names of the respective nibabel function used to retrieve the data. The values are the data as returned by nibabel.
+
+    Examples
+    --------
+    Read a file in MGH format from the surf dir of a subject:
+
+    >>> import os
+    >>> import brainload.freesurferdata as fsd
+    >>> mgh_file = os.path.join('my_subjects_dir', 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+    >>> mgh_data, mgh_meta_data = fsd.read_mgh_file(mgh_file)
 
     See also
     --------
@@ -82,6 +93,22 @@ def merge_morphology_data(morphology_data_arrays, dtype=float):
     -------
     numpy array
         Horizontally stacked array containing the data from all arrays in the input array.
+
+    Examples
+    --------
+    Merge some data:
+
+    >>> lh_morphology_data = np.array([0.0, 0.1, 0.2, 0.3])   # some fake data
+    >>> rh_morphology_data = np.array([0.5, 0.6])
+    >>> merged_data = fsd.merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
+    >>> print merged_data.shape
+    (6, )
+
+    Typically, the `lh_morphology_data` and `rh_morphology_data` come from calls to `read_fs_morphology_data_file_and_record_meta_data` as shown here:
+
+    >>> lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh')
+    >>> rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data)
+    >>> both_hemis_morphology_data = merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
     """
     merged_data = np.empty((0), dtype=dtype)
     for morphology_data in morphology_data_arrays:
@@ -104,6 +131,12 @@ def _get_morphology_data_suffix_for_surface(surf):
     -------
     string
         The empty string if `surf` is 'white'. A dot followed by the string in the input argument `surf` otherwise.
+
+    Examples
+    --------
+    >>> import brainload.freesurferdata as fsd
+    >>> print fsd._get_morphology_data_suffix_for_surface('pial')
+    .pial
     """
     if surf == 'white':
         return ''
@@ -136,7 +169,16 @@ def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_
         A 2D array containing 3 vertex indices per face. Look at the respective indices in `vert_coords` to get the vertex coordinates.
 
     meta_data: dictionary
-        Contains detailed information on the data that was loaded.
+        Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
+            - `?h.num_vertices` : number of vertices in the loaded mesh
+            - `?h.num_faces` : number of faces in the loaded mesh
+            - `?lh.surf_file` : value of the `surf_file` argument: the mesh file that was loaded
+
+    Examples
+    --------
+    >>> vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(surf_file, 'lh')
+    >>> print meta_data['lh.num_vertices']
+    121567                  # arbitrary number, depends on the subject mesh
     """
     if hemisphere_label not in ('lh', 'rh'):
         raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'} but is '%s'." % hemisphere_label)
@@ -167,7 +209,7 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
     Parameters
     ----------
     curv_file: string
-        A string representing an absolute path to a morphology file (e.g., the path to 'lh.area').
+        A string representing a path to a morphology file (e.g., the path to 'lh.area').
 
     hemisphere_label: {'lh' or 'rh'}
         A string representing the hemisphere this file belongs to. This is used to write the correct meta data.
@@ -187,7 +229,20 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
         A 1D array containing one scalar value per vertex.
 
     meta_data: dictionary
-        Contains detailed information on the data that was loaded.
+        Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
+            - `?h.num_data_points` : the number of data points loaded.
+            - `?h.morphology_file` : the value of the `curv_file` argument (data file that was loaded)
+            - `?h.morphology_file_format` : the value for `format` that was used
+
+    Examples
+    --------
+    >>> import brainload.freesurferdata as fsd; import os
+    >>> lh_morphology_file = os.path.join('my_subjects_dir', 'subject1', 'surf', 'lh.area')
+    >>> lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_file, 'lh')
+    >>> print meta_data['lh.num_data_points']
+    121567                  # arbitrary number, depends on the subject mesh
+    >>> print meta_data['lh.morphology_file']
+    my_subjects_dir/subject1/surf/lh.area             # on UNIX-like systems
     """
     if format not in ('curv', 'mgh'):
         raise ValueError("ERROR: format must be one of {'curv', 'mgh'} but is '%s'." % format)
@@ -246,7 +301,17 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
         A 2D array containing 3 vertex indices per face. Look at the respective indices in `vert_coords` to get the vertex coordinates. If the argument `hemi` was 'both', this includes faces from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_faces']` and  `meta_data['rh.num_faces']`.
 
     meta_data: dictionary
-        Contains detailed information on the data that was loaded.
+        Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_vertices` : number of vertices in the loaded mesh
+            - `?h.num_faces` : number of faces in the loaded mesh
+            - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
+
+    Examples
+    --------
+    >>> import brainload.freesurferdata as fsd; import os
+    >>> lh_surf_file = os.path.join('my_subjects_dir', 'subject1', 'surf', 'lh.white')
+    >>> rh_surf_file = os.path.join('my_subjects_dir', 'subject1', 'surf', 'rh.white')
+    >>> vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, rh_surf_file)
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -365,14 +430,16 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
         An array containing the scalar per-vertex data loaded from the file(s).
 
     meta_data: dictionary
-        Contains detailed information on the data that was loaded.
+        Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_data_points` : the number of data points loaded.
+            - `?h.morphology_file` : the value of the `?h_morphology_data_file` argument (data file that was loaded)
+            - `?h.morphology_file_format` : the value for `format` that was used
 
     Examples
     --------
     Load the lh and rh area files for subject1.
 
-    >>> import os
-    >>> import brainload.freesurferdata as fsd
+    >>> import brainload.freesurferdata as fsd; import os
     >>> lh_morphology_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'lh.area')
     >>> rh_morphology_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'rh.area')
     >>> morphology_data, meta_data = fsd.load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file)
@@ -441,7 +508,10 @@ def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_d
         A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
 
     meta_data: dictionary
-        A dictionary containing detailed information on all files that were loaded and used settings.
+        A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_vertices` : number of vertices in the loaded mesh
+            - `?h.num_faces` : number of faces in the loaded mesh
+            - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
 
     Raises
     ------
@@ -510,7 +580,19 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
         A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. Note that the two hemispheres do in general NOT have the same number of vertices.
 
     meta_data: dictionary
-        A dictionary containing detailed information on all files that were loaded and used settings.
+        A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_data_points` : the number of data points loaded.
+            - `?h.morphology_file` : the value of the `?h_morphology_data_file` argument (data file that was loaded)
+            - `?h.morphology_file_format` : the value for `format` that was used
+            - `?h.num_vertices` : number of vertices in the loaded mesh
+            - `?h.num_faces` : number of faces in the loaded mesh
+            - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
+            - `subject_id` : the subject id
+            - `subjects_dir` : the subjects dir that was used
+            - `surf` : the surf that was used, e.g., 'white'
+            - `measure` : the measure that was loaded as morphology data, e.g., 'area'
+            - `space` : always the string 'subject'. This means that the data loaded represent morphology data taken from the subject's surface (as opposed to data mapped to a common or average subject).
+            - `hemi` : the `hemi` value that was used
 
     Raises
     ------
@@ -672,7 +754,21 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
         A numpy array with as many entries as there are vertices in the average subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. In many cases, your average subject will have the same number of vertices for both hemispheres and you will know this number beforehand, so you may not have to worry about this at all.
 
     meta_data: dictionary
-        A dictionary containing detailed information on all files that were loaded and used settings.
+        A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_data_points` : the number of data points loaded.
+            - `?h.morphology_file` : the value of the `?h_morphology_data_file` argument (data file that was loaded)
+            - `?h.morphology_file_format` : the value for `format` that was used
+            - `?h.num_vertices` : number of vertices in the loaded mesh
+            - `?h.num_faces` : number of faces in the loaded mesh
+            - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
+            - `subject_id` : the subject id
+            - `subjects_dir` : the subjects dir that was used
+            - `surf` : the surf that was used, e.g., 'white'
+            - `measure` : the measure that was loaded as morphology data, e.g., 'area'
+            - `space` : always the string 'common'. This means that the data loaded represent morphology data that has been mapped to a common or average subject.
+            - `hemi` : the `hemi` value that was used
+            - `display_subject` : the name of the common or average subject. This is the subject the surface meshes originate from. Ususally 'fsaverage'.
+            - `display_surf` : the surface of the common subject that has been loaded. Something like 'pial', 'white', or 'inflated'.
 
     Raises
     ------
@@ -685,6 +781,8 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
 
     >>> import brainload as bl
     >>> v, f, data, md = bl.subject_avg('subject1')
+    >>> print md['surf']
+    white
 
     Here, we are a bit more picky and explicit about what we want to load:
 
