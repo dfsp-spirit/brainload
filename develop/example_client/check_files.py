@@ -4,6 +4,7 @@ import os
 import brainload.freesurferdata as fsd
 import brainload.nitools as nit
 from datetime import datetime
+from sets import Set
 
 def gen_result_measures(measures):
     new_measures = []
@@ -28,7 +29,7 @@ def check_files():
 
     curv_measures_str = "principal_curvature_k1 principal_curvature_k2 principal_curvature_k_major principal_curvature_k_minor mean_curvature gaussian_curvature intrinsic_curvature_index negative_intrinsic_curvature_index gaussian_l2_norm absolute_intrinsic_curvature_index mean_curvature_index negative_mean_curvature_index mean_l2_norm absolute_mean_curvature_index folding_index curvedness_index shape_index shape_type area_fraction_of_intrinsic_curvature_index area_fraction_of_negative_intrinsic_curvature_index area_fraction_of_mean_curvature_index area_fraction_of_negative_mean_curvature_index sh2sh sk2sk"
     measures = curv_measures_str.split()
-    surfaces = ['white']
+    surfaces = ['pial']
     print "------- subject space -------"
     check_subject_morph_files(subjects, subjects_dir, measures, surfaces)
     print "------- common fsaverage space fwhm 0 -------"
@@ -91,9 +92,9 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
                 if write_missing_subjects_file:
                     with open(missing_subjects_file, "w") as text_file:
                         # merge lh and rh into set
-                        missing_both = set()
-                        missing_both = missing_both.union(missing_lh.keys)
-                        missing_both = missing_both.union(missing_rh.keys)
+                        missing_both = Set()
+                        missing_both = missing_both.union(missing_lh.keys())
+                        missing_both = missing_both.union(missing_rh.keys())
                         for subject_id in missing_both:
                             text_file.write("%s\n" % subject_id)
                     #print "NOTE: Created missing subjects file containing %d subjects at location '%s'." % (len(missing_lh), missing_subjects_file)
