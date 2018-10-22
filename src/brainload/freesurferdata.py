@@ -265,6 +265,77 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
     return vert_coords, faces, meta_data
 
 
+def rhi(rh_relative_index, meta_data):
+    """
+    Computes the absolute data index given an index relative to the right hemisphere.
+
+    This function makes sense only given a `morphology_data` and associated `meta_data` that contains data on two hemispheres (even though the `morphology_data` array itself is not passed to this function). E.g., the return value of a function like `subject()` or `subject_avg()` when called with `hemi='both'`. For such data, it computes the absolute index in the data given a request index relative to the right hemisphere. The name is short for 'right hemisphere index'.
+
+    Parameters
+    ----------
+    rh_relative_index: int
+        An index relative to the right hemisphere. E.g., `0` if you want to get the index of the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and `-1` will get you the last possible index, `-2` the second-to-last, and so on.
+
+    meta_data: dictionary
+        The meta data dictionary returned for your data. It must contain the keys 'lh.num_data_points' and 'rh.num_data_points'.
+
+    Returns
+    -------
+    The absolute index into the data for the given `rh_relative_index`.
+
+    Examples
+    --------
+    >>> import brainload as bl
+    >>> morphology_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
+    >>> print "rh value at index 10, relative to start of right hemisphere: %d." % morphology_data[bl.rhi(10, meta_data)]
+    """
+    lh_key = 'lh.num_data_points'
+    rh_key = 'rh.num_data_points'
+    if not isinstance(meta_data, collections.Mapping):
+        raise ValueError("rhi: meta_data must be a meta data dictionary containing the keys '%s' and '%s'." % (lh_key, rh_key))
+
+    if not ('lh.num_data_points' in meta_data and 'rh.num_data_points' in meta_data):
+        raise ValueError("rhi: meta_data must be a meta data dictionary containing the keys '%s' and '%s'." % (lh_key, rh_key))
+
+    num_lh = meta_data[lh_key]
+    num_rh = meta_data[rh_key]
+    if abs(rh_relative_index) >= num_rh:
+        raise ValueError('rhi: rh_relative_index %d out of bounds: right hemisphere has %d values, valid index range is -%d .. %d.' % (rh_relative_index, num_rh, num_rh+1, num_rh-1))
+    if rh_relative_index < 0:
+        return num_lh + num_rh + rh_relative_index -1
+    else:
+        return num_lh + rh_relative_index
+
+
+def rhv(rh_relative_index, morphology_data, meta_data):
+    """
+    Returns the value in `morphology_data` at an index relative to the right hemisphere.
+
+    This function makes sense only given a `morphology_data` and associated `meta_data` that contains data on two hemispheres. E.g., the return value of a function like `subject()` or `subject_avg()` when called with `hemi='both'`. For such data, it returns the value in `morphology_data` at a request index given relative to the right hemisphere. The name is short for 'right hemisphere value'.
+
+    Parameters
+    ----------
+    rh_relative_index: int
+        An index relative to the start of the right hemisphere in the data. E.g., `0` if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and `-1` will get you the last possible value, `-2` the second-to-last, and so on.
+
+    meta_data: dictionary
+        The meta data dictionary returned for your data. It must contain the keys 'lh.num_data_points' and 'rh.num_data_points'.
+
+    Returns
+    -------
+    The value at the given index that is relative to the start of the right hemisphere in the data.
+
+    Examples
+    --------
+    >>> import brainload as bl
+    >>> morphology_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
+    >>> print "rh value at index 10, relative to start of right hemisphere: %d." % bl.rhv(10, morphology_data, meta_data)
+    """
+    abs_index = abs_index_rh(rh_relative_index, meta_data)
+    return morphology_data[abs_index]
+
+
+
 def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_data_file, hemi='both', format='curv', meta_data=None):
     """
     Load morphology data files for a subject.
@@ -295,6 +366,28 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
 
     meta_data: dictionary
         Contains detailed information on the data that was loaded.
+
+    Examples
+    --------
+    Load the lh and rh area files for subject1.
+
+    >>> import os
+    >>> import brainload.freesurferdata as fsd
+    >>> lh_morphology_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'lh.area')
+    >>> rh_morphology_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'rh.area')
+    >>> morphology_data, meta_data = fsd.load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file)
+
+    Now let's look at the area value for the vertex at index 10:
+
+    >>> print "lh value at index 10: %d." % morphology_data[10]
+
+    But what about the value of vertex 10 at the right hemisphere? We loaded 2 hemispheres, so the data is concatinated. But you can use the `meta_data` to get the correct index relative to the right hemisphere:
+
+    >>> print "rh value at index 10: %d." % morphology_data[fsd.rhi(10, meta_data)]
+
+    You could also get the value directly using the `rhv` function:
+
+    >>> print "rh value at index 10: %d." % fsd.rhv(10, morphology_data, meta_data)
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -360,7 +453,7 @@ def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_d
     Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:
 
     >>> import brainload as bl
-    >>> verts, faced, meta = bl.fsaverage_mesh()
+    >>> verts, faced, meta_data = bl.fsaverage_mesh()
     """
     if subjects_dir is None:
         subjects_dir = os.getenv('SUBJECTS_DIR', os.getcwd())
@@ -438,7 +531,7 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     >>> subjects_dir = os.path.join(user_home, 'data', 'my_study_x')
     >>> v, f, data, md = bl.subject('subject1', hemi='lh', measure='curv', subjects_dir=subjects_dir)
 
-    Sometime we do not care for the mesh, e.g., we only want the morphometry data:
+    Sometimes we do not care for the mesh, e.g., we only want the morphometry data:
 
     >>> data, md = bl.subject('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
 
