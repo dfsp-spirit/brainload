@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import brainload.freesurferdata as fsd
 import brainload.nitools as nit
 from datetime import datetime
@@ -27,27 +28,34 @@ def check_files():
     subjects_file = os.path.join(subjects_dir, 'subjects_analysis.txt')
     subjects = nit.read_subjects_file(subjects_file)
 
+    print_details=True
+    special_interest_descriptors = []
+    if len(sys.argv) == 2:
+        special_interest_descriptors = [sys.argv[1]]   # will print details for this one
+        print_details=False
+        print "Special arg given as '%s'. Printing details only for this one." % sys.argv[1]
+    else:
+        print "No special arg given. Printing details for all."
+
     curv_measures_str = "principal_curvature_k1 principal_curvature_k2 principal_curvature_k_major principal_curvature_k_minor mean_curvature gaussian_curvature intrinsic_curvature_index negative_intrinsic_curvature_index gaussian_l2_norm absolute_intrinsic_curvature_index mean_curvature_index negative_mean_curvature_index mean_l2_norm absolute_mean_curvature_index folding_index curvedness_index shape_index shape_type area_fraction_of_intrinsic_curvature_index area_fraction_of_negative_intrinsic_curvature_index area_fraction_of_mean_curvature_index area_fraction_of_negative_mean_curvature_index sh2sh sk2sk"
     measures = curv_measures_str.split()
     surfaces = ['pial']
     print "------- subject space -------"
-    check_subject_morph_files(subjects, subjects_dir, measures, surfaces)
+    check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_details=print_details, special_interest_descriptors=special_interest_descriptors)
     print "------- common fsaverage space fwhm 0 -------"
-    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='0', write_missing_subjects_file=True, delete_missing_subjects_files_no_longer_missing=True)
+    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='0', write_missing_subjects_file=True, delete_missing_subjects_files_no_longer_missing=True, print_details=print_details, special_interest_descriptors=special_interest_descriptors)
     print "------- common fsaverage space fwhm 10 -------"
-    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10')
-
-    # just do it again without details printing for a better overview.
-    print "+++++++++++++++++++++ Overview +++++++++++++++++++++++"
-    check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_details=False)
-    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='0', print_details=False)
-    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10', print_details=False)
+    check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10', print_details=print_details, special_interest_descriptors=special_interest_descriptors)
 
 
-def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10', print_details=True, write_missing_subjects_file=False, delete_missing_subjects_files_no_longer_missing=False):
+
+def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm='10', print_details=True, write_missing_subjects_file=False, delete_missing_subjects_files_no_longer_missing=False, special_interest_descriptors=None):
     """
     Checks for the existance of the output files that contain the morph data mapped to fsaverage.
     """
+    if special_interest_descriptors is None:
+        special_interest_descriptors = []
+
     if write_missing_subjects_file and len(surfaces) > 1:
         print "ERROR: More than one surface given, the missing subjects files for the last surface one will overwrite all the others."
         exit(1)
@@ -67,6 +75,11 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
             measures = pial_measures
         else:
             measures = white_measures
+
+        for si_measure in special_interest_descriptors:
+            if si_measure not in measures:
+                print "WARNING: Special interest measure '%s' does not occur in the %d measures at all. Cannot print details on it." % (si_measure, len(measures))
+
         surf_file_part = fsd._get_morphology_data_suffix_for_surface(surf)
 
         num_missing_files_total_this_surf = 0
@@ -99,7 +112,7 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
                             text_file.write("%s\n" % subject_id)
                     #print "NOTE: Created missing subjects file containing %d subjects at location '%s'." % (len(missing_lh), missing_subjects_file)
 
-                if print_details:
+                if print_details or measure in special_interest_descriptors:
                     if len(missing_lh) == len(missing_rh):
                         print "[fsaverage surf=%s fwhm=%s] Measure '%s': There were %d subjects which were missing both lh and rh files." % (surf, fwhm, measure, len(missing_lh))
                     else:
@@ -122,10 +135,12 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
 
 
 
-def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_details=True):
+def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_details=True, special_interest_descriptors=None):
     """
     Checks for the existance of the output files that contain the morph data of the subject.
     """
+    if special_interest_descriptors is None:
+        special_interest_descriptors = []
 
     # generate our special measures
     measures = gen_result_measures(measures)
@@ -141,6 +156,11 @@ def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_
             measures = pial_measures
         else:
             measures = white_measures
+
+        for si_measure in special_interest_descriptors:
+            if si_measure not in measures:
+                print "WARNING: Special interest measure '%s' does not occur in the %d measures at all. Cannot print details on it." % (si_measure, len(measures))
+
         surf_file_part = fsd._get_morphology_data_suffix_for_surface(surf)
 
         num_missing_files_total_this_surf = 0
@@ -163,7 +183,7 @@ def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_
                     #print "subject %s: missing %s" % (subject_id, rh_file)
 
             if len(missing_lh) > 0 or len(missing_rh) > 0:
-                if print_details:
+                if print_details or measure in special_interest_descriptors:
                     if len(missing_lh) == len(missing_rh):
                         print "[subject surf=%s] Measure '%s': There were %d subjects which were missing both lh and rh files." % (surf, measure, len(missing_lh))
                     else:
