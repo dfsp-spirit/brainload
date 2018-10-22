@@ -12,6 +12,12 @@ def gen_result_measures(measures):
         new_measures.append(measure + '_avg10')
     return new_measures
 
+def append_pial(measures):
+    new_measures = []
+    for measure in measures:
+        new_measures.append(measure + '.pial')
+    return new_measures
+
 def check_files():
     print "-------------------- Checking ----------------------"
     print datetime.now()
@@ -47,8 +53,19 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
 
     # generate our special measures
     measures = gen_result_measures(measures)
+
+    # hax, sry
+    white_measures = measures
+    pial_measures = append_pial(measures)
+
     num_missing_files_total = 0
     for surf in surfaces:
+        if surf not in ('pial', 'white'):
+            raise ValueError("ERROR: surf must be 'white' or 'pial'.")
+        if surf == 'pial':
+            measures = pial_measures
+        else:
+            measures = white_measures
         surf_file_part = fsd._get_morphology_data_suffix_for_surface(surf)
 
         num_missing_files_total_this_surf = 0
@@ -57,13 +74,13 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
             missing_lh = {}
             missing_rh = {}
             for subject_id in subjects:
-                lh_file_name = "lh%s.%s.fwhm%s.fsaverage.mgh" % (surf_file_part, measure, fwhm)
+                lh_file_name = "lh.%s.fwhm%s.fsaverage.mgh" % (measure, fwhm)
                 lh_file = os.path.join(subjects_dir, subject_id, 'surf', lh_file_name)
                 if not os.path.isfile(lh_file):
                     #print "[fsaverage surf=%s] subject %s lh: missing %s" % (surf, subject_id, lh_file)
                     missing_lh[subject_id] = lh_file
 
-                rh_file_name = "rh%s.%s.fwhm%s.fsaverage.mgh" % (surf_file_part, measure, fwhm)
+                rh_file_name = "rh.%s.fwhm%s.fsaverage.mgh" % (measure, fwhm)
                 rh_file = os.path.join(subjects_dir, subject_id, 'surf', rh_file_name)
                 if not os.path.isfile(rh_file):
                     missing_rh[subject_id] = rh_file
@@ -73,7 +90,11 @@ def check_fsaverage_morph_files(subjects, subjects_dir, measures, surfaces, fwhm
             if len(missing_lh) > 0 or len(missing_rh) > 0:
                 if write_missing_subjects_file:
                     with open(missing_subjects_file, "w") as text_file:
-                        for subject_id in missing_lh:
+                        # merge lh and rh into set
+                        missing_both = set()
+                        missing_both = missing_both.union(missing_lh.keys)
+                        missing_both = missing_both.union(missing_rh.keys)
+                        for subject_id in missing_both:
                             text_file.write("%s\n" % subject_id)
                     #print "NOTE: Created missing subjects file containing %d subjects at location '%s'." % (len(missing_lh), missing_subjects_file)
 
@@ -108,7 +129,17 @@ def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_
     # generate our special measures
     measures = gen_result_measures(measures)
     num_missing_files_total = 0
+
+    white_measures = measures
+    pial_measures = append_pial(measures)
+
     for surf in surfaces:
+        if surf not in ('pial', 'white'):
+            raise ValueError("ERROR: surf must be 'white' or 'pial'.")
+        if surf == 'pial':
+            measures = pial_measures
+        else:
+            measures = white_measures
         surf_file_part = fsd._get_morphology_data_suffix_for_surface(surf)
 
         num_missing_files_total_this_surf = 0
@@ -118,13 +149,13 @@ def check_subject_morph_files(subjects, subjects_dir, measures, surfaces, print_
             missing_rh = {}
             for subject_id in subjects:
 
-                lh_file_name = "lh%s.%s" % (surf_file_part, measure)
+                lh_file_name = "lh.%s" % measure
                 lh_file = os.path.join(subjects_dir, subject_id, 'surf', lh_file_name)
                 if not os.path.isfile(lh_file):
                     #print "subject %s: missing %s" % (subject_id, lh_file)
                     missing_lh[subject_id] = lh_file
 
-                rh_file_name = "rh%s.%s" % (surf_file_part, measure)
+                rh_file_name = "rh.%s" % measure
                 rh_file = os.path.join(subjects_dir, subject_id, 'surf', rh_file_name)
                 if not os.path.isfile(rh_file):
                     missing_rh[subject_id] = rh_file
