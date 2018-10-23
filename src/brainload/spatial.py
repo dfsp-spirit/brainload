@@ -9,7 +9,48 @@ import numpy as np
 
 def rotate_3D_coordinates_around_axes(x, y, z, rotx, roty, rotz):
     """
-    Rotate coordinates around the axes. Rotation must be given in radians.
+    Rotate coordinates around the 3 axes.
+
+    Rotate coordinates around the x, y, and z axes. The rotation values must be given in radians.
+
+    Parameters
+    ----------
+    x: Numpy array of numbers
+        A 1D array representing x axis coordinates. Must have the same length as the `y` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    y: Numpy array of numbers
+        A 1D array representing y axis coordinates. Must have the same length as the `x` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    z: Numpy array of numbers
+        A 1D array, representing z axis coordinates. Must have the same length as the `x` and `y` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    rotx: number
+        A single number, representing the rotation in radians around the x axis.
+
+    roty: number
+        A single number, representing the rotation in radians around the y axis.
+
+    rotz: number
+        A single number, representing the rotation in radians around the z axis.
+
+    Returns
+    -------
+    xr: Numpy array of numbers
+        The rotated x coordinates.
+
+    yr: Numpy array of numbers
+        The rotated y coordinates.
+
+    zr: Numpy array of numbers
+        The rotated z coordinates.
+
+    Examples
+    --------
+    >>> import brainload.spatial as st; import numpy as np;
+    >>> x = np.array([5, 6])
+    >>> y = np.array([7, 8])
+    >>> z = np.array([9, 10])
+    >>> xr, yr, zr = st.rotate_3D_coordinates_around_axes(x, y, z, np.pi, 0, 0)
     """
     xr, yr, zr = _rotate_3D_coordinates_around_x_axis(x, y, z, rotx)
     xr, yr, zr = _rotate_3D_coordinates_around_y_axis(xr, yr, zr, roty)
@@ -49,7 +90,7 @@ def _rotate_3D_coordinates_around_z_axis(x, y, z, rot):
 
 def coords_a2s(coords):
     """
-    Split a 3xn array of coordinates (x, y, z values) into 3 separate arrays of length n.
+    Split a 2D array with shape (3, n) of coordinates (x, y, z values) into 3 separate 1D arrays of length n.
     """
     x = coords[:,0]
     y = coords[:,1]
@@ -58,7 +99,35 @@ def coords_a2s(coords):
 
 def coords_s2a(x, y, z):
     """
+    Separate a single xyz coordinate array into x, y and z arrays.
+
     Merge 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape (3, n).
+
+    Parameters
+    ----------
+    x: Numpy array of numbers
+        A 1D array representing x axis coordinates. Must have the same length as the `y` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    y: Numpy array of numbers
+        A 1D array representing y axis coordinates. Must have the same length as the `x` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    z: Numpy array of numbers
+        A 1D array, representing z axis coordinates. Must have the same length as the `x` and `y` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    Returns
+    -------
+    Numpy 2D array of numbers
+        The merged coordinate array.
+
+    Examples
+    --------
+    >>> import brainload.spatial as st; import numpy as np;
+    >>> x = np.array([5, 6])
+    >>> y = np.array([7, 8])
+    >>> z = np.array([9, 10])
+    >>> coords = st.coords_s2a(x, y, z)
+    >>> print coords[1][2]
+    10
     """
     if np.isscalar(x) and np.isscalar(y) and np.isscalar(z):
         x = np.array([x])
@@ -109,7 +178,7 @@ def mirror_3D_coordinates_at_axis(x, y, z, axis, mirror_at_axis_coordinate=None)
 def _mirror_coordinates_at_axis(c, mirror_at_axis_coordinate=None):
     """
     Mirror or reflect a 1-dimensional array of coordinates on a mirror plane.
-    
+
     Mirror or reflect a 1-dimensional array of coordinates on a plane (perpendicular to the axis) at the given axis coordinate. If no coordinate is given, the minimum value of the coordinates is used.
     """
     if mirror_at_axis_coordinate is None:
@@ -140,6 +209,11 @@ def rad2deg(rad):
     -------
     float
         The angle in degrees.
+
+    Examples
+    --------
+    >>> import brainload.spatial as st
+    >>> deg = st.rad2deg(2 * np.pi)   # will be 360
     """
     if rad < 0 or rad > 2 * np.pi:
         adjusted = rad % (2 * np.pi)
@@ -162,6 +236,11 @@ def deg2rad(degrees):
     -------
     float
         The angle in radians.
+
+    Examples
+    --------
+    >>> import brainload.spatial as st
+    >>> rad = st.deg2rad(180)   # will be Pi
     """
     if degrees < 0 or degrees > 360:
         adjusted = degrees % 360
