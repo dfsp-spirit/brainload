@@ -48,7 +48,7 @@ if [ -d "${BRAINLOAD_TEST_DATA_DIR}/subject1" ]; then
 
     touch ${EXTRA_SUBJECTS_DIR}/subject2x/subject2x.txt
     mkdir ${EXTRA_SUBJECTS_DIR}/subject2x/mri
-    touch ${EXTRA_SUBJECTS_DIR}/subject2x/subject2x_mri.txt
+    touch ${EXTRA_SUBJECTS_DIR}/subject2x/mri/subject2x_mri.txt
     mkdir ${EXTRA_SUBJECTS_DIR}/subject2x/scripts
 
 else

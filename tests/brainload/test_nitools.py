@@ -256,7 +256,7 @@ def test_do_subject_files_exist_with_custom_dir_mri():
 
     subjects_dir = expected_subjects_dir
     subjects_list = ['subject2x', 'subject3x']
-    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='info.txt', sub_dir='mri')
+    missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='subject2x_mri.txt', sub_dir='mri')
     assert len(missing) == 1
     assert 'subject3x' in missing
 
