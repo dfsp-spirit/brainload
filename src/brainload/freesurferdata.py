@@ -604,18 +604,23 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:
 
     >>> import brainload as bl
-    >>> v, f, data, md = bl.subject('subject1')
+    >>> vertices, faces, data, md = bl.subject('subject1')
 
     Here, we are a bit more explicit about what we want to load:
 
     >>> import os
     >>> user_home = os.getenv('HOME')
     >>> subjects_dir = os.path.join(user_home, 'data', 'my_study_x')
-    >>> v, f, data, md = bl.subject('subject1', hemi='lh', measure='curv', subjects_dir=subjects_dir)
+    >>> vertices, faces, data, md = bl.subject('subject1', hemi='lh', measure='curv', subjects_dir=subjects_dir)
 
     Sometimes we do not care for the mesh, e.g., we only want the morphometry data:
 
-    >>> data, md = bl.subject('subject1', hemi='rh', fwhm='15', load_surface_files=False)[2:4]
+    >>> data, md = bl.subject('subject1', hemi='rh', load_surface_files=False)[2:4]
+
+    ...or the other way around (mesh only, no morphology data):
+
+    >>> vertices, faces = bl.subject('subject1', hemi='rh', load_morphology_data=False)[0:2]
+
 
     """
     if hemi not in ('lh', 'rh', 'both'):
