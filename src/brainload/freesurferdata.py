@@ -8,6 +8,7 @@ import os
 import sys
 import errno
 import numpy as np
+import collections
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 import brainload.nitools as nit
@@ -383,6 +384,9 @@ def rhv(rh_relative_index, morphology_data, meta_data):
     rh_relative_index: int
         An index relative to the start of the right hemisphere in the data. E.g., `0` if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and `-1` will get you the last possible value, `-2` the second-to-last, and so on.
 
+    morphology_data: numpy array
+        The morphology data array, must represent data for both hemispheres.
+
     meta_data: dictionary
         The meta data dictionary returned for your data. It must contain the keys 'lh.num_data_points' and 'rh.num_data_points'.
 
@@ -396,7 +400,7 @@ def rhv(rh_relative_index, morphology_data, meta_data):
     >>> morphology_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
     >>> print "rh value at index 10, relative to start of right hemisphere: %d." % bl.rhv(10, morphology_data, meta_data)
     """
-    abs_index = abs_index_rh(rh_relative_index, meta_data)
+    abs_index = rhi(rh_relative_index, meta_data)
     return morphology_data[abs_index]
 
 

@@ -1077,3 +1077,41 @@ def test_load_group_data_list_mode_works():
     assert run_meta_data['subjects_detection_mode'] == 'list'
     assert run_meta_data['subjects_file_used'] == False
     assert not 'subjects_detection_mode_auto_used_method' in run_meta_data
+
+
+def test_rhi_all_fine():
+    morphology_data_lh, meta_data_lh = bl.subject('subject1', hemi='lh', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    morphology_data_rh, meta_data_rh = bl.subject('subject1', hemi='rh', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    morphology_data_both, meta_data_both = bl.subject('subject1', hemi='both', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    assert meta_data_both['lh.num_data_points'] == len(morphology_data_lh)
+    assert meta_data_both['rh.num_data_points'] == len(morphology_data_rh)
+    assert meta_data_lh['lh.num_data_points'] == meta_data_both['lh.num_data_points']
+    assert meta_data_rh['rh.num_data_points'] == meta_data_both['rh.num_data_points']
+    abs_rh_start = bl.rhi(0, meta_data_both)
+    assert morphology_data_both[abs_rh_start] == pytest.approx(morphology_data_rh[0], 0.1)
+    assert bl.rhv(0, morphology_data_both, meta_data_both) == pytest.approx(morphology_data_rh[0], 0.1)
+    abs_rh_second_to_last = bl.rhi(-1, meta_data_both)
+    assert abs_rh_second_to_last == len(morphology_data_lh) + len(morphology_data_rh) -2
+    assert morphology_data_both[abs_rh_second_to_last] == pytest.approx(morphology_data_rh[len(morphology_data_rh)-2], 0.1)
+
+
+def test_rhi_raises_on_invalid_metadata():
+    meta_data_both = 5
+    with pytest.raises(ValueError) as exc_info:
+        abs_rh_start = bl.rhi(0, meta_data_both)
+    assert 'must be a meta data dictionary containing the keys' in str(exc_info.value)
+
+
+def test_rhi_raises_on_missing_metadata_keys():
+    meta_data_both = {'a': 'test', 'b': 'test2'}
+    with pytest.raises(ValueError) as exc_info:
+        abs_rh_start = bl.rhi(0, meta_data_both)
+    assert 'must be a meta data dictionary containing the keys' in str(exc_info.value)
+
+
+def test_rhi_raises_on_index_out_of_bounds():
+    morphology_data_both, meta_data_both = bl.subject('subject1', hemi='both', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    with pytest.raises(ValueError) as exc_info:
+        abs_rh_start = bl.rhi(500000, meta_data_both)
+    assert 'out of bounds: right hemisphere has' in str(exc_info.value)
+    assert '500000' in str(exc_info.value)
