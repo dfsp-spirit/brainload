@@ -3,3 +3,6 @@ include *.md
 
 # Include the license file
 include LICENSE
+
+# Include the generated documentation
+recursive-include docs/v0.1.2 *

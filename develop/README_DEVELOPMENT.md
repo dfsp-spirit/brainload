@@ -103,15 +103,15 @@ The tests are run automatically when you push to master and devs get results by 
 
 ### Creating the release package
 
-Set the new version in `setup.py` and `src/brainload/__init__.py`:
+Set the new version information:
 
 ```console
-cd ~/develop/brainload/                       # repo root
+cd ~/develop/brainload/        # repo root
 git checkout master
 git pull
 
-vim setup.py                                # update version
-vim src/brainload/__init__.py               # update version
+vim setup.py                   # update 'version' in here
+vim doc/conf.py                # update 'version' and 'release' in here
 
 git add setup.py src/brainload/__init__.py
 git commit -m "Update version to 0.0.2."
@@ -136,15 +136,26 @@ TODO: Add the generation and distribution of the documentation to this workflow.
 
 We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
 
+Install sphinx and our theme if you do not have them yet:
+
 ```console
 pip install sphinx sphinx_rtd_theme
+```
+
+Then build the documentation:
+
+```console
 cd doc/
 make html
 ```
 
-This will build the documentation in HTML format and place it in `_build/html/` (relative to the `doc/` directory).
+This will build the documentation in HTML format and place it in `_build/html/` (relative to the `doc/` directory). Now copy it to the correct location to be included in the release:
 
-We will put the documentation online later (maybe on a GitHub page), but that does not make any sense yet.
+```console
+cd ..
+mkdir -p doc/generated/v0.0.2/
+cp -r doc/_build/html doc/generated/v0.0.2/
+```
 
 Note that if you added new modules in separate directories, for the documentation to show up,
 you will have to tell autodoc about the paths to the new directories by adding them to `sys.path`
