@@ -90,12 +90,39 @@ def _rotate_3D_coordinates_around_z_axis(x, y, z, rot):
 
 def coords_a2s(coords):
     """
+    Split single array for all 3 coords into 3 separate ones.
+
     Split a 2D array with shape (3, n) of coordinates (x, y, z values) into 3 separate 1D arrays of length n.
+
+    Parameters
+    ----------
+    coords: Numpy 2D array of numbers
+        The merged coordinate array.
+
+    Returns
+    -------
+    x: Numpy array of numbers
+        A 1D array representing x axis coordinates. Has the same length as the `y` and `z` arrays.
+
+    y: Numpy array of numbers
+        A 1D array representing y axis coordinates. Has the same length as the `x` and `z` arrays.
+
+    z: Numpy array of numbers
+        A 1D array, representing z axis coordinates. Has the same length as the `x` and `y` arrays.
+
+    Examples
+    --------
+    >>> import brainload.spatial as st; import numpy as np;
+    >>> coords = np.array([[5, 7, 9], [6, 8, 10]])
+    >>> x, y, z = st.coords_a2s(coords)
+    >>> print y[1]
+    8
     """
     x = coords[:,0]
     y = coords[:,1]
     z = coords[:,2]
     return np.asarray(x), np.asarray(y), np.asarray(z)
+
 
 def coords_s2a(x, y, z):
     """
@@ -106,13 +133,13 @@ def coords_s2a(x, y, z):
     Parameters
     ----------
     x: Numpy array of numbers
-        A 1D array representing x axis coordinates. Must have the same length as the `y` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+        A 1D array representing x axis coordinates. Must have the same length as the `y` and `z` arrays.
 
     y: Numpy array of numbers
-        A 1D array representing y axis coordinates. Must have the same length as the `x` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+        A 1D array representing y axis coordinates. Must have the same length as the `x` and `z` arrays.
 
     z: Numpy array of numbers
-        A 1D array, representing z axis coordinates. Must have the same length as the `x` and `y` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+        A 1D array, representing z axis coordinates. Must have the same length as the `x` and `y` arrays.
 
     Returns
     -------
@@ -139,6 +166,43 @@ def coords_s2a(x, y, z):
 def translate_3D_coordinates_along_axes(x, y, z, shift_x, shift_y, shift_z):
     """
     Translate coordinates along one or more axes.
+
+    Translate or shift coordinates along one or more axes.
+
+    Parameters
+    ----------
+    x: Numpy array of numbers
+        A 1D array representing x axis coordinates. Must have the same length as the `y` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    y: Numpy array of numbers
+        A 1D array representing y axis coordinates. Must have the same length as the `x` and `z` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    z: Numpy array of numbers
+        A 1D array, representing z axis coordinates. Must have the same length as the `x` and `y` arrays. (See `coords_a2s` if you have a single 2D array containing all 3.)
+
+    shift_x: number
+        A single number, representing the shift along the x axis.
+
+    shift_y: number
+        A single number, representing the shift along the y axis.
+
+    shift_z: number
+        A single number, representing the shift along the z axis.
+
+    Returns
+    -------
+    x_shifted: Numpy array of numbers
+        The shifted x coordinates.
+
+    y_shifted: Numpy array of numbers
+        The shifted y coordinates.
+
+    z_shifted: Numpy array of numbers
+        The shifted z coordinates.
+
+    Examples
+    --------
+    >>> import brainload.spatial as st; import numpy as np;
     """
     x_shifted = x + shift_x
     y_shifted = y + shift_y
