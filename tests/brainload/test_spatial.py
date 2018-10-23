@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
 import brainload as bl
-import brainload.spatial_transform as st
+import brainload.spatial as st
 
 def test_rad2deg_with_positive_input():
     deg = st.rad2deg(2 * np.pi)
