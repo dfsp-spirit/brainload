@@ -14,7 +14,7 @@ A python module designed to reduce your brain load while accessing FreeSurfer br
 This is pre-alpha and not ready for usage yet. Come back soon.
 
 
-## Interface (WIP)
+## Interface Examples
 
 Here are some example usages that load brain surface data.
 
@@ -57,9 +57,11 @@ print group_meta_data['subject1']['hemi']                           # will print
 
 Whatever function you used, you can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
 
-## API Documentation
+## Full API Documentation
 
-It's a bit too early for that.
+The brainload API documentation is now available:
+    - [Brainload API documentation for the latest release (v0.1.2)](http://dfsp-spirit.github.io/brainload/v0.1.2)
+    - [Brainload API documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
 
 ## What about visualization?
 
