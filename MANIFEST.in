@@ -6,4 +6,4 @@ include README_DEVELOPMENT.md
 include LICENSE
 
 # Include the generated documentation
-recursive-include docs/v0.1.2 *
+recursive-include docs/v0.2.0 *

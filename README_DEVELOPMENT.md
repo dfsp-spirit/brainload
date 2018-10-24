@@ -114,6 +114,7 @@ git pull
 
 vim setup.py                   # update 'version' in here
 vim doc/conf.py                # update 'version' and 'release' in here
+vim MANIFEST.in                # update the new documentation to include: docs/${NEW_RELEASE}/ (hard-code the number, of course)
 
 git add setup.py doc/conf.py
 ```
@@ -156,10 +157,6 @@ git add docs/index.html docs/versions.html
 git commit -m "Update version to ${NEW_VERSION}, add generated documentation."
 ```
 
-```console
-git tag -a ${NEW_RELEASE} -m "Some annotation for this release."
-git push origin --tags
-```
 
 #### Build the packages for PyPI / pip
 
@@ -171,6 +168,7 @@ rm -rf dist/
 python setup.py sdist bdist_wheel --universal
 ```
 
+Carefully check the output of the command for warnings or errors: wrong information in `setup.py` or `MANIFEST.in` may become obvious. If something is wrong, fix it and commit again.
 
 ### Distributing the packages
 
@@ -199,7 +197,14 @@ deactivate
 rm -rf env_for_v2
 ```
 
-If it looked good, upload it to the real one:
+If something is wrong, fix it and commit again. If everything looks fine, tag the current version as the new release:
+
+```console
+git tag -a ${NEW_RELEASE} -m "Some annotation for this release."
+git push origin --tags
+```
+
+It is finally time to upload it to the real PyPI:
 
 #### PyPI
 
@@ -209,14 +214,34 @@ twine upload dist/*                           # will ask for your PyPI credentia
 
 #### Anaconda (build and distribution)
 
-Not yet. This is WIP, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html for instructions.
+This is WIP, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html for instructions.
+
+IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
 
 Some work has already been done, see the files in `development/anaconda_dist`.
 
-Get the tools: install `conda` on your system and fire it up, then use it to get the build tools:
+Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into `~/software/anaconda2`.
+
+The first step is to activate conda if it is not active. Type `conda --version` to check, it the command is not found:
 
 ```console
+export CONDA_BIN=${HOME}/software/anaconda2/bin
+export PATH=${PATH}:${CONDA_BIN}
+conda --version
+```
+
+Let's create a new environment and install the required tools into it:
+
+```console
+cd develop/anaconda_dist
+conda update conda
+conda create --name blbuild python=2.7
+conda activate blbuild
 conda install conda-build anaconda-client
+conda skeleton pypi brainload --version ${NEW_VERSION}
+conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
+conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
+conda deactivate
 ```
 
 Now, update the `meta.yaml` file with the build information, e.g., the files to include. This is the main step.
@@ -224,7 +249,6 @@ Now, update the `meta.yaml` file with the build information, e.g., the files to 
 When that is done, build and upload the package:
 
 ```console
-conda build .                    # will output `full/path/to/package.tar.bz2`, e.g., `.../conda-bld/osx-64/brainload-0.1.1-py27_0.tar.bz2`
 anaconda login                   # will ask for your credentials
 anaconda upload full/path/to/package.tar.bz2
 ```

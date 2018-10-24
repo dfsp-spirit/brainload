@@ -13,6 +13,7 @@ setup(
     long_description='Provides a high-level interface for loading FreeSurfer brain imaging data by wrapping around nibabel.',
     keywords='neuroimaging freesurfer nibabel load mgh curv',
     author='Tim Schäfer',
+    author_email='ts+code@rcmd.org',
     url='https://github.com/dfsp-spirit/brainload',
     packages=find_packages(where='src'),
     classifiers = ['Development Status :: 3 - Alpha',     # See https://pypi.org/pypi?%3Aaction=list_classifiers for full classifier list
