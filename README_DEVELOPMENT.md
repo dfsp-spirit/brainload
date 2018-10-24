@@ -115,7 +115,7 @@ git pull
 vim setup.py                   # update 'version' in here
 vim doc/conf.py                # update 'version' and 'release' in here
 
-git add setup.py src/brainload/__init__.py
+git add setup.py doc/conf.py
 ```
 
 #### Build docs
@@ -140,7 +140,7 @@ This will build the documentation in HTML format and place it in `doc/_build/htm
 ```console
 cd ..    # back to repo root
 mkdir docs/${NEW_RELEASE)/
-cp -r doc/_build/html docs/${NEW_RELEASE}/
+cp -r doc/_build/html/* docs/${NEW_RELEASE}/
 ```
 
 The [Brainload API documentation](http://dfsp-spirit.github.io/brainload) is made available on the internet using Github Pages, and our page is served from the directory `docs/` (note the `s` at the end) in this repo. You have to update the following HTML files:
@@ -153,7 +153,7 @@ Now it's time to add all those changes to git:
 ```console
 git add docs/${NEW_RELEASE)
 git add docs/index.html docs/versions.html
-git commit -m "Update version to ${NEW_VERSION}, add documentation."
+git commit -m "Update version to ${NEW_VERSION}, add generated documentation."
 ```
 
 ```console
