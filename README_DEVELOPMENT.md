@@ -238,9 +238,11 @@ conda update conda
 conda create --name blbuild python=2.7
 conda activate blbuild
 conda install conda-build anaconda-client
-conda skeleton pypi brainload --version ${NEW_VERSION}
+mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
+CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
+# now edit develop/anaconda_dist/brainload/meta.yaml and add the following dependencies: pytest-runner
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
-conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
+CONDA_BLD_PATH conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
 conda deactivate
 ```
 
