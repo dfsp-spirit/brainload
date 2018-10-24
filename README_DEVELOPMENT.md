@@ -73,35 +73,24 @@ The script downloads all required [neuroimaging test data from Github](https://g
 
 #### Running the tests
 
-There are several ways to run the tests. The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level brainload directory, just run:
+The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level brainload directory, just run:
 
 ```console
 python setup.py test
 ```
 
-If you want to run the tests manually, you need `pytest` and `pytest-cov`, both of which can be installed via `pip`. Then just run:
-
-```console
-pytest
-```
-
-To run the tests with code coverage:
-
-```console
-pytest --cov=src/
-```
 
 ### Continuous Integration
 
-The tests are run automatically when you push to master and devs get results by email. Build status from travis-ci.org (Linux, branch master):
+The tests are run automatically when you push to master and developers get results by email. Build status from travis-ci.org (Linux, branch master):
 
 [![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
 
-
+Note that not all test data is available on Travis and as a result, some tests get skipped. We are working on this.
 
 ## Packaging
 
-If you want to get the tools you need for all steps below right now:
+If you want to get the tools you need for all steps below right now and all at once:
 
 ```console
 pip install --upgrade setuptools wheel twine sphinx sphinx_rtd_theme
@@ -126,14 +115,19 @@ vim setup.py                   # update 'version' in here
 vim doc/conf.py                # update 'version' and 'release' in here
 
 git add setup.py src/brainload/__init__.py
-git commit -m "Update version to ${NEW_VERSION}."
 ```
 
 #### Build docs
 
 First note the difference between the directories 'doc' (source for documentation and sphinx templates) and 'docs' (Github page made containing the generated documentation). Do not confuse them.
 
-Build the documentation:
+We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
+
+```console
+pip install sphinx sphinx_rtd_theme
+```
+
+Now build the documentation:
 
 ```console
 cd doc/
@@ -148,9 +142,23 @@ mkdir docs/${NEW_RELEASE)/
 cp -r doc/_build/html docs/${NEW_RELEASE}/
 ```
 
+The [Brainload API documentation](http://dfsp-spirit.github.io/brainload) is made available on the internet using Github Pages, and our page is served from the directory `docs/` (note the `s` at the end) in this repo. You have to update the following HTML files:
 
+- `docs/index.html`
+- `docs/versions.html`
+
+Now it's time to add all those changes to git:
+
+```console
+git add docs/${NEW_RELEASE)
+git add docs/index.html docs/versions.html
+git commit -m "Update version to ${NEW_VERSION}, add documentation."
+```
+
+```console
 git tag -a ${NEW_RELEASE} -m "Some annotation for this release."
 git push origin --tags
+```
 
 #### Build the packages for PyPI / pip
 
@@ -160,30 +168,10 @@ Then make the release:
 pip install --upgrade setuptools wheel              # just make sure we have the latest versions
 rm -rf dist/
 python setup.py sdist bdist_wheel --universal
-twine upload dist/*
-```
-
-TODO: Add the generation and distribution of the documentation to this workflow.
-
-
-### Building the `brainload` documentation
-
-We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
-
-Install sphinx and our theme if you do not have them yet:
-
-```console
-pip install sphinx sphinx_rtd_theme
 ```
 
 
-
-Note that if you added new modules in separate directories, for the documentation to show up,
-you will have to tell autodoc about the paths to the new directories by adding them to `sys.path`
-at the top of the `doc/conf.py` file.
-
-
-### Distributing the package
+### Distributing the packages
 
 
 We are following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here. First make sure you have the required tools:
@@ -204,10 +192,13 @@ Now try it in a fresh virtual environment (you may have to wait a sec for it to 
 deactivate                                  # leave current virtual env
 python -m virtualenv env_for_v2             # create a fresh one
 source env_for_v2/bin/activate              # activate it
-pip install --index-url https://test.pypi.org/simple/ brainload     # install it. now try the example client.
+pip install --index-url https://test.pypi.org/simple/ brainload     # install it.
+#now try the example client.
+deactivate
+rm -rf env_for_v2
 ```
 
-If it looks good, upload it to the real one:
+If it looked good, upload it to the real one:
 
 #### PyPI
 

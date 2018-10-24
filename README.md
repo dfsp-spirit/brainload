@@ -11,12 +11,12 @@ A python module designed to reduce your brain load while accessing FreeSurfer br
 
 ## Development stage
 
-This is pre-alpha and not ready for usage yet. Come back soon.
+This is now (October 24, 2018) in alpha stage and ready for usage. The API is not 100% stable yet though, so be prepared for changes in the future.
 
 
 ## Interface Examples
 
-Here are some example usages that load brain surface data.
+Here are some example usages that load brain surface data. See the API documentation for more examples.
 
 ### Load the brain mesh and morphometry data for a single subject in subject space
 
@@ -60,7 +60,7 @@ Whatever function you used, you can now use the data for statistical analysis in
 ## Full API Documentation
 
 The brainload API documentation is now available:
-- [Brainload API documentation for the latest release (v0.1.2)](http://dfsp-spirit.github.io/brainload/v0.1.2)
+- [Brainload API documentation for the latest release](http://dfsp-spirit.github.io/brainload/v0.2.0)
 - [Brainload API documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
 
 ## What about visualization?
@@ -96,4 +96,4 @@ Less related but still useful:
 
 ## License
 
-[MIT](https://opensource.org/licenses/MIT)
+Brainload is free software, released under the [MIT license](https://opensource.org/licenses/MIT).
