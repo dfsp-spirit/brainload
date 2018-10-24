@@ -86,7 +86,8 @@ The tests are run automatically when you push to master and developers get resul
 
 [![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
 
-Note that not all test data is available on Travis and as a result, some tests get skipped. We are working on this.
+Note that not all test data is available on Travis and as a result, some tests get skipped. We are working on this. When run locally with all test data, coverage must be greater than 95% for all files.
+
 
 ## Packaging
 
@@ -162,7 +163,7 @@ git push origin --tags
 
 #### Build the packages for PyPI / pip
 
-Then make the release:
+We use setuptools for building:
 
 ```console
 pip install --upgrade setuptools wheel              # just make sure we have the latest versions
@@ -174,7 +175,7 @@ python setup.py sdist bdist_wheel --universal
 ### Distributing the packages
 
 
-We are following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here. First make sure you have the required tools:
+We are more or less just following the [official Python packaging user guide](https://packaging.python.org/tutorials/packaging-projects/) here. First make sure you have the required tools:
 
 ```console
 pip install --upgrade twine            # in the virtual env. Add `--user` if you prefer to do it outside.
