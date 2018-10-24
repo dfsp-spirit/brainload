@@ -60,7 +60,7 @@ Whatever function you used, you can now use the data for statistical analysis in
 ## Full API Documentation
 
 The brainload API documentation is now available:
-- [Brainload API documentation for the latest release](http://dfsp-spirit.github.io/brainload/v0.2.0)
+- [Brainload API documentation for the latest release](http://dfsp-spirit.github.io/brainload)
 - [Brainload API documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
 
 ## What about visualization?
