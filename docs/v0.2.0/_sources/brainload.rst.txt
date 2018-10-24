@@ -25,10 +25,10 @@ brainload.nitools module
     :undoc-members:
     :show-inheritance:
 
-brainload.spatial module
-------------------------
+brainload.spatial\_transform module
+-----------------------------------
 
-.. automodule:: brainload.spatial
+.. automodule:: brainload.spatial_transform
     :members:
     :undoc-members:
     :show-inheritance:

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Brainload :: API documentation &mdash; brainload 0.1.2 documentation</title>
+  <title>Brainload :: API documentation &mdash; brainload  documentation</title>
   
 
   
@@ -56,10 +56,6 @@
           
             
             
-              <div class="version">
-                0.1.2
-              </div>
-            
           
 
           
@@ -87,7 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-brainload.freesurferdata">brainload.freesurferdata module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-brainload.nitools">brainload.nitools module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-brainload.spatial">brainload.spatial module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-brainload.spatial_transform">brainload.spatial_transform module</a></li>
 </ul>
 </li>
 </ul>
@@ -215,22 +211,18 @@
 <p class="rubric">Examples</p>
 <p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here, we are a bit more explicit about what we want to load:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">user_home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_home</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Sometimes we do not care for the mesh, e.g., we only want the morphometry data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>…or the other way around (mesh only, no morphology data):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_morphology_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -409,120 +401,6 @@ Example template string: <cite>subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.m
 <p>Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject ‘subject4’:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject4_idx</span> <span class="o">=</span> <span class="n">subjects</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;subject4&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">data</span><span class="p">[</span><span class="n">subject4_idx</span><span class="p">][</span><span class="mi">100000</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="brainload.fsaverage_mesh">
-<code class="descclassname">brainload.</code><code class="descname">fsaverage_mesh</code><span class="sig-paren">(</span><em>subject_id='fsaverage'</em>, <em>surf='white'</em>, <em>hemi='both'</em>, <em>subjects_dir=None</em>, <em>use_freesurfer_home_if_missing=True</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.fsaverage_mesh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load a surface mesh of the fsaverage subject.</p>
-<p>Convenience function to load a FreeSurfer surface mesh of the fsaverage subject. You could also use this function to load the mesh of any other subject, but in that case, you may want to set <cite>use_freesurfer_home_if_missing</cite> to False (see below). This function calls <cite>subject</cite> in the background and shares the relevant arguments and return values with that function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>subject_id</strong> (<em>string</em><em>, </em><em>optional</em>) – The subject identifier of the subject. Defaults to ‘fsaverage’.</li>
-<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
-<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
-<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
-<li><strong>use_freesurfer_home_if_missing</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If set to True, first checks whether the directory for the given subject exists in the <cite>subjects_dir</cite>. If it does not, it will reset the <cite>subjects_dir</cite> to ‘${FREESURFER_HOME}/subjects’ before proceeding.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
-<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
-</li>
-<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
-</li>
-<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
-<dl class="docutils">
-<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
-<dd><ul class="first last simple">
-<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
-<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
-<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
-</ul>
-</dd>
-</dl>
-</li>
-</ul>
-</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">verts</span><span class="p">,</span> <span class="n">faced</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">fsaverage_mesh</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="brainload.rhi">
-<code class="descclassname">brainload.</code><code class="descname">rhi</code><span class="sig-paren">(</span><em>rh_relative_index</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.rhi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the absolute data index given an index relative to the right hemisphere.</p>
-<p>This function makes sense only given a <cite>morphology_data</cite> and associated <cite>meta_data</cite> that contains data on two hemispheres (even though the <cite>morphology_data</cite> array itself is not passed to this function). E.g., the return value of a function like <cite>subject()</cite> or <cite>subject_avg()</cite> when called with <cite>hemi=’both’</cite>. For such data, it computes the absolute index in the data given a request index relative to the right hemisphere. The name is short for ‘right hemisphere index’.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the right hemisphere. E.g., <cite>0</cite> if you want to get the index of the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible index, <cite>-2</cite> the second-to-last, and so on.</li>
-<li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The absolute index into the data for the given <cite>rh_relative_index</cite>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">morphology_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;heinz&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10, relative to start of right hemisphere: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">morphology_data</span><span class="p">[</span><span class="n">bl</span><span class="o">.</span><span class="n">rhi</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="brainload.rhv">
-<code class="descclassname">brainload.</code><code class="descname">rhv</code><span class="sig-paren">(</span><em>rh_relative_index</em>, <em>morphology_data</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.rhv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the value in <cite>morphology_data</cite> at an index relative to the right hemisphere.</p>
-<p>This function makes sense only given a <cite>morphology_data</cite> and associated <cite>meta_data</cite> that contains data on two hemispheres. E.g., the return value of a function like <cite>subject()</cite> or <cite>subject_avg()</cite> when called with <cite>hemi=’both’</cite>. For such data, it returns the value in <cite>morphology_data</cite> at a request index given relative to the right hemisphere. The name is short for ‘right hemisphere value’.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the start of the right hemisphere in the data. E.g., <cite>0</cite> if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible value, <cite>-2</cite> the second-to-last, and so on.</li>
-<li><strong>morphology_data</strong> (<em>numpy array</em>) – The morphology data array, must represent data for both hemispheres.</li>
-<li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The value at the given index that is relative to the start of the right hemisphere in the data.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">morphology_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;heinz&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10, relative to start of right hemisphere: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">bl</span><span class="o">.</span><span class="n">rhv</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">morphology_data</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -996,7 +874,6 @@ Example template string: <cite>subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.m
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the start of the right hemisphere in the data. E.g., <cite>0</cite> if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible value, <cite>-2</cite> the second-to-last, and so on.</li>
-<li><strong>morphology_data</strong> (<em>numpy array</em>) – The morphology data array, must represent data for both hemispheres.</li>
 <li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
 </ul>
 </td>
@@ -1077,22 +954,18 @@ Example template string: <cite>subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.m
 <p class="rubric">Examples</p>
 <p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here, we are a bit more explicit about what we want to load:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">user_home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_home</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Sometimes we do not care for the mesh, e.g., we only want the morphometry data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>…or the other way around (mesh only, no morphology data):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_morphology_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1330,88 +1203,25 @@ to create a subjects.txt file. This method searches all direct sub directories o
 </dd></dl>
 
 </div>
-<div class="section" id="module-brainload.spatial">
-<span id="brainload-spatial-module"></span><h2>brainload.spatial module<a class="headerlink" href="#module-brainload.spatial" title="Permalink to this headline">¶</a></h2>
-<p>Simple functions for spatial tranformation of 3-dimensional coordinates.</p>
-<p>These functions are helpful if you want to rotate, translate, mirror, or scale (brain) meshes. In general, you would use them roughly like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">vert_coords</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">coords_a2s</span><span class="p">(</span><span class="n">vert_coords</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Now you have the coordinates of the mesh vertices in the required format and can call any function from this module:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xt</span><span class="p">,</span> <span class="n">yt</span><span class="p">,</span> <span class="n">zt</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">translate_3D_coordinates_along_axes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># or some other function</span>
-</pre></div>
-</div>
+<div class="section" id="module-brainload.spatial_transform">
+<span id="brainload-spatial-transform-module"></span><h2>brainload.spatial_transform module<a class="headerlink" href="#module-brainload.spatial_transform" title="Permalink to this headline">¶</a></h2>
+<p>Functions for spatial tranformation of 3-dimensional coordinates.</p>
+<p>These functions are helpful if you want to rotate, translate, mirror, or scale (brain) meshes.</p>
 <dl class="function">
-<dt id="brainload.spatial.coords_a2s">
-<code class="descclassname">brainload.spatial.</code><code class="descname">coords_a2s</code><span class="sig-paren">(</span><em>coords</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.coords_a2s" title="Permalink to this definition">¶</a></dt>
-<dd><p>Split single array for all 3 coords into 3 separate ones.</p>
-<p>Split a 2D array with shape (3, n) of coordinates (x, y, z values) into 3 separate 1D arrays of length n.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coords</strong> (<em>Numpy 2D array of numbers</em>) – The merged coordinate array.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Has the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Has the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Has the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="p">;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">coords_a2s</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">8</span>
-</pre></div>
-</div>
+<dt id="brainload.spatial_transform.coords_a2s">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">coords_a2s</code><span class="sig-paren">(</span><em>coords</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.coords_a2s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split a 3xn array of coordinates (x, y, z values) into 3 separate arrays of length n.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.coords_s2a">
-<code class="descclassname">brainload.spatial.</code><code class="descname">coords_s2a</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.coords_s2a" title="Permalink to this definition">¶</a></dt>
-<dd><p>Separate a single xyz coordinate array into x, y and z arrays.</p>
-<p>Merge 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape (3, n).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The merged coordinate array.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Numpy 2D array of numbers</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">coords</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">coords_s2a</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-<span class="go">10</span>
-</pre></div>
-</div>
+<dt id="brainload.spatial_transform.coords_s2a">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">coords_s2a</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.coords_s2a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape (3, n).</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.deg2rad">
-<code class="descclassname">brainload.spatial.</code><code class="descname">deg2rad</code><span class="sig-paren">(</span><em>degrees</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.deg2rad" title="Permalink to this definition">¶</a></dt>
+<dt id="brainload.spatial_transform.deg2rad">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">deg2rad</code><span class="sig-paren">(</span><em>degrees</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.deg2rad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert an angle given in degrees to radians.</p>
 <p>Convert an angle given in degrees to radians. 360 degrees are 2 Pi radians. If negative values or values larger than 360 are passed, use the modulo operation to bring them to a suitable range first. In other words, passing -90 will be transformed to 360 - 90 = 270 degrees, and will thus return 1.5 Pi radians.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1426,98 +1236,24 @@ to create a subjects.txt file. This method searches all direct sub directories o
 </tr>
 </tbody>
 </table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rad</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span>   <span class="c1"># will be Pi</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.mirror_3D_coordinates_at_axis">
-<code class="descclassname">brainload.spatial.</code><code class="descname">mirror_3D_coordinates_at_axis</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>axis</em>, <em>mirror_at_axis_coordinate=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.mirror_3D_coordinates_at_axis" title="Permalink to this definition">¶</a></dt>
+<dt id="brainload.spatial_transform.mirror_3D_coordinates_at_axis">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">mirror_3D_coordinates_at_axis</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>axis</em>, <em>mirror_at_axis_coordinate=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.mirror_3D_coordinates_at_axis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mirror the given 3D coordinates on the given mirror plane.</p>
 <p>Mirror or reflect the given 3D coordinates on a plane (perpendicular to the axis) at axis coordinate <cite>mirror_at_axis_coordinate</cite> at the given axis. If <cite>mirror_at_axis_coordinate</cite> is not given, the smallest coordinate along the mirror axis in the data is used.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
-<li><strong>axis</strong> (<em>string</em><em>, </em><em>one of {'x'</em><em>, </em><em>'y'</em><em>, </em><em>'z'}</em>) – An axis identifier.</li>
-<li><strong>mirror_at_axis_coordinate</strong> (<em>number | None</em>) – The coordinate along the axis <cite>axis</cite> at which the mirror plane should be created. If you set <cite>axis</cite> to ‘x’ and specify <cite>5</cite> for this, a yz-plane will be used at x coordinate 5. If not given, it defaults to the minimal axis coordinate for the respective axis in the data.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>x_mirrored</strong> (<em>Numpy array of numbers</em>) – The mirrored x coordinates.</li>
-<li><strong>y_mirrored</strong> (<em>Numpy array of numbers</em>) – The mirrored y coordinates.</li>
-<li><strong>z_mirrored</strong> (<em>Numpy array of numbers</em>) – The mirrored z coordinates.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>Mirror at the origin of the x axis:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">mirror_3D_coordinates_at_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># -5 7 9</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># -6 8 10</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.point_mirror_3D_coordinates">
-<code class="descclassname">brainload.spatial.</code><code class="descname">point_mirror_3D_coordinates</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>point_x</em>, <em>point_y</em>, <em>point_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.point_mirror_3D_coordinates" title="Permalink to this definition">¶</a></dt>
+<dt id="brainload.spatial_transform.point_mirror_3D_coordinates">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">point_mirror_3D_coordinates</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>point_x</em>, <em>point_y</em>, <em>point_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.point_mirror_3D_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Point-mirror or reflect the given coordinates at the given point.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
-<li><strong>point_x</strong> (<em>number</em>) – The x coordinate of the point used for mirroring.</li>
-<li><strong>point_y</strong> (<em>number</em>) – The y coordinate of the point used for mirroring.</li>
-<li><strong>point_z</strong> (<em>number</em>) – The z coordinate of the point used for mirroring.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>xm</strong> (<em>Numpy array of numbers</em>) – The mirrored x coordinates.</li>
-<li><strong>ym</strong> (<em>Numpy array of numbers</em>) – The mirrored y coordinates.</li>
-<li><strong>zm</strong> (<em>Numpy array of numbers</em>) – The mirrored z coordinates.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>Mirror at the origin:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">point_mirror_3D_coordinates</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># -5 -7 -9</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># -6 -8 -10</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.rad2deg">
-<code class="descclassname">brainload.spatial.</code><code class="descname">rad2deg</code><span class="sig-paren">(</span><em>rad</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.rad2deg" title="Permalink to this definition">¶</a></dt>
+<dt id="brainload.spatial_transform.rad2deg">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">rad2deg</code><span class="sig-paren">(</span><em>rad</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.rad2deg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert an angle given in radians to degrees.</p>
 <p>Convert an angle given in radians to degrees. 2 Pi radians are 360 degrees. If negative values or values larger than 2 Pi are passed, use the modulo operation to bring them to a suitable range first. In other words, passing -0.5 * Pi will be transformed to 2 - 0.5 = 1.5 Pi, and will thus return 270 degrees.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1532,132 +1268,24 @@ to create a subjects.txt file. This method searches all direct sub directories o
 </tr>
 </tbody>
 </table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">deg</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>   <span class="c1"># will be 360</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.rotate_3D_coordinates_around_axes">
-<code class="descclassname">brainload.spatial.</code><code class="descname">rotate_3D_coordinates_around_axes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>radians_x</em>, <em>radians_y</em>, <em>radians_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.rotate_3D_coordinates_around_axes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotate coordinates around the 3 axes.</p>
-<p>Rotate coordinates around the x, y, and z axes. The rotation values must be given in radians.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays. (See <cite>coords_a2s</cite> if you have a single 2D array containing all 3.)</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays. (See <cite>coords_a2s</cite> if you have a single 2D array containing all 3.)</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays. (See <cite>coords_a2s</cite> if you have a single 2D array containing all 3.)</li>
-<li><strong>radians_x</strong> (<em>number</em>) – A single number, representing the rotation in radians around the x axis.</li>
-<li><strong>radians_y</strong> (<em>number</em>) – A single number, representing the rotation in radians around the y axis.</li>
-<li><strong>radians_z</strong> (<em>number</em>) – A single number, representing the rotation in radians around the z axis.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>xr</strong> (<em>Numpy array of numbers</em>) – The rotated x coordinates.</li>
-<li><strong>yr</strong> (<em>Numpy array of numbers</em>) – The rotated y coordinates.</li>
-<li><strong>zr</strong> (<em>Numpy array of numbers</em>) – The rotated z coordinates.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="p">;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="n">zr</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">rotate_3D_coordinates_around_axes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</pre></div>
-</div>
+<dt id="brainload.spatial_transform.rotate_3D_coordinates_around_axes">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">rotate_3D_coordinates_around_axes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>rotx</em>, <em>roty</em>, <em>rotz</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.rotate_3D_coordinates_around_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate coordinates around the axes. Rotation must be given in radians.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.scale_3D_coordinates">
-<code class="descclassname">brainload.spatial.</code><code class="descname">scale_3D_coordinates</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>x_scale_factor</em>, <em>y_scale_factor=None</em>, <em>z_scale_factor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.scale_3D_coordinates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Scale coordinates by factors.</p>
-<p>Scale the given coordinates by the given scale factor or factors.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
-<li><strong>x_scale_factor</strong> (<em>number</em>) – A single number, representing the scaling factor along the x axis. If the other values are not given, this counts for all axes.</li>
-<li><strong>y_scale_factor</strong> (<em>number | None</em>) – A single number, representing the scaling factor along the y axis. If this is <cite>None</cite>, the value given for <cite>x_scale_factor</cite> is used.</li>
-<li><strong>z_scale_factor</strong> (<em>number | None</em>) – A single number, representing the scaling factor along the z axis. If this is <cite>None</cite>, the value given for <cite>x_scale_factor</cite> is used.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>x_scaled</strong> (<em>Numpy array of numbers</em>) – The scaled x coordinates.</li>
-<li><strong>y_scaled</strong> (<em>Numpy array of numbers</em>) – The scaled y coordinates.</li>
-<li><strong>z_scaled</strong> (<em>Numpy array of numbers</em>) – The scaled z coordinates.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">scale_3D_coordinates</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># 15 21 27</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># 18 24 30</span>
-</pre></div>
-</div>
+<dt id="brainload.spatial_transform.scale_3D_coordinates">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">scale_3D_coordinates</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>x_scale_factor</em>, <em>y_scale_factor=None</em>, <em>z_scale_factor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.scale_3D_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale the given coordinates by the given scale factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="brainload.spatial.translate_3D_coordinates_along_axes">
-<code class="descclassname">brainload.spatial.</code><code class="descname">translate_3D_coordinates_along_axes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>shift_x</em>, <em>shift_y</em>, <em>shift_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.translate_3D_coordinates_along_axes" title="Permalink to this definition">¶</a></dt>
+<dt id="brainload.spatial_transform.translate_3D_coordinates_along_axes">
+<code class="descclassname">brainload.spatial_transform.</code><code class="descname">translate_3D_coordinates_along_axes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>shift_x</em>, <em>shift_y</em>, <em>shift_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial_transform.translate_3D_coordinates_along_axes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translate coordinates along one or more axes.</p>
-<p>Translate or shift coordinates along one or more axes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
-<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
-<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
-<li><strong>shift_x</strong> (<em>number</em>) – A single number, representing the shift along the x axis.</li>
-<li><strong>shift_y</strong> (<em>number</em>) – A single number, representing the shift along the y axis.</li>
-<li><strong>shift_z</strong> (<em>number</em>) – A single number, representing the shift along the z axis.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
-<li><strong>x_shifted</strong> (<em>Numpy array of numbers</em>) – The shifted x coordinates.</li>
-<li><strong>y_shifted</strong> (<em>Numpy array of numbers</em>) – The shifted y coordinates.</li>
-<li><strong>z_shifted</strong> (<em>Numpy array of numbers</em>) – The shifted z coordinates.</li>
-</ul>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xt</span><span class="p">,</span> <span class="n">yt</span><span class="p">,</span> <span class="n">zt</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">translate_3D_coordinates_along_axes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># 7 3 9</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">yt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># 8 4 10</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>
@@ -1700,20 +1328,11 @@ to create a subjects.txt file. This method searches all direct sub directories o
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.1.2',
-              LANGUAGE:'en',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

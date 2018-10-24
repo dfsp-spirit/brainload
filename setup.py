@@ -8,14 +8,14 @@ except ImportError:
 
 setup(
     name='brainload',
-    version='0.1.1',
+    version='0.2.0',
     description='Load FreeSurfer brain imaging data with minimal cognitive load',
     long_description='Provides a high-level interface for loading FreeSurfer brain imaging data by wrapping around nibabel.',
     keywords='neuroimaging freesurfer nibabel load mgh curv',
     author='Tim Schäfer',
     url='https://github.com/dfsp-spirit/brainload',
     packages=find_packages(where='src'),
-    classifiers = ['Development Status :: 2 - Pre-Alpha',     # See https://pypi.org/pypi?%3Aaction=list_classifiers for full classifier list
+    classifiers = ['Development Status :: 3 - Alpha',     # See https://pypi.org/pypi?%3Aaction=list_classifiers for full classifier list
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
