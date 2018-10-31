@@ -19,10 +19,16 @@ requirements:
     - numpy
     - pip
     - python
+    - pytest
+    - pytest-cov
+    - pytest-runner
   run:
     - nibabel
     - numpy
     - python
+    - pytest
+    - pytest-cov
+    - pytest-runner
 
 test:
   imports:
