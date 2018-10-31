@@ -278,3 +278,19 @@ When the build is done, upload the package:
 anaconda login                   # will ask for your credentials
 anaconda upload full/path/to/package.tar.bz2
 ```
+
+## Python 3
+
+### Running the dev version
+
+There is no difference to Python2, just use the equivalent commands:
+
+```console
+sudo apt install python3-pip python3-venv
+python3 -m venv venvp3      # create virtual env in REPO_ROOT
+source venvp3/bin/activate
+pip3 install -e .
+python3
+>>> import brainload as bl
+>>>
+```
