@@ -52,7 +52,7 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
         - https://surfer.nmr.mgh.harvard.edu/fswiki/FileFormats
     """
     mgh_meta_data = {}
-    with open(mgh_file_name, 'r') as mgh_file_handle:
+    with open(mgh_file_name, 'rb') as mgh_file_handle:
         header = fsmgh.MGHHeader.from_fileobj(mgh_file_handle)
 
         if collect_meta_data:
