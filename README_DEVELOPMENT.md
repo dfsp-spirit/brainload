@@ -214,11 +214,9 @@ twine upload dist/*                           # will ask for your PyPI credentia
 
 #### Anaconda (build and distribution)
 
-This is WIP, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html for instructions.
+This has been done successfully under Linux. It more or less follows the official conda instructions, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html.
 
 IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
-
-Some work has already been done, see the files in `development/anaconda_dist`.
 
 Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into `~/software/anaconda2`.
 
