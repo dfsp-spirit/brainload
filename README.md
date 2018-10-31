@@ -29,7 +29,7 @@ Now you have the brain surface mesh (defined by `vert_coords` and `faces`) and t
 
 Note that the data we retrieved in the example above is in native space. You may want to retrieve standard space data, i.e., subject data mapped to an average subject like FreeSurfer's `fsaverage` subject, instead. Here is an example for that:
 
-### Load the fsaverage brain mesh and morphometry data for a single subject in standard space
+### Load the fsaverage brain mesh and morphometry data for a single subject that has been mapped to fsaverage
 
 ```python
 import brainload as bl
@@ -39,7 +39,7 @@ vert_coords, faces, per_vertex_data, meta_data = bl.subject_avg(subject_id, surf
 
 This time, the mesh you get is the inflated surface of the `fsaverage` subject (since that is the default for the named parameter `average_subject`, which we omitted in the example above). The `per_vertex_data` represents the area data for the white matter surface of your subject, mapped to the vertices of the average subject and ready for group comparison.
 
-### Load standard space for all subjects in your SUBJECTS_DIR
+### Load fsaverage data for all subjects in your SUBJECTS_DIR
 
 ```python
 import brainload as bl
@@ -62,6 +62,22 @@ Whatever function you used, you can now use the data for statistical analysis in
 The brainload API documentation is now available:
 - [Brainload API documentation for the latest release](http://dfsp-spirit.github.io/brainload)
 - [Brainload API documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
+
+
+## Installation
+
+
+```console
+pip install --user brainload
+```
+
+You can also get a wheel file here in the releases section at GitHub.
+
+### Anaconda
+
+I started building conda packages for different architectures, see https://anaconda.org/dfspspirit/brainload.
+
+
 
 ## What about visualization?
 
