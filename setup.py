@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pytho6
 # -*- coding: utf-8 -*-
 
 try:
@@ -20,7 +20,8 @@ setup(
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
-          'Programming Language :: Python :: 2.7'],
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.6'],
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'pytest-cov'],
