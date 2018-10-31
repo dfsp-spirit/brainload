@@ -290,7 +290,9 @@ sudo apt install python3-pip python3-venv
 python3 -m venv venvp3      # create virtual env in REPO_ROOT
 source venvp3/bin/activate
 pip3 install -e .
+python3 setup.py test # run unit tests
 python3
 >>> import brainload as bl
->>>
+>>> ...                    # do stuff
+>>> quit()
 ```
