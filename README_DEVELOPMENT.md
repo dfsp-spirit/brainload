@@ -222,33 +222,49 @@ Some work has already been done, see the files in `development/anaconda_dist`.
 
 Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into `~/software/anaconda2`.
 
-The first step is to activate conda if it is not active. Type `conda --version` to check, it the command is not found:
+The first step is to activate conda if it is not yet active. Type `conda --version` to check whether the `conda` command is available. If the command is not found, assuming you installed conda to `${CONDA_DIR}`:
+
+If you installed conda < 4.4:
 
 ```console
-export CONDA_BIN=${HOME}/software/anaconda2/bin
-export PATH=${PATH}:${CONDA_BIN}
+export PATH=${CONDA_DIR}/bin:${PATH}   # also activates the base conda environment
 conda --version
+conda env list        # shows available environments, the one marked with a * is active (should be base)
 ```
 
-Let's create a new environment and install the required tools into it:
+If you installed conda >= 4.4:
+```console
+source ${CONDA_DIR}/etc/profile.d/conda.sh     # does NOT activate the base conda environment
+conda --version
+conda activate                                 # activates the base environment
+conda env list        # shows available environments, the one marked with a * is active (should be base)
+```
+
+
+Now that conda is active, we are in the conda `base` environment. Let's create a new sub environment and install the required tools into it:
 
 ```console
 cd develop/anaconda_dist
 conda update conda
-conda create --name blbuild python=2.7
+conda create --name blbuild python=2.7                  # skip if you have done these steps before
 conda activate blbuild
 conda install conda-build anaconda-client
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
-# now edit develop/anaconda_dist/brainload/meta.yaml and add the following dependencies: pytest-runner
+```
+
+The last command created a skeleton version of the conda `meta.yaml` build file based on the `setup.py` file from pip. This version is not ready for usage though, you have to manually fix some stuff. So edit `develop/anaconda_dist/brainload/meta.yaml` and perform the following steps
+- add to dependencies: pytest-runner
+
+
+```console
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
-CONDA_BLD_PATH conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
+CONDA_BLD_PATH=/tmp/condaishacky conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
 conda deactivate
 ```
 
-Now, update the `meta.yaml` file with the build information, e.g., the files to include. This is the main step.
 
-When that is done, build and upload the package:
+When the build is done, upload the package:
 
 ```console
 anaconda login                   # will ask for your credentials
