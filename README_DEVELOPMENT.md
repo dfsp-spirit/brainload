@@ -237,7 +237,7 @@ If you installed conda >= 4.4:
 source ${CONDA_DIR}/etc/profile.d/conda.sh     # does NOT activate the base conda environment
 conda --version
 conda activate                                 # activates the base environment
-conda env list        # shows available environments, the one marked with a * is active (should be base)
+conda env list        # shows available environments, the one marked with an asterisk is active (should be base)
 ```
 
 
@@ -248,13 +248,23 @@ cd develop/anaconda_dist
 conda update conda
 conda create --name blbuild python=2.7                  # skip if you have done these steps before
 conda activate blbuild
-conda install conda-build anaconda-client
+conda install conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
 ```
 
-The last command created a skeleton version of the conda `meta.yaml` build file based on the `setup.py` file from pip. This version is not ready for usage though, you have to manually fix some stuff. So edit `develop/anaconda_dist/brainload/meta.yaml` and perform the following steps
-- add to dependencies: pytest-runner
+The last command created a skeleton version of the conda `meta.yaml` build file based on the `setup.py` file from pip and placed it in a new directory named `brainload`. So you should now have a file at `REPO_ROOT/develop/anaconda_dist/brainload/meta_yaml`. This skeleton version is not ready for usage though. Just overwrite it with the working version from `REPO_ROOT/develop/anaconda_dist/recipe/meta_yaml`:
+
+```console
+# we are still in REPO_ROOT/develop/anaconda_dist
+cp recipe/meta_yaml brainload/meta.yaml
+```
+
+Alternatively, you have to manually edit and fix the skeleton version. In case you wanna do that, edit `develop/anaconda_dist/brainload/meta.yaml` and add these to the dependencies in sections host and run:
+- pytest
+- pytest-cov
+- pytest-runner
+Also update the recipe maintainer.
 
 
 ```console
