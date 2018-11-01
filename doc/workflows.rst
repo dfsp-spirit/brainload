@@ -20,7 +20,7 @@ In this example, we will load area data for each vertex of the example subject b
     freesurfer_dir = os.path.join('usr', 'local', 'freesurfer')  # or wherever your FREESURFER_HOME is
     subjects_dir = os.path.join(freesurfer_dir, 'subjects')
 
-    vert_coords, faces, per_vertex_data, meta_data = bl.subject('bert', measure='area')
+    vert_coords, faces, per_vertex_data, meta_data = bl.subject('bert', subjects_dir=subjects_dir, measure='area')
 
 
 This operation loaded 4 files: the 2 brain mesh files (one for the hemisphere, one for the right hemisphere) and the 2 morphometry data files. The mesh data are in the variables *vert_coords* and *faces*, and the morphometry data can be found in *per_vertex_data*. The *meta_data* contains information on the loaded data. Let's use it to see exactly which files were loaded.
