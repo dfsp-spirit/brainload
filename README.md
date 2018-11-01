@@ -84,9 +84,11 @@ I started building conda packages for different platforms, check https://anacond
 conda install -c dfspspirit brainload
 ```
 
+[![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/version.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/platforms.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/license.svg)](https://anaconda.org/dfspspirit/brainload)
+
 #### Supported Python versions
 
-Brainload 0.2.0 is available for Python 2.7. Starting from 0.2.1, Brainload will also support Python 3.
+Brainload 0.2.0 is available for Python 2.7. Starting from the next release, Brainload will also support Python 3.
 
 
 ## What about visualization?
