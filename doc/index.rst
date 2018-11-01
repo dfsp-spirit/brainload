@@ -11,6 +11,7 @@ Welcome to brainload's documentation!
    :caption: Contents:
 
    brainload
+   workflows
 
 
 Indices and tables
