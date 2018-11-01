@@ -21,13 +21,13 @@ SUBJECT1_SURF_LH_WHITE_NUM_FACES = 298484           # this number is quite arbit
 SUBJECT1_SURF_RH_WHITE_NUM_VERTICES = 153333        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
 SUBJECT1_SURF_RH_WHITE_NUM_FACES = 306662           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
 
-def test_get_morphology_data_suffix_for_surface_with_surf_white():
-    suffix = fsd._get_morphology_data_suffix_for_surface('white')
+def test_get_morphometry_data_suffix_for_surface_with_surf_white():
+    suffix = fsd._get_morphometry_data_suffix_for_surface('white')
     assert suffix == ''
 
 
-def test_get_morphology_data_suffix_for_surface_with_surf_other():
-    suffix = fsd._get_morphology_data_suffix_for_surface('pial')
+def test_get_morphometry_data_suffix_for_surface_with_surf_other():
+    suffix = fsd._get_morphometry_data_suffix_for_surface('pial')
     assert suffix == '.pial'
 
 
@@ -65,11 +65,11 @@ def test_merge_meshes():
     assert_allclose(np.array([5, 7, 6]), merged_faces[3])
 
 
-def test_merge_morphology_data():
+def test_merge_morphometry_data():
     morph_data1 = np.array([0.0, 0.1, 0.2, 0.3])
     morph_data2 = np.array([0.4])
     morph_data3 = np.array([0.5, 0.6])
-    merged_data = fsd.merge_morphology_data(np.array([morph_data1, morph_data2, morph_data3]))
+    merged_data = fsd.merge_morphometry_data(np.array([morph_data1, morph_data2, morph_data3]))
     assert merged_data.shape == (7,)
     assert merged_data[0] == pytest.approx(0.0, 0.0001)
     assert merged_data[4] == pytest.approx(0.4, 0.0001)
@@ -104,47 +104,47 @@ def test_read_fs_surface_file_and_record_meta_data_raises_on_wrong_hemisphere_va
     assert 'invalid_hemisphere' in str(exc_info.value)
 
 
-def test_read_fs_morphology_data_file_and_record_meta_data_with_subj1_curv_file_without_existing_metadata():
-    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh')
+def test_read_fs_morphometry_data_file_and_record_meta_data_with_subj1_curv_file_without_existing_metadata():
+    morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    per_vertex_data, meta_data = fsd.read_fs_morphometry_data_file_and_record_meta_data(morphometry_file, 'lh')
     assert len(meta_data) == 3
-    assert meta_data['lh.morphology_file'] == morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
+    assert meta_data['lh.morphometry_file'] == morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     assert per_vertex_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
 
-def test_read_fs_morphology_data_file_and_record_meta_data_with_subj1_curv_file_with_existing_metadata():
-    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', meta_data={'this_boy': 'still_exists'})
+def test_read_fs_morphometry_data_file_and_record_meta_data_with_subj1_curv_file_with_existing_metadata():
+    morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    per_vertex_data, meta_data = fsd.read_fs_morphometry_data_file_and_record_meta_data(morphometry_file, 'lh', meta_data={'this_boy': 'still_exists'})
     assert len(meta_data) == 4
     assert meta_data['this_boy'] == 'still_exists'
     assert per_vertex_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
 
-def test_read_fs_morphology_data_file_and_record_meta_data_with_fsavg_mgh_file_with_existing_metadata():
-    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
-    per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', format='mgh', meta_data={'this_boy': 'still_exists'})
+def test_read_fs_morphometry_data_file_and_record_meta_data_with_fsavg_mgh_file_with_existing_metadata():
+    morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
+    per_vertex_data, meta_data = fsd.read_fs_morphometry_data_file_and_record_meta_data(morphometry_file, 'lh', format='mgh', meta_data={'this_boy': 'still_exists'})
     assert len(meta_data) == 4
     assert meta_data['this_boy'] == 'still_exists'
-    assert meta_data['lh.morphology_file'] == morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.morphometry_file'] == morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'mgh'
     assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
     assert per_vertex_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
 
 
-def test_read_fs_morphology_data_file_and_record_meta_data_raises_on_wrong_hemisphere_value():
-    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+def test_read_fs_morphometry_data_file_and_record_meta_data_raises_on_wrong_hemisphere_value():
+    morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
     with pytest.raises(ValueError) as exc_info:
-        per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'invalid_hemisphere')
+        per_vertex_data, meta_data = fsd.read_fs_morphometry_data_file_and_record_meta_data(morphometry_file, 'invalid_hemisphere')
     assert 'hemisphere_label must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
 
-def test_read_fs_morphology_data_file_and_record_meta_data_raises_on_wrong_format_value():
-    morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+def test_read_fs_morphometry_data_file_and_record_meta_data_raises_on_wrong_format_value():
+    morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
     with pytest.raises(ValueError) as exc_info:
-        per_vertex_data, meta_data = fsd.read_fs_morphology_data_file_and_record_meta_data(morphology_file, 'lh', format='invalid_format')
+        per_vertex_data, meta_data = fsd.read_fs_morphometry_data_file_and_record_meta_data(morphometry_file, 'lh', format='invalid_format')
     assert 'format must be one of' in str(exc_info.value)
     assert 'invalid_format' in str(exc_info.value)
 
@@ -196,70 +196,70 @@ def test_load_subject_mesh_files_works_with_right_hemisphere_only():
     assert len(meta_data) == 3
 
 
-def test_load_subject_morphology_data_files():
-    lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
-    morphology_data, meta_data = fsd.load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file)
-    assert meta_data['lh.morphology_file'] == lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
+def test_load_subject_morphometry_data_files():
+    lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    morphometry_data, meta_data = fsd.load_subject_morphometry_data_files(lh_morphometry_file, rh_morphometry_file)
+    assert meta_data['lh.morphometry_file'] == lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    assert meta_data['rh.morphology_file'] == rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'curv'
+    assert meta_data['rh.morphometry_file'] == rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
     assert len(meta_data) == 6
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
 
-def test_load_subject_morphology_data_files_preserves_existing_meta_data():
-    lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
-    morphology_data, meta_data = fsd.load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file, meta_data={'this_boy': 'still_exists'})
+def test_load_subject_morphometry_data_files_preserves_existing_meta_data():
+    lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    morphometry_data, meta_data = fsd.load_subject_morphometry_data_files(lh_morphometry_file, rh_morphometry_file, meta_data={'this_boy': 'still_exists'})
     assert meta_data['this_boy'] == 'still_exists'
     assert len(meta_data) == 7
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
 
-def test_load_subject_morphology_data_files_works_with_left_hemisphere_only():
-    lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    morphology_data, meta_data = fsd.load_subject_morphology_data_files(lh_morphology_file, None, hemi='lh')
-    assert meta_data['lh.morphology_file'] == lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
+def test_load_subject_morphometry_data_files_works_with_left_hemisphere_only():
+    lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    morphometry_data, meta_data = fsd.load_subject_morphometry_data_files(lh_morphometry_file, None, hemi='lh')
+    assert meta_data['lh.morphometry_file'] == lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     assert len(meta_data) == 3
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
 
-def test_load_subject_morphology_data_files_works_with_right_hemisphere_only():
-    rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
-    morphology_data, meta_data = fsd.load_subject_morphology_data_files(None, rh_morphology_file, hemi='rh')
-    assert meta_data['rh.morphology_file'] == rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'curv'
+def test_load_subject_morphometry_data_files_works_with_right_hemisphere_only():
+    rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    morphometry_data, meta_data = fsd.load_subject_morphometry_data_files(None, rh_morphometry_file, hemi='rh')
+    assert meta_data['rh.morphometry_file'] == rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
     assert len(meta_data) == 3
-    assert morphology_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
-def test_load_subject_morphology_data_files_raises_on_invalid_format():
+def test_load_subject_morphometry_data_files_raises_on_invalid_format():
     with pytest.raises(ValueError) as exc_info:
-        morphology_data, meta_data = fsd.load_subject_morphology_data_files('some_file', 'some_other_file', format='invalid_format')
+        morphometry_data, meta_data = fsd.load_subject_morphometry_data_files('some_file', 'some_other_file', format='invalid_format')
     assert 'format must be one of' in str(exc_info.value)
     assert 'invalid_format' in str(exc_info.value)
 
 
-def test_load_subject_morphology_data_files_raises_on_invalid_hemisphere():
+def test_load_subject_morphometry_data_files_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        morphology_data, meta_data = fsd.load_subject_morphology_data_files('some_file', 'some_other_file', hemi='invalid_hemisphere')
+        morphometry_data, meta_data = fsd.load_subject_morphometry_data_files('some_file', 'some_other_file', hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
 
 def test_parse_subject():
-    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR)
     assert len(meta_data) == 20
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
     assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
     assert meta_data['lh.surf_file'] == expected_lh_surf_file
@@ -267,11 +267,11 @@ def test_parse_subject():
     assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
     assert meta_data['rh.surf_file'] == expected_rh_surf_file
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'curv'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
 
     assert meta_data['subject_id'] == 'subject1'
@@ -285,34 +285,34 @@ def test_parse_subject():
 
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
 
 def test_parse_subject_preserves_existing_meta_data():
-    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, meta_data={'this_boy': 'still_exists'})
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, meta_data={'this_boy': 'still_exists'})
     assert len(meta_data) == 21
     assert meta_data['this_boy'] == 'still_exists'
 
 
 def test_parse_subject_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
+        vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
 
 def test_parse_subject_works_with_left_hemisphere_only():
-    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
     assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     assert meta_data['lh.num_faces'] == SUBJECT1_SURF_LH_WHITE_NUM_FACES
     assert meta_data['lh.surf_file'] == expected_lh_surf_file
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
 
     assert meta_data['subject_id'] == 'subject1'
@@ -326,21 +326,21 @@ def test_parse_subject_works_with_left_hemisphere_only():
 
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
 
 def test_parse_subject_works_with_right_hemisphere_only():
-    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
     assert meta_data['rh.num_vertices'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
     assert meta_data['rh.num_faces'] == SUBJECT1_SURF_RH_WHITE_NUM_FACES
     assert meta_data['rh.surf_file'] == expected_rh_surf_file
 
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'curv'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
 
     assert meta_data['subject_id'] == 'subject1'
@@ -354,21 +354,21 @@ def test_parse_subject_works_with_right_hemisphere_only():
 
     assert vert_coords.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
-    assert morphology_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
 
 def test_parse_subject_does_not_load_surface_when_asked_not_to():
-    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'curv'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'curv'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
 
     assert meta_data['subject_id'] == 'subject1'
@@ -382,11 +382,11 @@ def test_parse_subject_does_not_load_surface_when_asked_not_to():
 
     assert vert_coords == None
     assert faces == None
-    assert morphology_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
 
-def test_parse_subject_does_not_load_morphology_data_when_asked_not_to():
-    vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
+def test_parse_subject_does_not_load_morphometry_data_when_asked_not_to():
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
@@ -409,7 +409,7 @@ def test_parse_subject_does_not_load_morphology_data_when_asked_not_to():
 
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
-    assert morphology_data is None
+    assert morphometry_data is None
 
 
 def test_parse_subject_standard_space_data():
@@ -418,12 +418,12 @@ def test_parse_subject_standard_space_data():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR)
     assert len(meta_data) == 24
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     assert meta_data['lh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
     assert meta_data['lh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['lh.surf_file'] == expected_lh_surf_file
@@ -431,11 +431,11 @@ def test_parse_subject_standard_space_data():
     assert meta_data['rh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['rh.surf_file'] == expected_rh_surf_file
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'mgh'
     assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'mgh'
     assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
     assert meta_data['subject_id'] == 'subject1'
@@ -452,12 +452,12 @@ def test_parse_subject_standard_space_data():
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
-    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
+    assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
 
 
 def test_parse_subject_standard_space_data_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        vert_coords, faces, morphology_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
+        vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
@@ -468,16 +468,16 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
     assert len(meta_data) == 18
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     assert meta_data['lh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
     assert meta_data['lh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['lh.surf_file'] == expected_lh_surf_file
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'mgh'
     assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
     assert meta_data['subject_id'] == 'subject1'
@@ -490,7 +490,7 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE, 3)
-    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+    assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
 
 
 def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
@@ -499,16 +499,16 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 18
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     assert meta_data['rh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
     assert meta_data['rh.num_faces'] == FSAVERAGE_NUM_FACES_PER_HEMISPHERE
     assert meta_data['rh.surf_file'] == expected_rh_surf_file
 
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'mgh'
     assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
     assert meta_data['subject_id'] == 'subject1'
@@ -520,7 +520,7 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE, 3)
-    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+    assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
 
 
 def test_parse_subject_standard_space_data_respects_fwhm_setting_none():
@@ -529,16 +529,16 @@ def test_parse_subject_standard_space_data_respects_fwhm_setting_none():
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, fwhm=None)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, fwhm=None)
     assert len(meta_data) == 24
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')    # No 'fhwmX' in here!
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')    # No 'fhwmX' in here!
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'mgh'
     assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'mgh'
     assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
 
@@ -546,7 +546,7 @@ def test_parse_subject_standard_space_data_respects_fwhm_setting_none():
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
-    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
+    assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
 
 def test_parse_subject_standard_space_data_does_not_load_surface_when_asked_not_to():
     expected_subjects_dir = TEST_DATA_DIR
@@ -554,35 +554,35 @@ def test_parse_subject_standard_space_data_does_not_load_surface_when_asked_not_
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_surface_files=False)
     assert len(meta_data) == 18
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'mgh'
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'mgh'
     assert meta_data['lh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'mgh'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'mgh'
     assert meta_data['rh.num_data_points'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
 
     assert meta_data['display_subject'] is None
     assert meta_data['display_surf'] is None
     assert meta_data['measure'] == 'area'
-    assert meta_data['custom_morphology_files_used'] == False
+    assert meta_data['custom_morphometry_files_used'] == False
 
     assert vert_coords is None
     assert faces is None
-    assert morphology_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
+    assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, )
 
 
-def test_parse_subject_standard_space_data_does_not_load_morphology_data_when_asked_not_to():
+def test_parse_subject_standard_space_data_does_not_load_morphometry_data_when_asked_not_to():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
     assert len(meta_data) == 17
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
@@ -600,25 +600,25 @@ def test_parse_subject_standard_space_data_does_not_load_morphology_data_when_as
 
     assert vert_coords.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
     assert faces.shape == (FSAVERAGE_NUM_FACES_PER_HEMISPHERE * 2, 3)
-    assert morphology_data is None
+    assert morphometry_data is None
 
 
-def test_parse_subject_standard_space_data_accepts_custom_morphology_files():
+def test_parse_subject_standard_space_data_accepts_custom_morphometry_files():
     expected_subjects_dir = TEST_DATA_DIR
     expected_fsaverage_surf_dir = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf')
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    custom_morphology_files = { 'lh': 'lh.area.fsaverage.mgh', 'rh': 'rh.area.fsaverage.mgh' }  # You could access these files without the custom_morphology_files argument (by setting fwhm to None explicitely), but using this custom name is convenient because we already have test data named like this.
-    vert_coords, faces, morphology_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, custom_morphology_files=custom_morphology_files)
+    custom_morphometry_files = { 'lh': 'lh.area.fsaverage.mgh', 'rh': 'rh.area.fsaverage.mgh' }  # You could access these files without the custom_morphometry_files argument (by setting fwhm to None explicitely), but using this custom name is convenient because we already have test data named like this.
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, custom_morphometry_files=custom_morphometry_files)
     assert len(meta_data) == 24
-    expected_lh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
-    expected_rh_morphology_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
-    assert meta_data['lh.morphology_file'] == expected_lh_morphology_file
-    assert meta_data['lh.morphology_file_format'] == 'mgh'
-    assert meta_data['rh.morphology_file'] == expected_rh_morphology_file
-    assert meta_data['rh.morphology_file_format'] == 'mgh'
-    assert meta_data['custom_morphology_files_used'] == True
+    expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
+    expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+    assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
+    assert meta_data['lh.morphometry_file_format'] == 'mgh'
+    assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
+    assert meta_data['rh.morphometry_file_format'] == 'mgh'
+    assert meta_data['custom_morphometry_files_used'] == True
 
 
 def test_load_group_data():
@@ -628,17 +628,17 @@ def test_load_group_data():
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
-    expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
 
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2)   # We have 5 subjects in the subjects.txt file in the test data dir
 
     assert len(run_meta_data) == 5
-    assert run_meta_data['custom_morphology_file_templates_used'] == False
+    assert run_meta_data['custom_morphometry_file_templates_used'] == False
     assert run_meta_data['subjects_file_used'] == True
     assert run_meta_data['subjects_file'] == expected_subjects_file
     assert run_meta_data['subjects_detection_mode'] == 'auto'
@@ -648,16 +648,16 @@ def test_load_group_data():
     assert len(group_meta_data) == len(group_data_subjects)
 
     assert len(group_meta_data['subject1']) == 18
-    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
-    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
+    assert group_meta_data['subject1']['lh.morphometry_file'] == expected_lh_morphometry_file_subject1
+    assert group_meta_data['subject1']['rh.morphometry_file'] == expected_rh_morphometry_file_subject1
 
     assert group_meta_data['subject1']['display_subject'] is None
     assert group_meta_data['subject1']['display_surf'] is None
     assert group_meta_data['subject1']['measure'] == 'area'
 
     assert len(group_meta_data['subject5']) == 18
-    assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
-    assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
+    assert group_meta_data['subject5']['lh.morphometry_file'] == expected_lh_morphometry_file_subject5
+    assert group_meta_data['subject5']['rh.morphometry_file'] == expected_rh_morphometry_file_subject5
 
 
 def test_load_group_data_works_with_subjects_file_in_custom_dir():
@@ -668,10 +668,10 @@ def test_load_group_data_works_with_subjects_file_in_custom_dir():
     custom_subjects_file_dir = os.path.join(TEST_DATA_DIR, 'subject_files_in_extra_dir')
     group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_file='subjects_including_s6_in_subdir.csv', subjects_file_dir=custom_subjects_file_dir)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
-    expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
 
@@ -687,8 +687,8 @@ def test_load_group_data_works_with_left_hemisphere_only():
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='lh', subjects_dir=TEST_DATA_DIR)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
 
     assert len(run_meta_data) == 5
     assert run_meta_data['subjects_detection_mode'] == 'auto'
@@ -697,10 +697,10 @@ def test_load_group_data_works_with_left_hemisphere_only():
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 15
-    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
-    assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
-    assert not 'rh.morphology_file' in group_meta_data['subject1']
-    assert not 'rh.morphology_file' in group_meta_data['subject5']
+    assert group_meta_data['subject1']['lh.morphometry_file'] == expected_lh_morphometry_file_subject1
+    assert group_meta_data['subject5']['lh.morphometry_file'] == expected_lh_morphometry_file_subject5
+    assert not 'rh.morphometry_file' in group_meta_data['subject1']
+    assert not 'rh.morphometry_file' in group_meta_data['subject5']
 
 
 def test_load_group_data_works_with_right_hemisphere_only():
@@ -710,8 +710,8 @@ def test_load_group_data_works_with_right_hemisphere_only():
 
     group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='rh', subjects_dir=TEST_DATA_DIR)
 
-    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
     assert len(run_meta_data) == 5
     assert run_meta_data['subjects_detection_mode'] == 'auto'
@@ -720,33 +720,33 @@ def test_load_group_data_works_with_right_hemisphere_only():
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 15
-    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
-    assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
-    assert not 'lh.morphology_file' in group_meta_data['subject1']
-    assert not 'lh.morphology_file' in group_meta_data['subject5']
+    assert group_meta_data['subject1']['rh.morphometry_file'] == expected_rh_morphometry_file_subject1
+    assert group_meta_data['subject5']['rh.morphometry_file'] == expected_rh_morphometry_file_subject5
+    assert not 'lh.morphometry_file' in group_meta_data['subject1']
+    assert not 'lh.morphometry_file' in group_meta_data['subject5']
 
 
-def test_load_group_data_works_with_custom_morphology_file_templates_using_variables_surf_white():
+def test_load_group_data_works_with_custom_morphometry_file_templates_using_variables_surf_white():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
-    morphology_template = '${HEMI}.${SURF}${MEASURE}.${AVERAGE_SUBJECT}.mgh'
-    custom_morphology_file_templates = {'lh': morphology_template, 'rh': morphology_template}
-    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='both', surf='white', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    morphometry_template = '${HEMI}.${SURF}${MEASURE}.${AVERAGE_SUBJECT}.mgh'
+    custom_morphometry_file_templates = {'lh': morphometry_template, 'rh': morphometry_template}
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='both', surf='white', subjects_dir=TEST_DATA_DIR, custom_morphometry_file_templates=custom_morphometry_file_templates)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')     # for surface 'white', the surface must NOT show up in the result.
-    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
-    expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
-    expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
+    expected_lh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')     # for surface 'white', the surface must NOT show up in the result.
+    expected_rh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+    expected_lh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
+    expected_rh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
 
     assert len(run_meta_data) == 7
-    assert run_meta_data['custom_morphology_file_templates_used'] == True
+    assert run_meta_data['custom_morphometry_file_templates_used'] == True
     assert run_meta_data['subjects_file_used'] == True
     assert run_meta_data['subjects_file'] == expected_subjects_file
-    assert run_meta_data['lh.custom_morphology_file_template'] == morphology_template
-    assert run_meta_data['rh.custom_morphology_file_template'] == morphology_template
+    assert run_meta_data['lh.custom_morphometry_file_template'] == morphometry_template
+    assert run_meta_data['rh.custom_morphometry_file_template'] == morphometry_template
     assert run_meta_data['subjects_detection_mode'] == 'auto'
     assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
 
@@ -754,34 +754,34 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_varia
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 18
-    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
-    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
-    assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
-    assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
+    assert group_meta_data['subject1']['lh.morphometry_file'] == expected_lh_morphometry_file_subject1
+    assert group_meta_data['subject1']['rh.morphometry_file'] == expected_rh_morphometry_file_subject1
+    assert group_meta_data['subject5']['lh.morphometry_file'] == expected_lh_morphometry_file_subject5
+    assert group_meta_data['subject5']['rh.morphometry_file'] == expected_rh_morphometry_file_subject5
 
 
-def test_load_group_data_works_with_custom_morphology_file_templates_using_hardcoded_filenames():
+def test_load_group_data_works_with_custom_morphometry_file_templates_using_hardcoded_filenames():
     expected_subject2_dir = os.path.join(TEST_DATA_DIR, 'subject2')
     if not os.path.isdir(expected_subject2_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_dir)
 
     template_lh = 'lh.area.fsaverage.mgh'   # nobody forces you to use any variables
     template_rh = 'rh.area.fsaverage.mgh'
-    custom_morphology_file_templates = {'lh': template_lh, 'rh': template_rh}
-    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphology_file_templates=custom_morphology_file_templates)
+    custom_morphometry_file_templates = {'lh': template_lh, 'rh': template_rh}
+    group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', hemi='both', subjects_dir=TEST_DATA_DIR, custom_morphometry_file_templates=custom_morphometry_file_templates)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
-    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
-    expected_lh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
-    expected_rh_morphology_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
+    expected_lh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fsaverage.mgh')
+    expected_rh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+    expected_lh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'lh.area.fsaverage.mgh')
+    expected_rh_morphometry_file_subject5 = os.path.join(TEST_DATA_DIR, 'subject5', 'surf', 'rh.area.fsaverage.mgh')
     expected_subjects_file = os.path.join(TEST_DATA_DIR, 'subjects.txt')
 
     assert len(run_meta_data) == 7
-    assert run_meta_data['custom_morphology_file_templates_used'] == True
+    assert run_meta_data['custom_morphometry_file_templates_used'] == True
     assert run_meta_data['subjects_file_used'] == True
     assert run_meta_data['subjects_file'] == expected_subjects_file
-    assert run_meta_data['lh.custom_morphology_file_template'] == template_lh
-    assert run_meta_data['rh.custom_morphology_file_template'] == template_rh
+    assert run_meta_data['lh.custom_morphometry_file_template'] == template_lh
+    assert run_meta_data['rh.custom_morphometry_file_template'] == template_rh
     assert run_meta_data['subjects_detection_mode'] == 'auto'
     assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'file'
 
@@ -789,10 +789,10 @@ def test_load_group_data_works_with_custom_morphology_file_templates_using_hardc
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
     assert len(group_meta_data['subject1']) == 18
-    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
-    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
-    assert group_meta_data['subject5']['lh.morphology_file'] == expected_lh_morphology_file_subject5
-    assert group_meta_data['subject5']['rh.morphology_file'] == expected_rh_morphology_file_subject5
+    assert group_meta_data['subject1']['lh.morphometry_file'] == expected_lh_morphometry_file_subject1
+    assert group_meta_data['subject1']['rh.morphometry_file'] == expected_rh_morphometry_file_subject1
+    assert group_meta_data['subject5']['lh.morphometry_file'] == expected_lh_morphometry_file_subject5
+    assert group_meta_data['subject5']['rh.morphometry_file'] == expected_rh_morphometry_file_subject5
 
 
 def test_load_group_data_works_with_subjects_list():
@@ -803,13 +803,13 @@ def test_load_group_data_works_with_subjects_list():
     subjects_list = [ 'subject1', 'subject3' ]
     group_data, group_data_subjects, group_meta_data, run_meta_data = bl.group('area', subjects_dir=TEST_DATA_DIR, subjects_list=subjects_list)
 
-    expected_lh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
-    expected_lh_morphology_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    expected_rh_morphology_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject1 = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    expected_lh_morphometry_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    expected_rh_morphometry_file_subject3 = os.path.join(TEST_DATA_DIR, 'subject3', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
 
     assert len(run_meta_data) == 4
-    assert run_meta_data['custom_morphology_file_templates_used'] == False
+    assert run_meta_data['custom_morphometry_file_templates_used'] == False
     assert run_meta_data['subjects_file_used'] == False
     assert run_meta_data['subjects_detection_mode'] == 'auto'
     assert run_meta_data['subjects_detection_mode_auto_used_method'] == 'list'
@@ -819,16 +819,16 @@ def test_load_group_data_works_with_subjects_list():
     assert len(group_meta_data) == len(group_data_subjects)
     assert not 'subject2' in group_meta_data
     assert len(group_meta_data['subject1']) == 18
-    assert group_meta_data['subject1']['lh.morphology_file'] == expected_lh_morphology_file_subject1
-    assert group_meta_data['subject1']['rh.morphology_file'] == expected_rh_morphology_file_subject1
+    assert group_meta_data['subject1']['lh.morphometry_file'] == expected_lh_morphometry_file_subject1
+    assert group_meta_data['subject1']['rh.morphometry_file'] == expected_rh_morphometry_file_subject1
 
     assert group_meta_data['subject1']['display_subject'] is None
     assert group_meta_data['subject1']['display_surf'] is None
     assert group_meta_data['subject1']['measure'] == 'area'
 
     assert len(group_meta_data['subject3']) == 18
-    assert group_meta_data['subject3']['lh.morphology_file'] == expected_lh_morphology_file_subject3
-    assert group_meta_data['subject3']['rh.morphology_file'] == expected_rh_morphology_file_subject3
+    assert group_meta_data['subject3']['lh.morphometry_file'] == expected_lh_morphometry_file_subject3
+    assert group_meta_data['subject3']['rh.morphometry_file'] == expected_rh_morphometry_file_subject3
 
 
 def test_load_group_data_subject_order_in_data_is_correct_from_subjects_file():
@@ -885,10 +885,10 @@ def test_load_group_data_subject_order_in_data_is_correct_from_subjects_list():
 def test_test_data_lh_is_as_expected():
     # The file lh.area.fwhm11.fsaverage.mgh is an edited version of lh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.74, is replaced with the value 0.2.
     # The MGH file edits were done with the FreeSurfer matlab functions MRIread and MRIwrite.
-    morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
-    morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm11.fsaverage.mgh')
+    morphometry_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    morphometry_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm11.fsaverage.mgh')
 
-    mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphology_file_value_orig)
+    mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphometry_file_value_orig)
     assert mgh_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
     relevant_data_inner_array_orig = mgh_data_orig[:,0]
     assert relevant_data_inner_array_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
@@ -896,7 +896,7 @@ def test_test_data_lh_is_as_expected():
     assert per_vertex_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
     assert per_vertex_data_orig[100000] == pytest.approx(0.74, 0.1)                     # lh original value at index 100,000
 
-    mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphology_file_value_mod)
+    mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphometry_file_value_mod)
     assert mgh_data_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
     relevant_data_inner_array_mod = mgh_data_mod[:,0]
     assert relevant_data_inner_array_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
@@ -914,10 +914,10 @@ def test_test_data_lh_is_as_expected():
 def test_test_data_rh_is_as_expected():
     # The file rh.area.fwhm11.fsaverage.mgh is an edited version of rh.area.fwhm10.fsaverage.mgh. The only change is that the data value at index 100,000 (with indexing starting at 0), 0.60, is replaced with the value 0.2.
     # The MGH file edits were done with the FreeSurfer matlab functions MRIread and MRIwrite.
-    morphology_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
-    morphology_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm11.fsaverage.mgh')
+    morphometry_file_value_orig = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
+    morphometry_file_value_mod = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm11.fsaverage.mgh')
 
-    mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphology_file_value_orig)
+    mgh_data_orig, mgh_meta_data_orig = fsd.read_mgh_file(morphometry_file_value_orig)
     assert mgh_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
     relevant_data_inner_array_orig = mgh_data_orig[:,0]
     assert relevant_data_inner_array_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
@@ -925,7 +925,7 @@ def test_test_data_rh_is_as_expected():
     assert per_vertex_data_orig.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
     assert per_vertex_data_orig[100000] == pytest.approx(0.60, 0.1)                     # rh original value at index 100,000
 
-    mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphology_file_value_mod)
+    mgh_data_mod, mgh_meta_data_mod = fsd.read_mgh_file(morphometry_file_value_mod)
     assert mgh_data_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1, 1)
     relevant_data_inner_array_mod = mgh_data_mod[:,0]
     assert relevant_data_inner_array_mod.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, 1)
@@ -1080,19 +1080,19 @@ def test_load_group_data_list_mode_works():
 
 
 def test_rhi_all_fine():
-    morphology_data_lh, meta_data_lh = bl.subject('subject1', hemi='lh', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
-    morphology_data_rh, meta_data_rh = bl.subject('subject1', hemi='rh', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
-    morphology_data_both, meta_data_both = bl.subject('subject1', hemi='both', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
-    assert meta_data_both['lh.num_data_points'] == len(morphology_data_lh)
-    assert meta_data_both['rh.num_data_points'] == len(morphology_data_rh)
+    morphometry_data_lh, meta_data_lh = bl.subject('subject1', hemi='lh', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    morphometry_data_rh, meta_data_rh = bl.subject('subject1', hemi='rh', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    morphometry_data_both, meta_data_both = bl.subject('subject1', hemi='both', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    assert meta_data_both['lh.num_data_points'] == len(morphometry_data_lh)
+    assert meta_data_both['rh.num_data_points'] == len(morphometry_data_rh)
     assert meta_data_lh['lh.num_data_points'] == meta_data_both['lh.num_data_points']
     assert meta_data_rh['rh.num_data_points'] == meta_data_both['rh.num_data_points']
     abs_rh_start = bl.rhi(0, meta_data_both)
-    assert morphology_data_both[abs_rh_start] == pytest.approx(morphology_data_rh[0], 0.1)
-    assert bl.rhv(0, morphology_data_both, meta_data_both) == pytest.approx(morphology_data_rh[0], 0.1)
+    assert morphometry_data_both[abs_rh_start] == pytest.approx(morphometry_data_rh[0], 0.1)
+    assert bl.rhv(0, morphometry_data_both, meta_data_both) == pytest.approx(morphometry_data_rh[0], 0.1)
     abs_rh_second_to_last = bl.rhi(-1, meta_data_both)
-    assert abs_rh_second_to_last == len(morphology_data_lh) + len(morphology_data_rh) -2
-    assert morphology_data_both[abs_rh_second_to_last] == pytest.approx(morphology_data_rh[len(morphology_data_rh)-2], 0.1)
+    assert abs_rh_second_to_last == len(morphometry_data_lh) + len(morphometry_data_rh) -2
+    assert morphometry_data_both[abs_rh_second_to_last] == pytest.approx(morphometry_data_rh[len(morphometry_data_rh)-2], 0.1)
 
 
 def test_rhi_raises_on_invalid_metadata():
@@ -1110,7 +1110,7 @@ def test_rhi_raises_on_missing_metadata_keys():
 
 
 def test_rhi_raises_on_index_out_of_bounds():
-    morphology_data_both, meta_data_both = bl.subject('subject1', hemi='both', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
+    morphometry_data_both, meta_data_both = bl.subject('subject1', hemi='both', subjects_dir=TEST_DATA_DIR, load_surface_files=False)[2:4]
     with pytest.raises(ValueError) as exc_info:
         abs_rh_start = bl.rhi(500000, meta_data_both)
     assert 'out of bounds: right hemisphere has' in str(exc_info.value)

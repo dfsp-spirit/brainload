@@ -25,7 +25,7 @@ import brainload as bl
 subject_id = 'bert'
 vert_coords, faces, per_vertex_data, meta_data = bl.subject(subject_id, surf='pial', measure='area')
 ```
-Now you have the brain surface mesh (defined by `vert_coords` and `faces`) and the morphology data from the curv file in `per_vertex_data`. The `meta_data` holds information like the subject id and the full paths of the files that were used to retrieve the data. The `subject` function uses the environment variable `SUBJECTS_DIR` to determine where your data is. You can override that (and change many other things via optional named arguments), of course.
+Now you have the brain surface mesh (defined by `vert_coords` and `faces`) and the morphometry data from the curv file in `per_vertex_data`. The `meta_data` holds information like the subject id and the full paths of the files that were used to retrieve the data. The `subject` function uses the environment variable `SUBJECTS_DIR` to determine where your data is. You can override that (and change many other things via optional named arguments), of course.
 
 Note that the data we retrieved in the example above is in native space. You may want to retrieve standard space data, i.e., subject data mapped to an average subject like FreeSurfer's `fsaverage` subject, instead. Here is an example for that:
 
@@ -51,7 +51,7 @@ This will load the standard space area data for all subjects in the SUBJECTS_DIR
 
 ```python
 # continued from last code sample
-print group_meta_data['subject1']['lh.morphology_file']             # will print SUBJECTS_DIR/subject1/surf/lh.area.pial.fwhm15.fsaverage.mgh
+print group_meta_data['subject1']['lh.morphometry_file']             # will print SUBJECTS_DIR/subject1/surf/lh.area.pial.fwhm15.fsaverage.mgh
 print group_meta_data['subject1']['hemi']                           # will print 'lh'
 ```
 

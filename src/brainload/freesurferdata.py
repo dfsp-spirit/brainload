@@ -76,16 +76,16 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
     return mgh_data, mgh_meta_data
 
 
-def merge_morphology_data(morphology_data_arrays, dtype=float):
+def merge_morphometry_data(morphometry_data_arrays, dtype=float):
     """
-    Merge morphology data horizontally.
+    Merge morphometry data horizontally.
 
-    Merge morphology data read from several meshes of the same subject horizontally. This is used to merge data from the left and right hemispheres.
+    Merge morphometry data read from several meshes of the same subject horizontally. This is used to merge data from the left and right hemispheres.
 
     Parameters
     ----------
-    morphology_data_arrays: 2D array
-        An array of arrays, each of which represents morphology data from different hemispheres of the same subject.
+    morphometry_data_arrays: 2D array
+        An array of arrays, each of which represents morphometry data from different hemispheres of the same subject.
 
     dtype: data type, optional
         Data type for the output numpy array. Defaults to float.
@@ -99,25 +99,25 @@ def merge_morphology_data(morphology_data_arrays, dtype=float):
     --------
     Merge some data:
 
-    >>> lh_morphology_data = np.array([0.0, 0.1, 0.2, 0.3])   # some fake data
-    >>> rh_morphology_data = np.array([0.5, 0.6])
-    >>> merged_data = fsd.merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
+    >>> lh_morphometry_data = np.array([0.0, 0.1, 0.2, 0.3])   # some fake data
+    >>> rh_morphometry_data = np.array([0.5, 0.6])
+    >>> merged_data = fsd.merge_morphometry_data(np.array([lh_morphometry_data, rh_morphometry_data]))
     >>> print merged_data.shape
     (6, )
 
-    Typically, the `lh_morphology_data` and `rh_morphology_data` come from calls to `read_fs_morphology_data_file_and_record_meta_data` as shown here:
+    Typically, the `lh_morphometry_data` and `rh_morphometry_data` come from calls to `read_fs_morphometry_data_file_and_record_meta_data` as shown here:
 
-    >>> lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh')
-    >>> rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data)
-    >>> both_hemis_morphology_data = merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
+    >>> lh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh')
+    >>> rh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data)
+    >>> both_hemis_morphometry_data = merge_morphometry_data(np.array([lh_morphometry_data, rh_morphometry_data]))
     """
     merged_data = np.empty((0), dtype=dtype)
-    for morphology_data in morphology_data_arrays:
-        merged_data = np.hstack((merged_data, morphology_data))
+    for morphometry_data in morphometry_data_arrays:
+        merged_data = np.hstack((merged_data, morphometry_data))
     return merged_data
 
 
-def _get_morphology_data_suffix_for_surface(surf):
+def _get_morphometry_data_suffix_for_surface(surf):
     """
     Determine FreeSurfer surface representation string.
 
@@ -136,7 +136,7 @@ def _get_morphology_data_suffix_for_surface(surf):
     Examples
     --------
     >>> import brainload.freesurferdata as fsd
-    >>> print fsd._get_morphology_data_suffix_for_surface('pial')
+    >>> print fsd._get_morphometry_data_suffix_for_surface('pial')
     .pial
     """
     if surf == 'white':
@@ -201,16 +201,16 @@ def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_
     return vert_coords, faces, meta_data
 
 
-def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_label, meta_data=None, format='curv'):
+def read_fs_morphometry_data_file_and_record_meta_data(curv_file, hemisphere_label, meta_data=None, format='curv'):
     """
-    Read a morphology file and record meta data on it.
+    Read a morphometry file and record meta data on it.
 
-    Read a morphology file and record meta data on it. A morphology file is file containing a scalar value for each vertex on the surface of a FreeSurfer mesh. An example is the file 'lh.area', which contains the area values for all vertices of the left hemisphere of the white surface. Such a file can be in two different formats: 'curv' or 'mgh'. The former is used when the data refers to the surface mesh of the original subject, the latter when it has been mapped to a standard subject like fsaverage.
+    Read a morphometry file and record meta data on it. A morphometry file is file containing a scalar value for each vertex on the surface of a FreeSurfer mesh. An example is the file 'lh.area', which contains the area values for all vertices of the left hemisphere of the white surface. Such a file can be in two different formats: 'curv' or 'mgh'. The former is used when the data refers to the surface mesh of the original subject, the latter when it has been mapped to a standard subject like fsaverage.
 
     Parameters
     ----------
     curv_file: string
-        A string representing a path to a morphology file (e.g., the path to 'lh.area').
+        A string representing a path to a morphometry file (e.g., the path to 'lh.area').
 
     hemisphere_label: {'lh' or 'rh'}
         A string representing the hemisphere this file belongs to. This is used to write the correct meta data.
@@ -232,17 +232,17 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
     meta_data: dictionary
         Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
             - `?h.num_data_points` : the number of data points loaded.
-            - `?h.morphology_file` : the value of the `curv_file` argument (data file that was loaded)
-            - `?h.morphology_file_format` : the value for `format` that was used
+            - `?h.morphometry_file` : the value of the `curv_file` argument (data file that was loaded)
+            - `?h.morphometry_file_format` : the value for `format` that was used
 
     Examples
     --------
     >>> import brainload.freesurferdata as fsd; import os
-    >>> lh_morphology_file = os.path.join('my_subjects_dir', 'subject1', 'surf', 'lh.area')
-    >>> lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_file, 'lh')
+    >>> lh_morphometry_file = os.path.join('my_subjects_dir', 'subject1', 'surf', 'lh.area')
+    >>> lh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_file, 'lh')
     >>> print meta_data['lh.num_data_points']
     121567                  # arbitrary number, depends on the subject mesh
-    >>> print meta_data['lh.morphology_file']
+    >>> print meta_data['lh.morphometry_file']
     my_subjects_dir/subject1/surf/lh.area             # on UNIX-like systems
     """
     if format not in ('curv', 'mgh'):
@@ -264,10 +264,10 @@ def read_fs_morphology_data_file_and_record_meta_data(curv_file, hemisphere_labe
     label_num_values = hemisphere_label + '.num_data_points'
     meta_data[label_num_values] = per_vertex_data.shape[0]
 
-    label_file = hemisphere_label + '.morphology_file'
+    label_file = hemisphere_label + '.morphometry_file'
     meta_data[label_file] = curv_file
 
-    label_file_format = hemisphere_label + '.morphology_file_format'
+    label_file_format = hemisphere_label + '.morphometry_file_format'
     meta_data[label_file_format] = format
 
     return per_vertex_data, meta_data
@@ -335,7 +335,7 @@ def rhi(rh_relative_index, meta_data):
     """
     Computes the absolute data index given an index relative to the right hemisphere.
 
-    This function makes sense only given a `morphology_data` and associated `meta_data` that contains data on two hemispheres (even though the `morphology_data` array itself is not passed to this function). E.g., the return value of a function like `subject()` or `subject_avg()` when called with `hemi='both'`. For such data, it computes the absolute index in the data given a request index relative to the right hemisphere. The name is short for 'right hemisphere index'.
+    This function makes sense only given a `morphometry_data` and associated `meta_data` that contains data on two hemispheres (even though the `morphometry_data` array itself is not passed to this function). E.g., the return value of a function like `subject()` or `subject_avg()` when called with `hemi='both'`. For such data, it computes the absolute index in the data given a request index relative to the right hemisphere. The name is short for 'right hemisphere index'.
 
     Parameters
     ----------
@@ -352,8 +352,8 @@ def rhi(rh_relative_index, meta_data):
     Examples
     --------
     >>> import brainload as bl
-    >>> morphology_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
-    >>> print "rh value at index 10, relative to start of right hemisphere: %d." % morphology_data[bl.rhi(10, meta_data)]
+    >>> morphometry_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
+    >>> print "rh value at index 10, relative to start of right hemisphere: %d." % morphometry_data[bl.rhi(10, meta_data)]
     """
     lh_key = 'lh.num_data_points'
     rh_key = 'rh.num_data_points'
@@ -373,19 +373,19 @@ def rhi(rh_relative_index, meta_data):
         return num_lh + rh_relative_index
 
 
-def rhv(rh_relative_index, morphology_data, meta_data):
+def rhv(rh_relative_index, morphometry_data, meta_data):
     """
-    Returns the value in `morphology_data` at an index relative to the right hemisphere.
+    Returns the value in `morphometry_data` at an index relative to the right hemisphere.
 
-    This function makes sense only given a `morphology_data` and associated `meta_data` that contains data on two hemispheres. E.g., the return value of a function like `subject()` or `subject_avg()` when called with `hemi='both'`. For such data, it returns the value in `morphology_data` at a request index given relative to the right hemisphere. The name is short for 'right hemisphere value'.
+    This function makes sense only given a `morphometry_data` and associated `meta_data` that contains data on two hemispheres. E.g., the return value of a function like `subject()` or `subject_avg()` when called with `hemi='both'`. For such data, it returns the value in `morphometry_data` at a request index given relative to the right hemisphere. The name is short for 'right hemisphere value'.
 
     Parameters
     ----------
     rh_relative_index: int
         An index relative to the start of the right hemisphere in the data. E.g., `0` if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and `-1` will get you the last possible value, `-2` the second-to-last, and so on.
 
-    morphology_data: numpy array
-        The morphology data array, must represent data for both hemispheres.
+    morphometry_data: numpy array
+        The morphometry data array, must represent data for both hemispheres.
 
     meta_data: dictionary
         The meta data dictionary returned for your data. It must contain the keys 'lh.num_data_points' and 'rh.num_data_points'.
@@ -397,27 +397,27 @@ def rhv(rh_relative_index, morphology_data, meta_data):
     Examples
     --------
     >>> import brainload as bl
-    >>> morphology_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
-    >>> print "rh value at index 10, relative to start of right hemisphere: %d." % bl.rhv(10, morphology_data, meta_data)
+    >>> morphometry_data, meta_data = bl.subject('heinz', hemi='both')[2:4]
+    >>> print "rh value at index 10, relative to start of right hemisphere: %d." % bl.rhv(10, morphometry_data, meta_data)
     """
     abs_index = rhi(rh_relative_index, meta_data)
-    return morphology_data[abs_index]
+    return morphometry_data[abs_index]
 
 
 
-def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_data_file, hemi='both', format='curv', meta_data=None):
+def load_subject_morphometry_data_files(lh_morphometry_data_file, rh_morphometry_data_file, hemi='both', format='curv', meta_data=None):
     """
-    Load morphology data files for a subject.
+    Load morphometry data files for a subject.
 
-    Load one or two morphology data files for a subject. Which of the two files `lh_morphology_data_file` and `rh_morphology_data_file` are actually loaded is determined by the `hemi` parameter.
+    Load one or two morphometry data files for a subject. Which of the two files `lh_morphometry_data_file` and `rh_morphometry_data_file` are actually loaded is determined by the `hemi` parameter.
 
     Parameters
     ----------
-    lh_morphology_data_file: string | None
-        A string representing an absolute path to a morphology data file for the left hemisphere. If `hemi` is 'rh', this will be ignored and can thus be None.
+    lh_morphometry_data_file: string | None
+        A string representing an absolute path to a morphometry data file for the left hemisphere. If `hemi` is 'rh', this will be ignored and can thus be None.
 
-    rh_morphology_data_file: string | None
-        A string representing an absolute path to a morphology data file for the right hemisphere. If `hemi` is 'lh', this will be ignored and can thus be None.
+    rh_morphometry_data_file: string | None
+        A string representing an absolute path to a morphometry data file for the right hemisphere. If `hemi` is 'lh', this will be ignored and can thus be None.
 
     hemi: {'both', 'lh', 'rh'}, optional
         The hemisphere for which data should actually be loaded. Defaults to 'both'.
@@ -430,35 +430,35 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
 
     Returns
     -------
-    morphology_data: numpy array
+    morphometry_data: numpy array
         An array containing the scalar per-vertex data loaded from the file(s).
 
     meta_data: dictionary
         Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
             - `?h.num_data_points` : the number of data points loaded.
-            - `?h.morphology_file` : the value of the `?h_morphology_data_file` argument (data file that was loaded)
-            - `?h.morphology_file_format` : the value for `format` that was used
+            - `?h.morphometry_file` : the value of the `?h_morphometry_data_file` argument (data file that was loaded)
+            - `?h.morphometry_file_format` : the value for `format` that was used
 
     Examples
     --------
     Load the lh and rh area files for subject1.
 
     >>> import brainload.freesurferdata as fsd; import os
-    >>> lh_morphology_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'lh.area')
-    >>> rh_morphology_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'rh.area')
-    >>> morphology_data, meta_data = fsd.load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file)
+    >>> lh_morphometry_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'lh.area')
+    >>> rh_morphometry_file = os.path.join('path', 'to', 'subjects_dir', 'subject1', 'surf', 'rh.area')
+    >>> morphometry_data, meta_data = fsd.load_subject_morphometry_data_files(lh_morphometry_file, rh_morphometry_file)
 
     Now let's look at the area value for the vertex at index 10:
 
-    >>> print "lh value at index 10: %d." % morphology_data[10]
+    >>> print "lh value at index 10: %d." % morphometry_data[10]
 
     But what about the value of vertex 10 at the right hemisphere? We loaded 2 hemispheres, so the data is concatinated. But you can use the `meta_data` to get the correct index relative to the right hemisphere:
 
-    >>> print "rh value at index 10: %d." % morphology_data[fsd.rhi(10, meta_data)]
+    >>> print "rh value at index 10: %d." % morphometry_data[fsd.rhi(10, meta_data)]
 
     You could also get the value directly using the `rhv` function:
 
-    >>> print "rh value at index 10: %d." % fsd.rhv(10, morphology_data, meta_data)
+    >>> print "rh value at index 10: %d." % fsd.rhv(10, morphometry_data, meta_data)
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -470,14 +470,14 @@ def load_subject_morphology_data_files(lh_morphology_data_file, rh_morphology_da
         meta_data = {}
 
     if hemi == 'lh':
-        morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
+        morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh', meta_data=meta_data, format=format)
     elif hemi == 'rh':
-        morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
+        morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data, format=format)
     else:
-        lh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(lh_morphology_data_file, 'lh', meta_data=meta_data, format=format)
-        rh_morphology_data, meta_data = read_fs_morphology_data_file_and_record_meta_data(rh_morphology_data_file, 'rh', meta_data=meta_data, format=format)
-        morphology_data = merge_morphology_data(np.array([lh_morphology_data, rh_morphology_data]))
-    return morphology_data, meta_data
+        lh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh', meta_data=meta_data, format=format)
+        rh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data, format=format)
+        morphometry_data = merge_morphometry_data(np.array([lh_morphometry_data, rh_morphometry_data]))
+    return morphometry_data, meta_data
 
 
 def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_dir=None, use_freesurfer_home_if_missing=True):
@@ -536,13 +536,13 @@ def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_d
         freesurfer_home = os.getenv('FREESURFER_HOME', os.getcwd())
         subjects_dir = os.path.join(freesurfer_home, 'subjects')
 
-    vert_coords, faces, morphology_data, meta_data = subject(subject_id, surf=surf, hemi=hemi, subjects_dir=subjects_dir, measure=None, load_morphology_data=False)
+    vert_coords, faces, morphometry_data, meta_data = subject(subject_id, surf=surf, hemi=hemi, subjects_dir=subjects_dir, measure=None, load_morphometry_data=False)
     return vert_coords, faces, meta_data
 
 
 def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
     """
-    Load FreeSurfer brain morphology and/or mesh data for a single subject.
+    Load FreeSurfer brain morphometry and/or mesh data for a single subject.
 
     High-level interface to load FreeSurfer brain data for a single space. This parses the data for the surfaces of this subject. If you want to load data that has been mapped to an average subject like 'fsaverage', use `subject_avg` instead.
 
@@ -569,8 +569,8 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     load_surface_files: boolean, optional
         Whether to load mesh data. If set to `False`, the first return values `vert_coords` and `faces` will be `None`. Defaults to `True`.
 
-    load_morphology_data: boolean, optional
-        Whether to load morphology data. If set to `False`, the first return value `morphology_data` will be `None`. Defaults to `True`.
+    load_morphometry_data: boolean, optional
+        Whether to load morphometry data. If set to `False`, the first return value `morphometry_data` will be `None`. Defaults to `True`.
 
     Returns
     -------
@@ -580,22 +580,22 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     faces: numpy array
         A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
 
-    morphology_data: numpy array
+    morphometry_data: numpy array
         A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. Note that the two hemispheres do in general NOT have the same number of vertices.
 
     meta_data: dictionary
         A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
             - `?h.num_data_points` : the number of data points loaded.
-            - `?h.morphology_file` : the value of the `?h_morphology_data_file` argument (data file that was loaded)
-            - `?h.morphology_file_format` : the value for `format` that was used
+            - `?h.morphometry_file` : the value of the `?h_morphometry_data_file` argument (data file that was loaded)
+            - `?h.morphometry_file_format` : the value for `format` that was used
             - `?h.num_vertices` : number of vertices in the loaded mesh
             - `?h.num_faces` : number of faces in the loaded mesh
             - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
             - `subject_id` : the subject id
             - `subjects_dir` : the subjects dir that was used
             - `surf` : the surf that was used, e.g., 'white'
-            - `measure` : the measure that was loaded as morphology data, e.g., 'area'
-            - `space` : always the string 'subject'. This means that the data loaded represent morphology data taken from the subject's surface (as opposed to data mapped to a common or average subject).
+            - `measure` : the measure that was loaded as morphometry data, e.g., 'area'
+            - `space` : always the string 'subject'. This means that the data loaded represent morphometry data taken from the subject's surface (as opposed to data mapped to a common or average subject).
             - `hemi` : the `hemi` value that was used
 
     Raises
@@ -621,9 +621,9 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
 
     >>> data, md = bl.subject('subject1', hemi='rh', load_surface_files=False)[2:4]
 
-    ...or the other way around (mesh only, no morphology data):
+    ...or the other way around (mesh only, no morphometry data):
 
-    >>> vertices, faces = bl.subject('subject1', hemi='rh', load_morphology_data=False)[0:2]
+    >>> vertices, faces = bl.subject('subject1', hemi='rh', load_morphometry_data=False)[0:2]
 
 
     """
@@ -649,11 +649,11 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
         display_subject = None
         display_surf = None
 
-    morphology_data = None
+    morphometry_data = None
     if load_morhology_data:
-        lh_morphology_file = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphology_data_suffix_for_surface(surf)))
-        rh_morphology_file = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphology_data_suffix_for_surface(surf)))
-        morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_file, rh_morphology_file, hemi=hemi, format='curv', meta_data=meta_data)
+        lh_morphometry_file = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphometry_data_suffix_for_surface(surf)))
+        rh_morphometry_file = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphometry_data_suffix_for_surface(surf)))
+        morphometry_data, meta_data = load_subject_morphometry_data_files(lh_morphometry_file, rh_morphometry_file, hemi=hemi, format='curv', meta_data=meta_data)
     else:
         measure = None
 
@@ -667,7 +667,7 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     meta_data['space'] = 'native_space'
     meta_data['hemi'] = hemi
 
-    return vert_coords, faces, morphology_data, meta_data
+    return vert_coords, faces, morphometry_data, meta_data
 
 
 def _merge_meshes(meshes):
@@ -704,7 +704,7 @@ def _merge_meshes(meshes):
     return all_vert_coords, all_faces
 
 
-def subject_avg(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphology_files=None):
+def subject_avg(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphometry_files=None):
     """
     Load morphometry data that has been mapped to an average subject for a subject.
 
@@ -745,10 +745,10 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     load_surface_files: boolean, optional
         Whether to load mesh data. If set to `False`, the first return values `vert_coords` and `faces` will be `None`. Defaults to `True`.
 
-    load_morphology_data: boolean, optional
-        Whether to load morphology data. If set to `False`, the first return value `morphology_data` will be `None`. Defaults to `True`.
+    load_morphometry_data: boolean, optional
+        Whether to load morphometry data. If set to `False`, the first return value `morphometry_data` will be `None`. Defaults to `True`.
 
-    custom_morphology_files: dictionary, optional
+    custom_morphometry_files: dictionary, optional
         Cutom filenames for the left and right hemispjere data files that should be loaded. A dictionary of strings with exactly the following two keys: `lh` and `rh`. The value strings must contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the `surf/` directory of the respective subject. Example: `{'lh': 'lefthemi.nonstandard.mymeasure44.mgh', 'rh': 'righthemi.nonstandard.mymeasure44.mgh'}`.
 
     Returns
@@ -759,22 +759,22 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     faces: numpy array
         A 2-dimensional array containing the 3-faces of the mesh(es) of the average subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
 
-    morphology_data: numpy array
+    morphometry_data: numpy array
         A numpy array with as many entries as there are vertices in the average subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. In many cases, your average subject will have the same number of vertices for both hemispheres and you will know this number beforehand, so you may not have to worry about this at all.
 
     meta_data: dictionary
         A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
             - `?h.num_data_points` : the number of data points loaded.
-            - `?h.morphology_file` : the value of the `?h_morphology_data_file` argument (data file that was loaded)
-            - `?h.morphology_file_format` : the value for `format` that was used
+            - `?h.morphometry_file` : the value of the `?h_morphometry_data_file` argument (data file that was loaded)
+            - `?h.morphometry_file_format` : the value for `format` that was used
             - `?h.num_vertices` : number of vertices in the loaded mesh
             - `?h.num_faces` : number of faces in the loaded mesh
             - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
             - `subject_id` : the subject id
             - `subjects_dir` : the subjects dir that was used
             - `surf` : the surf that was used, e.g., 'white'
-            - `measure` : the measure that was loaded as morphology data, e.g., 'area'
-            - `space` : always the string 'common'. This means that the data loaded represent morphology data that has been mapped to a common or average subject.
+            - `measure` : the measure that was loaded as morphometry data, e.g., 'area'
+            - `space` : always the string 'common'. This means that the data loaded represent morphometry data that has been mapped to a common or average subject.
             - `hemi` : the `hemi` value that was used
             - `display_subject` : the name of the common or average subject. This is the subject the surface meshes originate from. Ususally 'fsaverage'.
             - `display_surf` : the surface of the common subject that has been loaded. Something like 'pial', 'white', or 'inflated'.
@@ -832,8 +832,8 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
         display_surf = None
         display_subject = None
 
-    # Parse the subject's morphology data, mapped to standard space by FreeSurfer's recon-all.
-    morphology_data = None
+    # Parse the subject's morphometry data, mapped to standard space by FreeSurfer's recon-all.
+    morphometry_data = None
     if load_morhology_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
         if fwhm is None:    # If the uses explicitely sets fwmh to None, we use the file without any 'fwhmX' part. This data in this file should be identical to the data on the fwhm='0' case, so we expect that this will be rarely used.
@@ -841,16 +841,16 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
         else:
             fhwm_tag = '.fwhm' + fwhm
 
-        if custom_morphology_files is None:
-            meta_data['custom_morphology_files_used'] = False
-            lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
-            rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphology_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+        if custom_morphometry_files is None:
+            meta_data['custom_morphometry_files_used'] = False
+            lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+            rh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
         else:
-            meta_data['custom_morphology_files_used'] = True
-            lh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['lh'])
-            rh_morphology_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphology_files['rh'])
+            meta_data['custom_morphometry_files_used'] = True
+            lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphometry_files['lh'])
+            rh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphometry_files['rh'])
 
-        morphology_data, meta_data = load_subject_morphology_data_files(lh_morphology_data_mapped_to_fsaverage, rh_morphology_data_mapped_to_fsaverage, hemi=hemi, format='mgh', meta_data=meta_data)
+        morphometry_data, meta_data = load_subject_morphometry_data_files(lh_morphometry_data_mapped_to_fsaverage, rh_morphometry_data_mapped_to_fsaverage, hemi=hemi, format='mgh', meta_data=meta_data)
     else:
         measure = None
 
@@ -867,11 +867,11 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     meta_data['fwhm'] = fwhm
     meta_data['hemi'] = hemi
 
-    return vert_coords, faces, morphology_data, meta_data
+    return vert_coords, faces, morphometry_data, meta_data
 
 
 
-def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphology_file_templates=None, subjects_detection_mode='auto'):
+def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphometry_file_templates=None, subjects_detection_mode='auto'):
     """
     Load morphometry data for a number of subjects.
 
@@ -911,7 +911,7 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
     subjects_file: string, optional
         The name of the subjects file, relative to the `subjects_file_dir`. Defaults to 'subjects.txt'. The file must be a simple text file that contains one `subject_id` per line. It can be a CSV file that has other data following, but the `subject_id` has to be the first item on each line and the separator must be a comma. So a line is allowed to look like this: `subject1, 35, center1, 147`. No header is allowed. If you have a different format, consider reading the file yourself and pass the result as `subjects_list` instead.
 
-    custom_morphology_file_templates: dictionary, optional
+    custom_morphometry_file_templates: dictionary, optional
         Cutom filenames for the left and right hemisphere data files that should be loaded. A dictionary of strings with exactly the following two keys: `lh` and `rh`. The value strings can contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the `surf/` directory of the respective subject. Example for hard-coded files: `{'lh': 'lefthemi.nonstandard.mymeasure44.mgh', 'rh': 'righthemi.nonstandard.mymeasure44.mgh'}`. The strings may contain any of the following variabes, which will be replaced by what you supplied to the other arguments of this function:
             - `${MEASURE}` will be replaced with the value of `measure`.
             - `${SURF}` will be replaced with the FreeSurfer file name part for the surface `surf`. This is the empty string if `surf` is 'white', and a dot followed by the value of `surf` for all other settings of surf. Examples: when `surf` is 'pial', this will be replaced with '.pial' (Note the dot!). If `surf` is 'white', this will be replaced with the empty string.
@@ -936,11 +936,11 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
 
     Returns
     -------
-    group_morphology_data: numpy array
-        An array filled with the morphology data for the subjects. The array has shape `(n, m)` where `n` is the number of subjects, and `m` is the number of vertices of the standard subject. (If you load both hemispheres instead of one, m doubles.) To get the subject id for the entries, look at the respective index in the returned `subjects_list`.
+    group_morphometry_data: numpy array
+        An array filled with the morphometry data for the subjects. The array has shape `(n, m)` where `n` is the number of subjects, and `m` is the number of vertices of the standard subject. (If you load both hemispheres instead of one, m doubles.) To get the subject id for the entries, look at the respective index in the returned `subjects_list`.
 
     subjects_list: list of strings
-        A list containing the subject identifiers in the same order as the data in `group_morphology_data`. (If `subjects_detection_mode` is 'list' or 'file', the order in these is guaranteed to be preserved. But in mode 'search_dir' or 'auto' which may have chosen to fall back to 'search_dir' as a last resort, this is helpful: You can use the index of a subject in this list to find its data in `group_morphology_data`, as it will have the same index. See the examples below.)
+        A list containing the subject identifiers in the same order as the data in `group_morphometry_data`. (If `subjects_detection_mode` is 'list' or 'file', the order in these is guaranteed to be preserved. But in mode 'search_dir' or 'auto' which may have chosen to fall back to 'search_dir' as a last resort, this is helpful: You can use the index of a subject in this list to find its data in `group_morphometry_data`, as it will have the same index. See the examples below.)
 
     group_meta_data: dictionary
         A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the `subject_avg` function.
@@ -1031,29 +1031,29 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
             run_meta_data['subjects_detection_mode_auto_used_method'] = 'search_dir'
             subjects_list = nit.detect_subjects_in_directory(subjects_dir, ignore_dir_names=[average_subject])
 
-    if custom_morphology_file_templates is not None:
-        run_meta_data['custom_morphology_file_templates_used'] = True
-        run_meta_data['lh.custom_morphology_file_template'] = custom_morphology_file_templates['lh']
-        run_meta_data['rh.custom_morphology_file_template'] = custom_morphology_file_templates['rh']
+    if custom_morphometry_file_templates is not None:
+        run_meta_data['custom_morphometry_file_templates_used'] = True
+        run_meta_data['lh.custom_morphometry_file_template'] = custom_morphometry_file_templates['lh']
+        run_meta_data['rh.custom_morphometry_file_template'] = custom_morphometry_file_templates['rh']
     else:
-        run_meta_data['custom_morphology_file_templates_used'] = False
+        run_meta_data['custom_morphometry_file_templates_used'] = False
 
-    group_morphology_data = []
+    group_morphometry_data = []
     for subject_id in subjects_list:
 
-        custom_morphology_files = None
+        custom_morphometry_files = None
         subject_meta_data = {}
-        if custom_morphology_file_templates is not None:
-            surf_file_part = _get_morphology_data_suffix_for_surface(surf)
+        if custom_morphometry_file_templates is not None:
+            surf_file_part = _get_morphometry_data_suffix_for_surface(surf)
             substitution_dict_lh = {'MEASURE': measure, 'SURF_RAW': surf, 'SURF': surf_file_part, 'HEMI': 'lh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id, 'AVERAGE_SUBJECT': average_subject}
             substitution_dict_rh = {'MEASURE': measure, 'SURF_RAW': surf, 'SURF': surf_file_part, 'HEMI': 'rh', 'FWHM': fwhm, 'SUBJECT_ID': subject_id, 'AVERAGE_SUBJECT': average_subject}
-            custom_morphology_file_lh = nit.fill_template_filename(custom_morphology_file_templates['lh'], substitution_dict_lh)
-            custom_morphology_file_rh = nit.fill_template_filename(custom_morphology_file_templates['rh'], substitution_dict_rh)
-            custom_morphology_files = {'lh': custom_morphology_file_lh, 'rh': custom_morphology_file_rh}
+            custom_morphometry_file_lh = nit.fill_template_filename(custom_morphometry_file_templates['lh'], substitution_dict_lh)
+            custom_morphometry_file_rh = nit.fill_template_filename(custom_morphometry_file_templates['rh'], substitution_dict_rh)
+            custom_morphometry_files = {'lh': custom_morphometry_file_lh, 'rh': custom_morphometry_file_rh}
 
         # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
-        subject_morphology_data, subject_meta_data = subject_avg(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=subject_meta_data, load_surface_files=False, custom_morphology_files=custom_morphology_files)[2:4]
+        subject_morphometry_data, subject_meta_data = subject_avg(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=subject_meta_data, load_surface_files=False, custom_morphometry_files=custom_morphometry_files)[2:4]
         group_meta_data[subject_id] = subject_meta_data
-        group_morphology_data.append(subject_morphology_data)
-    group_morphology_data = np.array(group_morphology_data)
-    return group_morphology_data, subjects_list, group_meta_data, run_meta_data
+        group_morphometry_data.append(subject_morphometry_data)
+    group_morphometry_data = np.array(group_morphometry_data)
+    return group_morphometry_data, subjects_list, group_meta_data, run_meta_data
