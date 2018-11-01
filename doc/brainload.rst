@@ -1,5 +1,5 @@
-brainload package
-=================
+Brainload API Documentation
+===========================
 
 .. automodule:: brainload
     :members:
