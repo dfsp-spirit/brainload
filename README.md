@@ -1,5 +1,5 @@
 # brainload
-A python module designed to reduce your brain load while accessing FreeSurfer brain surface and morphology data files ;). A wrapper around nibabel.
+A python module designed to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files.
 
 ## About
 
@@ -66,17 +66,27 @@ The brainload API documentation is now available:
 
 ## Installation
 
+#### Recommended: via pip
 
 ```console
 pip install --user brainload
 ```
 
-You can also get a wheel file here in the releases section at GitHub.
+You can also install into a virtual environment (python2: virtualenv, python3: venv) of course, omit the `--user` part in that case.
 
-### Anaconda
+Both source and wheel packages are also available here in the [brainload releases](https://github.com/dfsp-spirit/brainload/releases) section at GitHub, but you should not need them.
 
-I started building conda packages for different architectures, see https://anaconda.org/dfspspirit/brainload.
+#### via Anaconda
 
+I started building conda packages for different platforms, check https://anaconda.org/dfspspirit/brainload to see whether one is available for yours. In case it is:
+
+```console
+conda install -c dfspspirit brainload
+```
+
+#### Supported Python versions
+
+Brainload 0.2.0 is available for Python 2.7. Starting from 0.2.1, Brainload will also support Python 3.
 
 
 ## What about visualization?
