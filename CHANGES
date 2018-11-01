@@ -1,0 +1,17 @@
+Brainload Changes
+=================
+
+Version 0.3.0
+--------------
+- Added support for Python 3. We now test for Python 2.7, Python 3.5 and Python 3.6 on Travis CI.
+- Renamed all occurrences of the word morphology to morphometry, including in meta data entries and function names. This breaks compatibility with v0.2.0.
+- Extend documentation: add workflow examples. The documentation is no longer only API documentation.
+- Add recipe for anaconda build.
+
+
+Version 0.2.0
+--------------
+- First official version.
+- Added API methods for loading group data.
+- Renamed spatial_transform module to spatial. This breaks compatibility with previous versions.
+- Added methods for checking for files in subject directories in nitools module.
