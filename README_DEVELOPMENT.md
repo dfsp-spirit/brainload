@@ -212,7 +212,9 @@ It is finally time to upload it to the real PyPI:
 twine upload dist/*                           # will ask for your PyPI credentials for brainload
 ```
 
-#### Anaconda (build and distribution)
+#### Anaconda (build and distribution, recipe)
+
+If you are experienced with building for conda, all you want to know is maybe the following: the recipe can be found in `REPO_ROOT/develop/anaconda_dist/recipe/meta.yaml`.
 
 This has been done successfully under Linux and MacOS. It more or less follows the [official conda build instructions](https://conda.io/docs/user-guide/tutorials/build-pkgs.html).
 

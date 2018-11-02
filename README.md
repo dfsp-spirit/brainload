@@ -78,13 +78,15 @@ Both source and wheel packages are also available here in the [brainload release
 
 #### via Anaconda
 
-I started building conda packages for different platforms, check https://anaconda.org/dfspspirit/brainload to see whether one is available for yours. In case it is:
+I started building conda packages for different operating systems, check https://anaconda.org/dfspspirit/brainload to see whether one is available for yours. In case it is:
 
 ```console
 conda install -c dfspspirit brainload
 ```
 
 [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/version.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/platforms.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/license.svg)](https://anaconda.org/dfspspirit/brainload)
+
+If it is not, you can use the recipe in this repo to build it yourself, see [README_DEVELOPMENT](README_DEVELOPMENT.md). 
 
 #### Supported Python versions
 
