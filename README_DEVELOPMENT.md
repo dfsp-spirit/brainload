@@ -263,14 +263,26 @@ conda config --add channels conda-forge      # add channel so the next command w
 CONDA_BLD_PATH=/tmp/condaishacky conda-build .                        # may take a while... will output the full path to the file in the end. You will need this soon.
 ```
 
+Since brainload is a pure python package, we can easily convert it for other platforms:
 
-When the build is done, upload the package:
 
-```console
-anaconda login                   # will ask for your credentials
-anaconda upload full/path/to/package.tar.bz2
-conda deactivate
 ```
+$ conda convert --platform all  full/path/to/package.tar.bz2 -o pkg_converted/
+```
+
+When the build and conversion are done, upload the first package:
+
+```console          
+anaconda upload full/path/to/package.tar.bz2         # will ask for your condacloud credentials
+```
+
+Now, you can upload all converted ones, just export the file name first.
+
+```
+export PKG_FILENAME="some_name_and_version_here.tar.bz2"
+for ARCH in linux-32 linux-64 linux-ppc64le linux-armv6l linux-armv7l linux-aarch64 osx-64 win-32 win-64; do anaconda upload pkg_converted/${ARCH}/${PKG_FILENAME}; done
+```
+
 
 ##### Anaconda: How the recipe was created
 
