@@ -214,7 +214,7 @@ twine upload dist/*                           # will ask for your PyPI credentia
 
 #### Anaconda (build and distribution)
 
-This has been done successfully under Linux. It more or less follows the official conda instructions, see https://conda.io/docs/user-guide/tutorials/build-pkgs.html.
+This has been done successfully under Linux and MacOS. It more or less follows the [official conda build instructions](https://conda.io/docs/user-guide/tutorials/build-pkgs.html).
 
 IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
 
@@ -248,27 +248,10 @@ conda create --name blbuild python=2.7                  # skip if you have done 
 conda activate blbuild
 conda install conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
-CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
-```
-
-The last command created a skeleton version of the conda `meta.yaml` build file based on the `setup.py` file from pip and placed it in a new directory named `brainload`. So you should now have a file at `REPO_ROOT/develop/anaconda_dist/brainload/meta_yaml`. This skeleton version is not ready for usage though. Just overwrite it with the working version from `REPO_ROOT/develop/anaconda_dist/recipe/meta_yaml`:
-
-```console
-# we are still in REPO_ROOT/develop/anaconda_dist
-cp recipe/meta_yaml brainload/meta.yaml
-```
-
-Alternatively, you have to manually edit and fix the skeleton version. In case you wanna do that, edit `develop/anaconda_dist/brainload/meta.yaml` and add these to the dependencies in sections host and run:
-- pytest
-- pytest-cov
-- pytest-runner
-Also update the recipe maintainer.
-
-
-```console
+mkdir brainload
+cp recipe/meta.yaml brainload/
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
 CONDA_BLD_PATH=/tmp/condaishacky conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
-conda deactivate
 ```
 
 
@@ -277,7 +260,38 @@ When the build is done, upload the package:
 ```console
 anaconda login                   # will ask for your credentials
 anaconda upload full/path/to/package.tar.bz2
+conda deactivate
 ```
+
+##### Anaconda: How the recipe was created
+
+You do not have to do this again, but still here is how I created the `meta.yaml` file that can be found in `develop/anaconda_dist/recipe`.
+
+It follows the [official guide using the skeleton from PyPI method](https://conda.io/docs/user-guide/tutorials/build-pkgs-skeleton.html).
+
+```console
+cd develop/anaconda_dist
+conda update conda
+conda create --name blbuild python=2.7                  # skip if you have done these steps before
+conda activate blbuild
+conda install conda-build anaconda-client conda-verify
+mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
+CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
+```
+
+The last command created a skeleton version of the conda `meta.yaml` build file based on the `setup.py` file from pip and placed it in a new directory named `brainload`. So you should now have a file at `REPO_ROOT/develop/anaconda_dist/brainload/meta_yaml`. This skeleton version is not ready for usage though and the build will fail with it. To create the final version, the following steps were needed:
+
+- In the `extra` section, full in the `recipe-maintainers` information
+- Setuptools will download some dependencies at install time or later when installing via pip, e.g., pytest-runner, when you run `python setup.py test`. This does not work with conda, so you have to list all these dependencies manually in the `meta.yaml` file for conda. These dependencies currently are the following packages:
+    - pytest
+    - pytest-cov
+    - pytest-runner
+  You have to add them in the following three sections:
+    - requirements | hosts
+    - requirements | run
+    - test | requires
+
+Save the file, and you should have a working recipe.
 
 ## Python 3
 
