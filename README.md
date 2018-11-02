@@ -86,7 +86,7 @@ conda install -c dfspspirit brainload
 
 [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/version.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/platforms.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/license.svg)](https://anaconda.org/dfspspirit/brainload)
 
-If it is not, you can use the recipe in this repo to build it yourself, see [README_DEVELOPMENT](README_DEVELOPMENT.md). 
+If it is not, you can use the recipe in this repo to build it yourself, see [README_DEVELOPMENT](README_DEVELOPMENT.md).
 
 #### Supported Python versions
 
@@ -126,4 +126,4 @@ Less related but still useful:
 
 ## License
 
-Brainload is free software, released under the [MIT license](https://opensource.org/licenses/MIT).
+Brainload is free software, released under the [MIT license](https://opensource.org/licenses/MIT). See the LICENSE file for the full license text.

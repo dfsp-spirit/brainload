@@ -214,11 +214,20 @@ twine upload dist/*                           # will ask for your PyPI credentia
 
 #### Anaconda (build and distribution, recipe)
 
+> WARNING: When trying to build a version of brainload yourself for conda, make sure that you are using the correct recipe version! I.e., make sure you check out the source code for that release, do NOT use the latest HEAD from master! Example for getting the correct recipe for version 0.2.0 (after normal clone/checkout of repo):
+
+```console
+$ cd REPO_ROOT
+$ git tag -l
+v0.2.0
+$ git checkout tags/v0.2.0
+```
+
 If you are experienced with building for conda, all you want to know is maybe the following: the recipe can be found in `REPO_ROOT/develop/anaconda_dist/recipe/meta.yaml`.
 
 This has been done successfully under Linux and MacOS. It more or less follows the [official conda build instructions](https://conda.io/docs/user-guide/tutorials/build-pkgs.html).
 
-IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
+> IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
 
 Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into `~/software/anaconda2`.
 
