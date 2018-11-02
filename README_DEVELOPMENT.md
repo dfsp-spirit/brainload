@@ -229,9 +229,9 @@ This has been done successfully under Linux and MacOS. It more or less follows t
 
 > IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
 
-Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into `~/software/anaconda2`.
+Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into ${CONDA_DIR}`, which could be something like `~/software/anaconda2`.
 
-The first step is to activate conda if it is not yet active. Type `conda --version` to check whether the `conda` command is available. If the command is not found, assuming you installed conda to `${CONDA_DIR}`:
+The first step is to activate conda if it is not yet active. Type `conda --version` to check whether the `conda` command is available. If the command is not found:
 
 If you installed conda < 4.4:
 
@@ -253,16 +253,14 @@ conda env list        # shows available environments, the one marked with an ast
 Now that conda is active, we are in the conda `base` environment. Let's create a new sub environment and install the required tools into it:
 
 ```console
-cd develop/anaconda_dist
+cd develop/anaconda_dist/recipe
 conda update conda
 conda create --name blbuild python=2.7                  # skip if you have done these steps before
 conda activate blbuild
 conda install conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
-mkdir brainload
-cp recipe/meta.yaml brainload/
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
-CONDA_BLD_PATH=/tmp/condaishacky conda-build brainload                        # may take a while... will output the full path to the file in the end. You will need this soon.
+CONDA_BLD_PATH=/tmp/condaishacky conda-build .                        # may take a while... will output the full path to the file in the end. You will need this soon.
 ```
 
 
@@ -297,12 +295,12 @@ The last command created a skeleton version of the conda `meta.yaml` build file 
     - pytest
     - pytest-cov
     - pytest-runner
-  You have to add them in the following three sections:
+You have to add them in the following three sections:
     - requirements | hosts
     - requirements | run
     - test | requires
 
-Save the file, and you should have a working recipe.
+Save the file `meta.yaml`, and you should have a working recipe.
 
 ## Python 3
 
