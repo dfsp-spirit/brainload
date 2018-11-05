@@ -74,6 +74,8 @@ pip install --user brainload
 
 You can also install into a virtual environment (python2: virtualenv, python3: venv) of course, omit the `--user` part in that case.
 
+[![PyPI version](https://badge.fury.io/py/brainload.svg)](https://badge.fury.io/py/brainload)
+
 Both source and wheel packages are also available here in the [brainload releases](https://github.com/dfsp-spirit/brainload/releases) section at GitHub, but you should not need them.
 
 #### via Anaconda
