@@ -1,0 +1,1734 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Brainload :: Documentation &mdash; brainload v0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Brainload Example Workflows" href="workflows.html" />
+    <link rel="prev" title="Welcome to brainload’s documentation!" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> brainload
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Brainload API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-brainload.freesurferdata">brainload.freesurferdata module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-brainload.nitools">brainload.nitools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-brainload.spatial">brainload.spatial module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Brainload Example Workflows</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">brainload</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Brainload :: Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-brainload">
+<span id="brainload-api-documentation"></span><h1>Brainload API Documentation<a class="headerlink" href="#module-brainload" title="Permalink to this headline">¶</a></h1>
+<p>Brainload high-level API functions.</p>
+<dl class="function">
+<dt id="brainload.subject">
+<code class="descclassname">brainload.</code><code class="descname">subject</code><span class="sig-paren">(</span><em>subject_id</em>, <em>surf='white'</em>, <em>measure='area'</em>, <em>hemi='both'</em>, <em>subjects_dir=None</em>, <em>meta_data=None</em>, <em>load_surface_files=True</em>, <em>load_morhology_data=True</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load FreeSurfer brain morphometry and/or mesh data for a single subject.</p>
+<p>High-level interface to load FreeSurfer brain data for a single space. This parses the data for the surfaces of this subject. If you want to load data that has been mapped to an average subject like ‘fsaverage’, use <cite>subject_avg</cite> instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subject_id</strong> (<em>string</em>) – The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject’s data, relative to <cite>subjects_dir</cite>. Example: ‘subject33’.</li>
+<li><strong>measure</strong> (<em>string</em><em>, </em><em>optional</em>) – The measure to load, e.g., ‘area’ or ‘curv’. Defaults to ‘area’.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – A dictionary that should be merged into the return value <cite>meta_data</cite>. Defaults to the empty dictionary if omitted.</li>
+<li><strong>load_surface_files</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load mesh data. If set to <cite>False</cite>, the first return values <cite>vert_coords</cite> and <cite>faces</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+<li><strong>load_morphometry_data</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load morphometry data. If set to <cite>False</cite>, the first return value <cite>morphometry_data</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
+</li>
+<li><p class="first"><strong>morphometry_data</strong> (<em>numpy array</em>) – A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned <cite>meta_data</cite>, see <cite>meta_data[‘lh.num_vertices’]</cite> and <cite>meta_data[‘rh.num_vertices’]</cite>. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has <cite>n</cite> vertices, the data for them are at indices <cite>0..n-1</cite>, and the data for the right hemisphere start at index <cite>n</cite>. Note that the two hemispheres do in general NOT have the same number of vertices.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_data_points</cite> : the number of data points loaded.</li>
+<li><cite>?h.morphometry_file</cite> : the value of the <cite>?h_morphometry_data_file</cite> argument (data file that was loaded)</li>
+<li><cite>?h.morphometry_file_format</cite> : the value for <cite>format</cite> that was used</li>
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+<li><cite>subject_id</cite> : the subject id</li>
+<li><cite>subjects_dir</cite> : the subjects dir that was used</li>
+<li><cite>surf</cite> : the surf that was used, e.g., ‘white’</li>
+<li><cite>measure</cite> : the measure that was loaded as morphometry data, e.g., ‘area’</li>
+<li><cite>space</cite> : always the string ‘subject’. This means that the data loaded represent morphometry data taken from the subject’s surface (as opposed to data mapped to a common or average subject).</li>
+<li><cite>hemi</cite> : the <cite>hemi</cite> value that was used</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, we are a bit more explicit about what we want to load:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_home</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometimes we do not care for the mesh, e.g., we only want the morphometry data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>…or the other way around (mesh only, no morphometry data):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_morphometry_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.subject_avg">
+<code class="descclassname">brainload.</code><code class="descname">subject_avg</code><span class="sig-paren">(</span><em>subject_id</em>, <em>measure='area'</em>, <em>surf='white'</em>, <em>display_surf='white'</em>, <em>hemi='both'</em>, <em>fwhm='10'</em>, <em>subjects_dir=None</em>, <em>average_subject='fsaverage'</em>, <em>subjects_dir_for_average_subject=None</em>, <em>meta_data=None</em>, <em>load_surface_files=True</em>, <em>load_morhology_data=True</em>, <em>custom_morphometry_files=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.subject_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load morphometry data that has been mapped to an average subject for a subject.</p>
+<p>Load data for a single subject that has been mapped to an average subject like the <cite>fsaverage</cite> subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subject_id</strong> (<em>string</em>) – The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject’s data, relative to <cite>subjects_dir</cite>. Example: ‘subject33’.</li>
+<li><strong>measure</strong> (<em>string</em><em>, </em><em>optional</em>) – The measure to load, e.g., ‘area’ or ‘curv’. Defaults to ‘area’.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>fwhm</strong> (<em>string</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. Defaults to ‘10’. If None is passed, the <cite>.fwhmX</cite> part is omitted from the file name completely. Set this to ‘0’ to get the unsmoothed version.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>average_subject</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the average subject to which the data was mapped. Defaults to ‘fsaverage’.</li>
+<li><strong>display_surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The surface of the average subject for which the mesh should be loaded, e.g., ‘white’, ‘pial’, ‘inflated’, or ‘sphere’. Defaults to ‘white’. Ignored if <cite>load_surface_files</cite> is <cite>False</cite>.</li>
+<li><strong>subjects_dir_for_average_subject</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This can be used if the average subject is not in the same directory as all your study subjects. Defaults to the setting of <cite>subjects_dir</cite>.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – A dictionary that should be merged into the return value <cite>meta_data</cite>. Defaults to the empty dictionary if omitted.</li>
+<li><strong>load_surface_files</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load mesh data. If set to <cite>False</cite>, the first return values <cite>vert_coords</cite> and <cite>faces</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+<li><strong>load_morphometry_data</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load morphometry data. If set to <cite>False</cite>, the first return value <cite>morphometry_data</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+<li><strong>custom_morphometry_files</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – Cutom filenames for the left and right hemispjere data files that should be loaded. A dictionary of strings with exactly the following two keys: <cite>lh</cite> and <cite>rh</cite>. The value strings must contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the <cite>surf/</cite> directory of the respective subject. Example: <cite>{‘lh’: ‘lefthemi.nonstandard.mymeasure44.mgh’, ‘rh’: ‘righthemi.nonstandard.mymeasure44.mgh’}</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the average subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the average subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
+</li>
+<li><p class="first"><strong>morphometry_data</strong> (<em>numpy array</em>) – A numpy array with as many entries as there are vertices in the average subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned <cite>meta_data</cite>, see <cite>meta_data[‘lh.num_vertices’]</cite> and <cite>meta_data[‘rh.num_vertices’]</cite>. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has <cite>n</cite> vertices, the data for them are at indices <cite>0..n-1</cite>, and the data for the right hemisphere start at index <cite>n</cite>. In many cases, your average subject will have the same number of vertices for both hemispheres and you will know this number beforehand, so you may not have to worry about this at all.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_data_points</cite> : the number of data points loaded.</li>
+<li><cite>?h.morphometry_file</cite> : the value of the <cite>?h_morphometry_data_file</cite> argument (data file that was loaded)</li>
+<li><cite>?h.morphometry_file_format</cite> : the value for <cite>format</cite> that was used</li>
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+<li><cite>subject_id</cite> : the subject id</li>
+<li><cite>subjects_dir</cite> : the subjects dir that was used</li>
+<li><cite>surf</cite> : the surf that was used, e.g., ‘white’</li>
+<li><cite>measure</cite> : the measure that was loaded as morphometry data, e.g., ‘area’</li>
+<li><cite>space</cite> : always the string ‘common’. This means that the data loaded represent morphometry data that has been mapped to a common or average subject.</li>
+<li><cite>hemi</cite> : the <cite>hemi</cite> value that was used</li>
+<li><cite>display_subject</cite> : the name of the common or average subject. This is the subject the surface meshes originate from. Ususally ‘fsaverage’.</li>
+<li><cite>display_surf</cite> : the surface of the common subject that has been loaded. Something like ‘pial’, ‘white’, or ‘inflated’.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR, mapped to fsaverage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;surf&#39;</span><span class="p">]</span>
+<span class="go">white</span>
+</pre></div>
+</div>
+<p>Here, we are a bit more picky and explicit about what we want to load:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_home</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">display_surf</span><span class="o">=</span><span class="s1">&#39;inflated&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometime we do not care for the mesh, e.g., we only want the morphometry data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.group">
+<code class="descclassname">brainload.</code><code class="descname">group</code><span class="sig-paren">(</span><em>measure</em>, <em>surf='white'</em>, <em>hemi='both'</em>, <em>fwhm='10'</em>, <em>subjects_dir=None</em>, <em>average_subject='fsaverage'</em>, <em>group_meta_data=None</em>, <em>subjects_list=None</em>, <em>subjects_file='subjects.txt'</em>, <em>subjects_file_dir=None</em>, <em>custom_morphometry_file_templates=None</em>, <em>subjects_detection_mode='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load morphometry data for a number of subjects.</p>
+<p>Load group data, i.e., morphometry data for all subjects in a study that has already been mapped to standard space and is ready for group analysis.
+The information given in the parameters <cite>measure</cite>, <cite>surf</cite>, <cite>hemi</cite>, and <cite>fwhm</cite> are used to construct the file name that will be loaded by default. This function will NOT load the meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>measure</strong> (<em>string</em>) – The measure to load, e.g., ‘area’ or ‘curv’. Data files for this measure have to exist for all subjects.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>fwhm</strong> (<em>string</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. Defaults to ‘10’. If None is passed, the <cite>.fwhmX</cite> part is omitted from the file name completely. Set this to ‘0’ to get the unsmoothed version.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>average_subject</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the average subject to which the data was mapped. Defaults to ‘fsaverage’.</li>
+<li><strong>group_meta_data</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – A dictionary that should be merged into the return value <cite>group_meta_data</cite>. Defaults to the empty dictionary if omitted.</li>
+<li><strong>subjects_list</strong> (list of strings, optional (unless <cite>subjects_detection_mode</cite> is set to <cite>list</cite>)) – A list of subject identifiers or directory names that should be loaded from the <cite>subjects_dir</cite>. Example list: <cite>[‘subject1’, ‘subject2’]</cite>. Defaults to None. Only allowed if <cite>subjects_detection_mode</cite> is <cite>auto</cite> or <cite>list</cite>. In <cite>auto</cite> mode, this takes
+precedence over all other options, i.e., if a <cite>subjects_list</cite> <em>and</em> the (default or custom) <cite>subjects_file</cite> are given, the <cite>subjects_list</cite> will be used.</li>
+<li><strong>subjects_file_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This directory must contain the <cite>subjects_file</cite> (see below). Defaults to the <cite>subjects_dir</cite>.</li>
+<li><strong>subjects_file</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the subjects file, relative to the <cite>subjects_file_dir</cite>. Defaults to ‘subjects.txt’. The file must be a simple text file that contains one <cite>subject_id</cite> per line. It can be a CSV file that has other data following, but the <cite>subject_id</cite> has to be the first item on each line and the separator must be a comma. So a line is allowed to look like this: <cite>subject1, 35, center1, 147</cite>. No header is allowed. If you have a different format, consider reading the file yourself and pass the result as <cite>subjects_list</cite> instead.</li>
+<li><strong>custom_morphometry_file_templates</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – <dl class="docutils">
+<dt>Cutom filenames for the left and right hemisphere data files that should be loaded. A dictionary of strings with exactly the following two keys: <cite>lh</cite> and <cite>rh</cite>. The value strings can contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the <cite>surf/</cite> directory of the respective subject. Example for hard-coded files: <cite>{‘lh’: ‘lefthemi.nonstandard.mymeasure44.mgh’, ‘rh’: ‘righthemi.nonstandard.mymeasure44.mgh’}</cite>. The strings may contain any of the following variabes, which will be replaced by what you supplied to the other arguments of this function:</dt>
+<dd><ul class="first">
+<li><cite>${MEASURE}</cite> will be replaced with the value of <cite>measure</cite>.</li>
+<li><cite>${SURF}</cite> will be replaced with the FreeSurfer file name part for the surface <cite>surf</cite>. This is the empty string if <cite>surf</cite> is ‘white’, and a dot followed by the value of <cite>surf</cite> for all other settings of surf. Examples: when <cite>surf</cite> is ‘pial’, this will be replaced with ‘.pial’ (Note the dot!). If <cite>surf</cite> is ‘white’, this will be replaced with the empty string.</li>
+<li><cite>${SURF_RAW}</cite> will be replaced with the value of <cite>surf</cite>.</li>
+<li><cite>${HEMI}</cite> will be replaced with ‘lh’ for the left hemisphere, and with ‘rh’ for the right hemisphere.</li>
+<li><cite>${FWHM}</cite> will be replaced with the value of <cite>fwhm</cite>, so something like ‘10’.</li>
+<li><cite>${SUBJECT_ID}</cite> will be replaced by the id of the subject that is being loaded, e.g., ‘subject3’.</li>
+<li><cite>${AVERAGE_SUBJECT}</cite> will be replaced by the value of <cite>average_subject</cite>.</li>
+</ul>
+<p class="last">Note that only <cite>${SURF}</cite> and <cite>${HEMI}</cite> are usually needed, everything else can be hardcoded (or is not part of typical FreeSurfer file names at all, like <cite>${SUBJECT_ID}</cite>).
+Example template string: <cite>subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh</cite>. Complete example for template strings in dictionary: <cite>{‘lh’: ‘subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh’, ‘rh’: ‘subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh’}</cite>.</p>
+</dd>
+</dl>
+</li>
+<li><strong>subjects_detection_mode</strong> (<em>{'auto'</em><em>, </em><em>'list'</em><em>, </em><em>'file'</em><em>, </em><em>'search_dir'}</em><em>, </em><em>optional</em>) – <dl class="docutils">
+<dt>The method used to determine the subjects that should be loaded. Defaults to ‘auto’. You can always see which mode was used by looking at the returned <cite>run_meta_data</cite>, see <cite>run_meta_data[‘subjects_detection_mode’]</cite>.</dt>
+<dd><ul class="first last">
+<li>’auto’: In this mode, all available methods will be tried in the following order: If a <cite>subjects_list</cite> is given, it is used. Then, the <cite>subjects_file</cite> is used if it exists. Note that this may be the default file, ‘$SUBJECTS_DIR/subject_surf_dir.txt’, or another if one has explicitely been defined by setting <cite>subjects_file</cite> and/or <cite>subjects_file_dir</cite>. If the file does not exist, the directory is searched for directories containing FreeSurfer data as defined in the section for ‘search_dir’ mode below. You can always see which method was used in auto mode by looking at the returned <cite>run_meta_data</cite>, see <cite>run_meta_data[‘subjects_detection_mode_auto_used_method’]</cite>.</li>
+<li>’list’: In this mode, the given <cite>subjects_list</cite> is used, and you have to supply one. If not, an error is raised. You are not allowed to supply a <cite>subjects_file</cite> in this mode, or an error will be raised.</li>
+<li>’file’: In this mode, the subjects file is used. Note that this may be the default file, ‘$SUBJECTS_DIR/subjects.txt’, or another if one has explicitely been defined by setting <cite>subjects_file</cite> and/or <cite>subjects_file_dir</cite>. If the file does not exist, an error is raised. You can see which file was used by looking at the returned <cite>run_meta_data</cite>, see <cite>run_meta_data[‘subjects_file’]</cite>. You are not allowed to supply a <cite>subjects_list</cite> in this mode, or an error will be raised.</li>
+<li>’search_dir’: In this mode, the <cite>subjects_dir</cite> (default or explicitely given) is searched for sub directories which look as if they could contain FreeSurfer data. The latter means that they contain a sub directory named ‘surf’. There is one exception though: if the name of one such directory equals the name of the <cite>average_subject</cite>, the directory is skipped. You are not allowed to supply a <cite>subjects_list</cite> in this mode, or an error will be raised.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li><strong>group_morphometry_data</strong> (<em>numpy array</em>) – An array filled with the morphometry data for the subjects. The array has shape <cite>(n, m)</cite> where <cite>n</cite> is the number of subjects, and <cite>m</cite> is the number of vertices of the standard subject. (If you load both hemispheres instead of one, m doubles.) To get the subject id for the entries, look at the respective index in the returned <cite>subjects_list</cite>.</li>
+<li><strong>subjects_list</strong> (<em>list of strings</em>) – A list containing the subject identifiers in the same order as the data in <cite>group_morphometry_data</cite>. (If <cite>subjects_detection_mode</cite> is ‘list’ or ‘file’, the order in these is guaranteed to be preserved. But in mode ‘search_dir’ or ‘auto’ which may have chosen to fall back to ‘search_dir’ as a last resort, this is helpful: You can use the index of a subject in this list to find its data in <cite>group_morphometry_data</cite>, as it will have the same index. See the examples below.)</li>
+<li><strong>group_meta_data</strong> (<em>dictionary</em>) – A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the <cite>subject_avg</cite> function.</li>
+<li><strong>run_meta_data</strong> (<em>dictionary</em>) – A dictionary containing general information on the settings used when executing the function and determining which subjects to load.</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for all subjects in the directory defined by the environment variable SUBJECTS_DIR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">group_md</span><span class="p">,</span> <span class="n">run_md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, we load curv data for the right hemisphere, computed on the pial surface with smooting of 20:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">group_md</span><span class="p">,</span> <span class="n">run_md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">surf</span><span class="o">=</span><span class="s1">&#39;pial&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;20&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We may want to be a but more explicit on which subjects are loaded from where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;subject4&#39;</span><span class="p">,</span> <span class="s1">&#39;subject8&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">group_md</span><span class="p">,</span> <span class="n">run_md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;20&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject ‘subject4’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject4_idx</span> <span class="o">=</span> <span class="n">subjects</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;subject4&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">data</span><span class="p">[</span><span class="n">subject4_idx</span><span class="p">][</span><span class="mi">100000</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.fsaverage_mesh">
+<code class="descclassname">brainload.</code><code class="descname">fsaverage_mesh</code><span class="sig-paren">(</span><em>subject_id='fsaverage'</em>, <em>surf='white'</em>, <em>hemi='both'</em>, <em>subjects_dir=None</em>, <em>use_freesurfer_home_if_missing=True</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.fsaverage_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a surface mesh of the fsaverage subject.</p>
+<p>Convenience function to load a FreeSurfer surface mesh of the fsaverage subject. You could also use this function to load the mesh of any other subject, but in that case, you may want to set <cite>use_freesurfer_home_if_missing</cite> to False (see below). This function calls <cite>subject</cite> in the background and shares the relevant arguments and return values with that function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subject_id</strong> (<em>string</em><em>, </em><em>optional</em>) – The subject identifier of the subject. Defaults to ‘fsaverage’.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>use_freesurfer_home_if_missing</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If set to True, first checks whether the directory for the given subject exists in the <cite>subjects_dir</cite>. If it does not, it will reset the <cite>subjects_dir</cite> to ‘${FREESURFER_HOME}/subjects’ before proceeding.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">verts</span><span class="p">,</span> <span class="n">faced</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">fsaverage_mesh</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.rhi">
+<code class="descclassname">brainload.</code><code class="descname">rhi</code><span class="sig-paren">(</span><em>rh_relative_index</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.rhi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the absolute data index given an index relative to the right hemisphere.</p>
+<p>This function makes sense only given a <cite>morphometry_data</cite> and associated <cite>meta_data</cite> that contains data on two hemispheres (even though the <cite>morphometry_data</cite> array itself is not passed to this function). E.g., the return value of a function like <cite>subject()</cite> or <cite>subject_avg()</cite> when called with <cite>hemi=’both’</cite>. For such data, it computes the absolute index in the data given a request index relative to the right hemisphere. The name is short for ‘right hemisphere index’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the right hemisphere. E.g., <cite>0</cite> if you want to get the index of the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible index, <cite>-2</cite> the second-to-last, and so on.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The absolute index into the data for the given <cite>rh_relative_index</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;heinz&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10, relative to start of right hemisphere: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">morphometry_data</span><span class="p">[</span><span class="n">bl</span><span class="o">.</span><span class="n">rhi</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.rhv">
+<code class="descclassname">brainload.</code><code class="descname">rhv</code><span class="sig-paren">(</span><em>rh_relative_index</em>, <em>morphometry_data</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.rhv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value in <cite>morphometry_data</cite> at an index relative to the right hemisphere.</p>
+<p>This function makes sense only given a <cite>morphometry_data</cite> and associated <cite>meta_data</cite> that contains data on two hemispheres. E.g., the return value of a function like <cite>subject()</cite> or <cite>subject_avg()</cite> when called with <cite>hemi=’both’</cite>. For such data, it returns the value in <cite>morphometry_data</cite> at a request index given relative to the right hemisphere. The name is short for ‘right hemisphere value’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the start of the right hemisphere in the data. E.g., <cite>0</cite> if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible value, <cite>-2</cite> the second-to-last, and so on.</li>
+<li><strong>morphometry_data</strong> (<em>numpy array</em>) – The morphometry data array, must represent data for both hemispheres.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The value at the given index that is relative to the start of the right hemisphere in the data.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;heinz&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10, relative to start of right hemisphere: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">bl</span><span class="o">.</span><span class="n">rhv</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-brainload.freesurferdata">
+<span id="brainload-freesurferdata-module"></span><h2>brainload.freesurferdata module<a class="headerlink" href="#module-brainload.freesurferdata" title="Permalink to this headline">¶</a></h2>
+<p>Functions for loading FreeSurfer data on different levels.</p>
+<p>The high-level functions are available directly in the package namespace. Using the functions in here should not be necessary.</p>
+<dl class="function">
+<dt id="brainload.freesurferdata.fsaverage_mesh">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">fsaverage_mesh</code><span class="sig-paren">(</span><em>subject_id='fsaverage'</em>, <em>surf='white'</em>, <em>hemi='both'</em>, <em>subjects_dir=None</em>, <em>use_freesurfer_home_if_missing=True</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.fsaverage_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a surface mesh of the fsaverage subject.</p>
+<p>Convenience function to load a FreeSurfer surface mesh of the fsaverage subject. You could also use this function to load the mesh of any other subject, but in that case, you may want to set <cite>use_freesurfer_home_if_missing</cite> to False (see below). This function calls <cite>subject</cite> in the background and shares the relevant arguments and return values with that function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subject_id</strong> (<em>string</em><em>, </em><em>optional</em>) – The subject identifier of the subject. Defaults to ‘fsaverage’.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>use_freesurfer_home_if_missing</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If set to True, first checks whether the directory for the given subject exists in the <cite>subjects_dir</cite>. If it does not, it will reset the <cite>subjects_dir</cite> to ‘${FREESURFER_HOME}/subjects’ before proceeding.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">verts</span><span class="p">,</span> <span class="n">faced</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">fsaverage_mesh</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.group">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">group</code><span class="sig-paren">(</span><em>measure</em>, <em>surf='white'</em>, <em>hemi='both'</em>, <em>fwhm='10'</em>, <em>subjects_dir=None</em>, <em>average_subject='fsaverage'</em>, <em>group_meta_data=None</em>, <em>subjects_list=None</em>, <em>subjects_file='subjects.txt'</em>, <em>subjects_file_dir=None</em>, <em>custom_morphometry_file_templates=None</em>, <em>subjects_detection_mode='auto'</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load morphometry data for a number of subjects.</p>
+<p>Load group data, i.e., morphometry data for all subjects in a study that has already been mapped to standard space and is ready for group analysis.
+The information given in the parameters <cite>measure</cite>, <cite>surf</cite>, <cite>hemi</cite>, and <cite>fwhm</cite> are used to construct the file name that will be loaded by default. This function will NOT load the meshes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>measure</strong> (<em>string</em>) – The measure to load, e.g., ‘area’ or ‘curv’. Data files for this measure have to exist for all subjects.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>fwhm</strong> (<em>string</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. Defaults to ‘10’. If None is passed, the <cite>.fwhmX</cite> part is omitted from the file name completely. Set this to ‘0’ to get the unsmoothed version.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>average_subject</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the average subject to which the data was mapped. Defaults to ‘fsaverage’.</li>
+<li><strong>group_meta_data</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – A dictionary that should be merged into the return value <cite>group_meta_data</cite>. Defaults to the empty dictionary if omitted.</li>
+<li><strong>subjects_list</strong> (list of strings, optional (unless <cite>subjects_detection_mode</cite> is set to <cite>list</cite>)) – A list of subject identifiers or directory names that should be loaded from the <cite>subjects_dir</cite>. Example list: <cite>[‘subject1’, ‘subject2’]</cite>. Defaults to None. Only allowed if <cite>subjects_detection_mode</cite> is <cite>auto</cite> or <cite>list</cite>. In <cite>auto</cite> mode, this takes
+precedence over all other options, i.e., if a <cite>subjects_list</cite> <em>and</em> the (default or custom) <cite>subjects_file</cite> are given, the <cite>subjects_list</cite> will be used.</li>
+<li><strong>subjects_file_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This directory must contain the <cite>subjects_file</cite> (see below). Defaults to the <cite>subjects_dir</cite>.</li>
+<li><strong>subjects_file</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the subjects file, relative to the <cite>subjects_file_dir</cite>. Defaults to ‘subjects.txt’. The file must be a simple text file that contains one <cite>subject_id</cite> per line. It can be a CSV file that has other data following, but the <cite>subject_id</cite> has to be the first item on each line and the separator must be a comma. So a line is allowed to look like this: <cite>subject1, 35, center1, 147</cite>. No header is allowed. If you have a different format, consider reading the file yourself and pass the result as <cite>subjects_list</cite> instead.</li>
+<li><strong>custom_morphometry_file_templates</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – <dl class="docutils">
+<dt>Cutom filenames for the left and right hemisphere data files that should be loaded. A dictionary of strings with exactly the following two keys: <cite>lh</cite> and <cite>rh</cite>. The value strings can contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the <cite>surf/</cite> directory of the respective subject. Example for hard-coded files: <cite>{‘lh’: ‘lefthemi.nonstandard.mymeasure44.mgh’, ‘rh’: ‘righthemi.nonstandard.mymeasure44.mgh’}</cite>. The strings may contain any of the following variabes, which will be replaced by what you supplied to the other arguments of this function:</dt>
+<dd><ul class="first">
+<li><cite>${MEASURE}</cite> will be replaced with the value of <cite>measure</cite>.</li>
+<li><cite>${SURF}</cite> will be replaced with the FreeSurfer file name part for the surface <cite>surf</cite>. This is the empty string if <cite>surf</cite> is ‘white’, and a dot followed by the value of <cite>surf</cite> for all other settings of surf. Examples: when <cite>surf</cite> is ‘pial’, this will be replaced with ‘.pial’ (Note the dot!). If <cite>surf</cite> is ‘white’, this will be replaced with the empty string.</li>
+<li><cite>${SURF_RAW}</cite> will be replaced with the value of <cite>surf</cite>.</li>
+<li><cite>${HEMI}</cite> will be replaced with ‘lh’ for the left hemisphere, and with ‘rh’ for the right hemisphere.</li>
+<li><cite>${FWHM}</cite> will be replaced with the value of <cite>fwhm</cite>, so something like ‘10’.</li>
+<li><cite>${SUBJECT_ID}</cite> will be replaced by the id of the subject that is being loaded, e.g., ‘subject3’.</li>
+<li><cite>${AVERAGE_SUBJECT}</cite> will be replaced by the value of <cite>average_subject</cite>.</li>
+</ul>
+<p class="last">Note that only <cite>${SURF}</cite> and <cite>${HEMI}</cite> are usually needed, everything else can be hardcoded (or is not part of typical FreeSurfer file names at all, like <cite>${SUBJECT_ID}</cite>).
+Example template string: <cite>subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh</cite>. Complete example for template strings in dictionary: <cite>{‘lh’: ‘subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh’, ‘rh’: ‘subj_${SUBJECT_ID}_hemi_${HEMI}.alsononstandard.mgh’}</cite>.</p>
+</dd>
+</dl>
+</li>
+<li><strong>subjects_detection_mode</strong> (<em>{'auto'</em><em>, </em><em>'list'</em><em>, </em><em>'file'</em><em>, </em><em>'search_dir'}</em><em>, </em><em>optional</em>) – <dl class="docutils">
+<dt>The method used to determine the subjects that should be loaded. Defaults to ‘auto’. You can always see which mode was used by looking at the returned <cite>run_meta_data</cite>, see <cite>run_meta_data[‘subjects_detection_mode’]</cite>.</dt>
+<dd><ul class="first last">
+<li>’auto’: In this mode, all available methods will be tried in the following order: If a <cite>subjects_list</cite> is given, it is used. Then, the <cite>subjects_file</cite> is used if it exists. Note that this may be the default file, ‘$SUBJECTS_DIR/subject_surf_dir.txt’, or another if one has explicitely been defined by setting <cite>subjects_file</cite> and/or <cite>subjects_file_dir</cite>. If the file does not exist, the directory is searched for directories containing FreeSurfer data as defined in the section for ‘search_dir’ mode below. You can always see which method was used in auto mode by looking at the returned <cite>run_meta_data</cite>, see <cite>run_meta_data[‘subjects_detection_mode_auto_used_method’]</cite>.</li>
+<li>’list’: In this mode, the given <cite>subjects_list</cite> is used, and you have to supply one. If not, an error is raised. You are not allowed to supply a <cite>subjects_file</cite> in this mode, or an error will be raised.</li>
+<li>’file’: In this mode, the subjects file is used. Note that this may be the default file, ‘$SUBJECTS_DIR/subjects.txt’, or another if one has explicitely been defined by setting <cite>subjects_file</cite> and/or <cite>subjects_file_dir</cite>. If the file does not exist, an error is raised. You can see which file was used by looking at the returned <cite>run_meta_data</cite>, see <cite>run_meta_data[‘subjects_file’]</cite>. You are not allowed to supply a <cite>subjects_list</cite> in this mode, or an error will be raised.</li>
+<li>’search_dir’: In this mode, the <cite>subjects_dir</cite> (default or explicitely given) is searched for sub directories which look as if they could contain FreeSurfer data. The latter means that they contain a sub directory named ‘surf’. There is one exception though: if the name of one such directory equals the name of the <cite>average_subject</cite>, the directory is skipped. You are not allowed to supply a <cite>subjects_list</cite> in this mode, or an error will be raised.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li><strong>group_morphometry_data</strong> (<em>numpy array</em>) – An array filled with the morphometry data for the subjects. The array has shape <cite>(n, m)</cite> where <cite>n</cite> is the number of subjects, and <cite>m</cite> is the number of vertices of the standard subject. (If you load both hemispheres instead of one, m doubles.) To get the subject id for the entries, look at the respective index in the returned <cite>subjects_list</cite>.</li>
+<li><strong>subjects_list</strong> (<em>list of strings</em>) – A list containing the subject identifiers in the same order as the data in <cite>group_morphometry_data</cite>. (If <cite>subjects_detection_mode</cite> is ‘list’ or ‘file’, the order in these is guaranteed to be preserved. But in mode ‘search_dir’ or ‘auto’ which may have chosen to fall back to ‘search_dir’ as a last resort, this is helpful: You can use the index of a subject in this list to find its data in <cite>group_morphometry_data</cite>, as it will have the same index. See the examples below.)</li>
+<li><strong>group_meta_data</strong> (<em>dictionary</em>) – A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject as returned by the <cite>subject_avg</cite> function.</li>
+<li><strong>run_meta_data</strong> (<em>dictionary</em>) – A dictionary containing general information on the settings used when executing the function and determining which subjects to load.</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for all subjects in the directory defined by the environment variable SUBJECTS_DIR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">group_md</span><span class="p">,</span> <span class="n">run_md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, we load curv data for the right hemisphere, computed on the pial surface with smooting of 20:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">group_md</span><span class="p">,</span> <span class="n">run_md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">surf</span><span class="o">=</span><span class="s1">&#39;pial&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;20&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We may want to be a but more explicit on which subjects are loaded from where:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;subject4&#39;</span><span class="p">,</span> <span class="s1">&#39;subject8&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">subjects</span><span class="p">,</span> <span class="n">group_md</span><span class="p">,</span> <span class="n">run_md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;20&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">subjects_list</span><span class="o">=</span><span class="n">subjects_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject ‘subject4’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">subject4_idx</span> <span class="o">=</span> <span class="n">subjects</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;subject4&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">data</span><span class="p">[</span><span class="n">subject4_idx</span><span class="p">][</span><span class="mi">100000</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.load_subject_mesh_files">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">load_subject_mesh_files</code><span class="sig-paren">(</span><em>lh_surf_file</em>, <em>rh_surf_file</em>, <em>hemi='both'</em>, <em>meta_data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.load_subject_mesh_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load mesh files for a subject.</p>
+<p>Load one or two mesh files for a subject. Which of the two files <cite>lh_surf_file</cite> and <cite>rh_surf_file</cite> are actually loaded is determined by the <cite>hemi</cite> parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lh_surf_file</strong> (<em>string | None</em>) – A string representing an absolute path to a mesh file for the left hemisphere (e.g., the path to ‘lh.white’). If <cite>hemi</cite> is ‘rh’, this will be ignored and can thus be None.</li>
+<li><strong>rh_surf_file</strong> (<em>string | None</em>) – A string representing an absolute path to a mesh file for the right hemisphere (e.g., the path to ‘rh.white’). If <cite>hemi</cite> is ‘lh’, this will be ignored and can thus be None.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere for which data should actually be loaded. Defaults to ‘both’.</li>
+<li><strong>meta_data</strong> (<em>dictionary | None</em><em>, </em><em>optional</em>) – Meta data to merge into the output <cite>meta_data</cite>. Defaults to the empty dictionary.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2D array containing 3 coordinates for each vertex. If the argument <cite>hemi</cite> was ‘both’, this includes vertices from several meshes. You can check the <cite>meta_data</cite> return values to get the border between meshes, see <cite>meta_data[‘lh.num_vertices’]</cite> and  <cite>meta_data[‘rh.num_vertices’]</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2D array containing 3 vertex indices per face. Look at the respective indices in <cite>vert_coords</cite> to get the vertex coordinates. If the argument <cite>hemi</cite> was ‘both’, this includes faces from several meshes. You can check the <cite>meta_data</cite> return values to get the border between meshes, see <cite>meta_data[‘lh.num_faces’]</cite> and  <cite>meta_data[‘rh.num_faces’]</cite>.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.freesurferdata</span> <span class="k">as</span> <span class="nn">fsd</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lh_surf_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;my_subjects_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;surf&#39;</span><span class="p">,</span> <span class="s1">&#39;lh.white&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rh_surf_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;my_subjects_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;surf&#39;</span><span class="p">,</span> <span class="s1">&#39;rh.white&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vert_coords</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">fsd</span><span class="o">.</span><span class="n">load_subject_mesh_files</span><span class="p">(</span><span class="n">lh_surf_file</span><span class="p">,</span> <span class="n">rh_surf_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.load_subject_morphometry_data_files">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">load_subject_morphometry_data_files</code><span class="sig-paren">(</span><em>lh_morphometry_data_file</em>, <em>rh_morphometry_data_file</em>, <em>hemi='both'</em>, <em>format='curv'</em>, <em>meta_data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.load_subject_morphometry_data_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load morphometry data files for a subject.</p>
+<p>Load one or two morphometry data files for a subject. Which of the two files <cite>lh_morphometry_data_file</cite> and <cite>rh_morphometry_data_file</cite> are actually loaded is determined by the <cite>hemi</cite> parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lh_morphometry_data_file</strong> (<em>string | None</em>) – A string representing an absolute path to a morphometry data file for the left hemisphere. If <cite>hemi</cite> is ‘rh’, this will be ignored and can thus be None.</li>
+<li><strong>rh_morphometry_data_file</strong> (<em>string | None</em>) – A string representing an absolute path to a morphometry data file for the right hemisphere. If <cite>hemi</cite> is ‘lh’, this will be ignored and can thus be None.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere for which data should actually be loaded. Defaults to ‘both’.</li>
+<li><strong>format</strong> (<em>{'curv'</em><em>, </em><em>'mgh'}</em><em>, </em><em>optional</em>) – The file format for the files that are to be loaded. Defaults to ‘curv’.</li>
+<li><strong>meta_data</strong> (<em>dictionary | None</em><em>, </em><em>optional</em>) – Meta data to merge into the output <cite>meta_data</cite>. Defaults to the empty dictionary.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><p class="first"><strong>morphometry_data</strong> (<em>numpy array</em>) – An array containing the scalar per-vertex data loaded from the file(s).</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_data_points</cite> : the number of data points loaded.</li>
+<li><cite>?h.morphometry_file</cite> : the value of the <cite>?h_morphometry_data_file</cite> argument (data file that was loaded)</li>
+<li><cite>?h.morphometry_file_format</cite> : the value for <cite>format</cite> that was used</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load the lh and rh area files for subject1.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.freesurferdata</span> <span class="k">as</span> <span class="nn">fsd</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lh_morphometry_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="s1">&#39;subjects_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;surf&#39;</span><span class="p">,</span> <span class="s1">&#39;lh.area&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rh_morphometry_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="s1">&#39;subjects_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;surf&#39;</span><span class="p">,</span> <span class="s1">&#39;rh.area&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">fsd</span><span class="o">.</span><span class="n">load_subject_morphometry_data_files</span><span class="p">(</span><span class="n">lh_morphometry_file</span><span class="p">,</span> <span class="n">rh_morphometry_file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now let’s look at the area value for the vertex at index 10:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;lh value at index 10: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">morphometry_data</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>But what about the value of vertex 10 at the right hemisphere? We loaded 2 hemispheres, so the data is concatinated. But you can use the <cite>meta_data</cite> to get the correct index relative to the right hemisphere:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">morphometry_data</span><span class="p">[</span><span class="n">fsd</span><span class="o">.</span><span class="n">rhi</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>You could also get the value directly using the <cite>rhv</cite> function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">fsd</span><span class="o">.</span><span class="n">rhv</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.merge_morphometry_data">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">merge_morphometry_data</code><span class="sig-paren">(</span><em>morphometry_data_arrays</em>, <em>dtype=&lt;type 'float'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.merge_morphometry_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge morphometry data horizontally.</p>
+<p>Merge morphometry data read from several meshes of the same subject horizontally. This is used to merge data from the left and right hemispheres.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>morphometry_data_arrays</strong> (<em>2D array</em>) – An array of arrays, each of which represents morphometry data from different hemispheres of the same subject.</li>
+<li><strong>dtype</strong> (<em>data type</em><em>, </em><em>optional</em>) – Data type for the output numpy array. Defaults to float.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Horizontally stacked array containing the data from all arrays in the input array.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Merge some data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lh_morphometry_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>   <span class="c1"># some fake data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rh_morphometry_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merged_data</span> <span class="o">=</span> <span class="n">fsd</span><span class="o">.</span><span class="n">merge_morphometry_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lh_morphometry_data</span><span class="p">,</span> <span class="n">rh_morphometry_data</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">merged_data</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(6, )</span>
+</pre></div>
+</div>
+<p>Typically, the <cite>lh_morphometry_data</cite> and <cite>rh_morphometry_data</cite> come from calls to <cite>read_fs_morphometry_data_file_and_record_meta_data</cite> as shown here:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lh_morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">read_fs_morphometry_data_file_and_record_meta_data</span><span class="p">(</span><span class="n">lh_morphometry_data_file</span><span class="p">,</span> <span class="s1">&#39;lh&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rh_morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">read_fs_morphometry_data_file_and_record_meta_data</span><span class="p">(</span><span class="n">rh_morphometry_data_file</span><span class="p">,</span> <span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="n">meta_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">both_hemis_morphometry_data</span> <span class="o">=</span> <span class="n">merge_morphometry_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lh_morphometry_data</span><span class="p">,</span> <span class="n">rh_morphometry_data</span><span class="p">]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.read_fs_morphometry_data_file_and_record_meta_data">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">read_fs_morphometry_data_file_and_record_meta_data</code><span class="sig-paren">(</span><em>curv_file</em>, <em>hemisphere_label</em>, <em>meta_data=None</em>, <em>format='curv'</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.read_fs_morphometry_data_file_and_record_meta_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a morphometry file and record meta data on it.</p>
+<p>Read a morphometry file and record meta data on it. A morphometry file is file containing a scalar value for each vertex on the surface of a FreeSurfer mesh. An example is the file ‘lh.area’, which contains the area values for all vertices of the left hemisphere of the white surface. Such a file can be in two different formats: ‘curv’ or ‘mgh’. The former is used when the data refers to the surface mesh of the original subject, the latter when it has been mapped to a standard subject like fsaverage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>curv_file</strong> (<em>string</em>) – A string representing a path to a morphometry file (e.g., the path to ‘lh.area’).</li>
+<li><strong>hemisphere_label</strong> (<em>{'lh'</em><em> or </em><em>'rh'}</em>) – A string representing the hemisphere this file belongs to. This is used to write the correct meta data.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere for which data should actually be loaded. Defaults to ‘both’.</li>
+<li><strong>meta_data</strong> (<em>dictionary | None</em><em>, </em><em>optional</em>) – Meta data to merge into the output <cite>meta_data</cite>. Defaults to the empty dictionary.</li>
+<li><strong>format</strong> (<em>{'curv'</em><em>, </em><em>'mgh'}</em><em>, </em><em>optional</em>) – The file format for the files that are to be loaded. Defaults to ‘curv’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><p class="first"><strong>per_vertex_data</strong> (<em>numpy array</em>) – A 1D array containing one scalar value per vertex.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>Contains detailed information on the data that was loaded. The following keys are available (replace <cite>?h</cite> with the value of the argument <cite>hemisphere_label</cite>, which must be ‘lh’ or ‘rh’).</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_data_points</cite> : the number of data points loaded.</li>
+<li><cite>?h.morphometry_file</cite> : the value of the <cite>curv_file</cite> argument (data file that was loaded)</li>
+<li><cite>?h.morphometry_file_format</cite> : the value for <cite>format</cite> that was used</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.freesurferdata</span> <span class="k">as</span> <span class="nn">fsd</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lh_morphometry_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;my_subjects_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;surf&#39;</span><span class="p">,</span> <span class="s1">&#39;lh.area&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lh_morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">read_fs_morphometry_data_file_and_record_meta_data</span><span class="p">(</span><span class="n">lh_morphometry_file</span><span class="p">,</span> <span class="s1">&#39;lh&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.num_data_points&#39;</span><span class="p">]</span>
+<span class="go">121567                  # arbitrary number, depends on the subject mesh</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.morphometry_file&#39;</span><span class="p">]</span>
+<span class="go">my_subjects_dir/subject1/surf/lh.area             # on UNIX-like systems</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.read_fs_surface_file_and_record_meta_data">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">read_fs_surface_file_and_record_meta_data</code><span class="sig-paren">(</span><em>surf_file</em>, <em>hemisphere_label</em>, <em>meta_data=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.read_fs_surface_file_and_record_meta_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a surface file and record meta data on it.</p>
+<p>Read a surface file and record meta data on it. A surface file is a mesh file in FreeSurfer format, e.g., ‘lh.white’. It contains vertices and 3-faces made out of them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>surf_file</strong> (<em>string</em>) – A string representing an absolute path to a surface (or ‘mesh’) file (e.g., the path to ‘lh.white’).</li>
+<li><strong>hemisphere_label</strong> (<em>{'lh'</em><em> or </em><em>'rh'}</em>) – A string representing the hemisphere this file belongs to. This is used to write the correct meta data.</li>
+<li><strong>meta_data</strong> (<em>dictionary | None</em><em>, </em><em>optional</em>) – Meta data to merge into the output <cite>meta_data</cite>. Defaults to the empty dictionary.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2D array containing 3 coordinates for each vertex in the <cite>surf_file</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2D array containing 3 vertex indices per face. Look at the respective indices in <cite>vert_coords</cite> to get the vertex coordinates.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>Contains detailed information on the data that was loaded. The following keys are available (replace <cite>?h</cite> with the value of the argument <cite>hemisphere_label</cite>, which must be ‘lh’ or ‘rh’).</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : value of the <cite>surf_file</cite> argument: the mesh file that was loaded</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vert_coords</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">fsd</span><span class="o">.</span><span class="n">read_fs_surface_file_and_record_meta_data</span><span class="p">(</span><span class="n">surf_file</span><span class="p">,</span> <span class="s1">&#39;lh&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.num_vertices&#39;</span><span class="p">]</span>
+<span class="go">121567                  # arbitrary number, depends on the subject mesh</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.read_mgh_file">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">read_mgh_file</code><span class="sig-paren">(</span><em>mgh_file_name</em>, <em>collect_meta_data=True</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.read_mgh_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from a FreeSurfer output file in mgh format.</p>
+<p>Read all data from the MGH file and return it as a numpy array. Optionally, collect meta data from the mgh file header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mgh_file_name</strong> (<em>string</em>) – A string representing a full path to a file in FreeSurfer MGH file format.</li>
+<li><strong>collect_meta_data</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether or not to collect meta data from the MGH file header. Defaults to True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>mgh_data</strong> (<em>numpy array</em>) – The data from the MGH file, usually one scalar value per voxel.</li>
+<li><strong>mgh_meta_data</strong> (<em>dictionary</em>) – The meta data collected from the header, or an empty dictionary if the argument <cite>collect_meta_data</cite> was ‘False’. The keys correspond to the names of the respective nibabel function used to retrieve the data. The values are the data as returned by nibabel.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Read a file in MGH format from the surf dir of a subject:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.freesurferdata</span> <span class="k">as</span> <span class="nn">fsd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mgh_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;my_subjects_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;surf&#39;</span><span class="p">,</span> <span class="s1">&#39;rh.area.fsaverage.mgh&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mgh_data</span><span class="p">,</span> <span class="n">mgh_meta_data</span> <span class="o">=</span> <span class="n">fsd</span><span class="o">.</span><span class="n">read_mgh_file</span><span class="p">(</span><span class="n">mgh_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.rhi">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">rhi</code><span class="sig-paren">(</span><em>rh_relative_index</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.rhi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the absolute data index given an index relative to the right hemisphere.</p>
+<p>This function makes sense only given a <cite>morphometry_data</cite> and associated <cite>meta_data</cite> that contains data on two hemispheres (even though the <cite>morphometry_data</cite> array itself is not passed to this function). E.g., the return value of a function like <cite>subject()</cite> or <cite>subject_avg()</cite> when called with <cite>hemi=’both’</cite>. For such data, it computes the absolute index in the data given a request index relative to the right hemisphere. The name is short for ‘right hemisphere index’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the right hemisphere. E.g., <cite>0</cite> if you want to get the index of the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible index, <cite>-2</cite> the second-to-last, and so on.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The absolute index into the data for the given <cite>rh_relative_index</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;heinz&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10, relative to start of right hemisphere: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">morphometry_data</span><span class="p">[</span><span class="n">bl</span><span class="o">.</span><span class="n">rhi</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.rhv">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">rhv</code><span class="sig-paren">(</span><em>rh_relative_index</em>, <em>morphometry_data</em>, <em>meta_data</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.rhv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value in <cite>morphometry_data</cite> at an index relative to the right hemisphere.</p>
+<p>This function makes sense only given a <cite>morphometry_data</cite> and associated <cite>meta_data</cite> that contains data on two hemispheres. E.g., the return value of a function like <cite>subject()</cite> or <cite>subject_avg()</cite> when called with <cite>hemi=’both’</cite>. For such data, it returns the value in <cite>morphometry_data</cite> at a request index given relative to the right hemisphere. The name is short for ‘right hemisphere value’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rh_relative_index</strong> (<em>int</em>) – An index relative to the start of the right hemisphere in the data. E.g., <cite>0</cite> if you want to get the value for the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and <cite>-1</cite> will get you the last possible value, <cite>-2</cite> the second-to-last, and so on.</li>
+<li><strong>morphometry_data</strong> (<em>numpy array</em>) – The morphometry data array, must represent data for both hemispheres.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em>) – The meta data dictionary returned for your data. It must contain the keys ‘lh.num_data_points’ and ‘rh.num_data_points’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The value at the given index that is relative to the start of the right hemisphere in the data.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;heinz&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;rh value at index 10, relative to start of right hemisphere: </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">bl</span><span class="o">.</span><span class="n">rhv</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.subject">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">subject</code><span class="sig-paren">(</span><em>subject_id</em>, <em>surf='white'</em>, <em>measure='area'</em>, <em>hemi='both'</em>, <em>subjects_dir=None</em>, <em>meta_data=None</em>, <em>load_surface_files=True</em>, <em>load_morhology_data=True</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load FreeSurfer brain morphometry and/or mesh data for a single subject.</p>
+<p>High-level interface to load FreeSurfer brain data for a single space. This parses the data for the surfaces of this subject. If you want to load data that has been mapped to an average subject like ‘fsaverage’, use <cite>subject_avg</cite> instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subject_id</strong> (<em>string</em>) – The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject’s data, relative to <cite>subjects_dir</cite>. Example: ‘subject33’.</li>
+<li><strong>measure</strong> (<em>string</em><em>, </em><em>optional</em>) – The measure to load, e.g., ‘area’ or ‘curv’. Defaults to ‘area’.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – A dictionary that should be merged into the return value <cite>meta_data</cite>. Defaults to the empty dictionary if omitted.</li>
+<li><strong>load_surface_files</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load mesh data. If set to <cite>False</cite>, the first return values <cite>vert_coords</cite> and <cite>faces</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+<li><strong>load_morphometry_data</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load morphometry data. If set to <cite>False</cite>, the first return value <cite>morphometry_data</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
+</li>
+<li><p class="first"><strong>morphometry_data</strong> (<em>numpy array</em>) – A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned <cite>meta_data</cite>, see <cite>meta_data[‘lh.num_vertices’]</cite> and <cite>meta_data[‘rh.num_vertices’]</cite>. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has <cite>n</cite> vertices, the data for them are at indices <cite>0..n-1</cite>, and the data for the right hemisphere start at index <cite>n</cite>. Note that the two hemispheres do in general NOT have the same number of vertices.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_data_points</cite> : the number of data points loaded.</li>
+<li><cite>?h.morphometry_file</cite> : the value of the <cite>?h_morphometry_data_file</cite> argument (data file that was loaded)</li>
+<li><cite>?h.morphometry_file_format</cite> : the value for <cite>format</cite> that was used</li>
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+<li><cite>subject_id</cite> : the subject id</li>
+<li><cite>subjects_dir</cite> : the subjects dir that was used</li>
+<li><cite>surf</cite> : the surf that was used, e.g., ‘white’</li>
+<li><cite>measure</cite> : the measure that was loaded as morphometry data, e.g., ‘area’</li>
+<li><cite>space</cite> : always the string ‘subject’. This means that the data loaded represent morphometry data taken from the subject’s surface (as opposed to data mapped to a common or average subject).</li>
+<li><cite>hemi</cite> : the <cite>hemi</cite> value that was used</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, we are a bit more explicit about what we want to load:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_home</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometimes we do not care for the mesh, e.g., we only want the morphometry data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>…or the other way around (mesh only, no morphometry data):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vertices</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">load_morphometry_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.freesurferdata.subject_avg">
+<code class="descclassname">brainload.freesurferdata.</code><code class="descname">subject_avg</code><span class="sig-paren">(</span><em>subject_id</em>, <em>measure='area'</em>, <em>surf='white'</em>, <em>display_surf='white'</em>, <em>hemi='both'</em>, <em>fwhm='10'</em>, <em>subjects_dir=None</em>, <em>average_subject='fsaverage'</em>, <em>subjects_dir_for_average_subject=None</em>, <em>meta_data=None</em>, <em>load_surface_files=True</em>, <em>load_morhology_data=True</em>, <em>custom_morphometry_files=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.freesurferdata.subject_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load morphometry data that has been mapped to an average subject for a subject.</p>
+<p>Load data for a single subject that has been mapped to an average subject like the <cite>fsaverage</cite> subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subject_id</strong> (<em>string</em>) – The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject’s data, relative to <cite>subjects_dir</cite>. Example: ‘subject33’.</li>
+<li><strong>measure</strong> (<em>string</em><em>, </em><em>optional</em>) – The measure to load, e.g., ‘area’ or ‘curv’. Defaults to ‘area’.</li>
+<li><strong>surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The brain surface where the data has been measured, e.g., ‘white’ or ‘pial’. This will become part of the file name that is loaded. Defaults to ‘white’.</li>
+<li><strong>hemi</strong> (<em>{'both'</em><em>, </em><em>'lh'</em><em>, </em><em>'rh'}</em><em>, </em><em>optional</em>) – The hemisphere that should be loaded. Defaults to ‘both’.</li>
+<li><strong>fwhm</strong> (<em>string</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. Defaults to ‘10’. If None is passed, the <cite>.fwhmX</cite> part is omitted from the file name completely. Set this to ‘0’ to get the unsmoothed version.</li>
+<li><strong>subjects_dir</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This should be the directory containing all subjects of your study. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.</li>
+<li><strong>average_subject</strong> (<em>string</em><em>, </em><em>optional</em>) – The name of the average subject to which the data was mapped. Defaults to ‘fsaverage’.</li>
+<li><strong>display_surf</strong> (<em>string</em><em>, </em><em>optional</em>) – The surface of the average subject for which the mesh should be loaded, e.g., ‘white’, ‘pial’, ‘inflated’, or ‘sphere’. Defaults to ‘white’. Ignored if <cite>load_surface_files</cite> is <cite>False</cite>.</li>
+<li><strong>subjects_dir_for_average_subject</strong> (<em>string</em><em>, </em><em>optional</em>) – A string representing the full path to a directory. This can be used if the average subject is not in the same directory as all your study subjects. Defaults to the setting of <cite>subjects_dir</cite>.</li>
+<li><strong>meta_data</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – A dictionary that should be merged into the return value <cite>meta_data</cite>. Defaults to the empty dictionary if omitted.</li>
+<li><strong>load_surface_files</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load mesh data. If set to <cite>False</cite>, the first return values <cite>vert_coords</cite> and <cite>faces</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+<li><strong>load_morphometry_data</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether to load morphometry data. If set to <cite>False</cite>, the first return value <cite>morphometry_data</cite> will be <cite>None</cite>. Defaults to <cite>True</cite>.</li>
+<li><strong>custom_morphometry_files</strong> (<em>dictionary</em><em>, </em><em>optional</em>) – Cutom filenames for the left and right hemispjere data files that should be loaded. A dictionary of strings with exactly the following two keys: <cite>lh</cite> and <cite>rh</cite>. The value strings must contain hardcoded file names or template strings for them. As always, the files will be loaded relative to the <cite>surf/</cite> directory of the respective subject. Example: <cite>{‘lh’: ‘lefthemi.nonstandard.mymeasure44.mgh’, ‘rh’: ‘righthemi.nonstandard.mymeasure44.mgh’}</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul>
+<li><p class="first"><strong>vert_coords</strong> (<em>numpy array</em>) – A 2-dimensional array containing the vertices of the mesh(es) of the average subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., ‘lh.white’), as returned by the <cite>nibabel</cite> function <cite>nibabel.freesurfer.io.read_geometry</cite>.</p>
+</li>
+<li><p class="first"><strong>faces</strong> (<em>numpy array</em>) – A 2-dimensional array containing the 3-faces of the mesh(es) of the average subject. Each face entry contains 3 indices. Each index references the respective vertex in the <cite>vert_coords</cite> array.</p>
+</li>
+<li><p class="first"><strong>morphometry_data</strong> (<em>numpy array</em>) – A numpy array with as many entries as there are vertices in the average subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned <cite>meta_data</cite>, see <cite>meta_data[‘lh.num_vertices’]</cite> and <cite>meta_data[‘rh.num_vertices’]</cite>. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has <cite>n</cite> vertices, the data for them are at indices <cite>0..n-1</cite>, and the data for the right hemisphere start at index <cite>n</cite>. In many cases, your average subject will have the same number of vertices for both hemispheres and you will know this number beforehand, so you may not have to worry about this at all.</p>
+</li>
+<li><p class="first"><strong>meta_data</strong> (<em>dictionary</em>) –</p>
+<dl class="docutils">
+<dt>A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the <cite>hemi</cite> argument, you can replace ?h with ‘lh’ or ‘rh’ or both ‘lh’ and ‘rh’):</dt>
+<dd><ul class="first last simple">
+<li><cite>?h.num_data_points</cite> : the number of data points loaded.</li>
+<li><cite>?h.morphometry_file</cite> : the value of the <cite>?h_morphometry_data_file</cite> argument (data file that was loaded)</li>
+<li><cite>?h.morphometry_file_format</cite> : the value for <cite>format</cite> that was used</li>
+<li><cite>?h.num_vertices</cite> : number of vertices in the loaded mesh</li>
+<li><cite>?h.num_faces</cite> : number of faces in the loaded mesh</li>
+<li><cite>?lh.surf_file</cite> : the mesh file that was loaded for this hemisphere</li>
+<li><cite>subject_id</cite> : the subject id</li>
+<li><cite>subjects_dir</cite> : the subjects dir that was used</li>
+<li><cite>surf</cite> : the surf that was used, e.g., ‘white’</li>
+<li><cite>measure</cite> : the measure that was loaded as morphometry data, e.g., ‘area’</li>
+<li><cite>space</cite> : always the string ‘common’. This means that the data loaded represent morphometry data that has been mapped to a common or average subject.</li>
+<li><cite>hemi</cite> : the <cite>hemi</cite> value that was used</li>
+<li><cite>display_subject</cite> : the name of the common or average subject. This is the subject the surface meshes originate from. Ususally ‘fsaverage’.</li>
+<li><cite>display_surf</cite> : the surface of the common subject that has been loaded. Something like ‘pial’, ‘white’, or ‘inflated’.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – If one of the parameters with a fixed set of values receives a value that is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load area data for both hemispheres and white surface of subject1 in the directory defined by the environment variable SUBJECTS_DIR, mapped to fsaverage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;surf&#39;</span><span class="p">]</span>
+<span class="go">white</span>
+</pre></div>
+</div>
+<p>Here, we are a bit more picky and explicit about what we want to load:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user_home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">user_home</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;lh&#39;</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;curv&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">display_surf</span><span class="o">=</span><span class="s1">&#39;inflated&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometime we do not care for the mesh, e.g., we only want the morphometry data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;rh&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="n">load_surface_files</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-brainload.nitools">
+<span id="brainload-nitools-module"></span><h2>brainload.nitools module<a class="headerlink" href="#module-brainload.nitools" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions for loading neuroimaging data.</p>
+<p>Most of these functions interact with the filesystem to find data.</p>
+<dl class="function">
+<dt id="brainload.nitools.detect_subjects_in_directory">
+<code class="descclassname">brainload.nitools.</code><code class="descname">detect_subjects_in_directory</code><span class="sig-paren">(</span><em>subjects_dir</em>, <em>ignore_dir_names=None</em>, <em>required_subdirs_for_hits=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.nitools.detect_subjects_in_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for directories containing FreeSurfer output in a directory and return the subject names.</p>
+<p>Given a directory, search its sub directories for FreeSurfer data and return the directory names of all directories in which such data was found. The resulting list can be used
+to create a subjects.txt file. This method searches all direct sub directories of the given subjects_dir for the existance of the typical FreeSurfer output directory structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subjects_dir</strong> (<em>string</em>) – Path to a subjects directory.</li>
+<li><strong>ignore_dir_names</strong> (<em>list of strings | None</em><em>, </em><em>optional</em>) – A list of directory names that should be ignored, even if they have the required sub directories. This is useful if you do not want to load certain subjects. It is often used to avoid loading the average subject ‘fsaverage’. Defaults to a list with the single element ‘fsaverage’. You can explicitely pass an empty list if you want to include all subjects.</li>
+<li><strong>required_subdirs_for_hits</strong> (<em>list of strings | None</em>) – A sub directory of the given <cite>subjects_dir</cite> is considered a subject if it contains the typical FreeSurfer directory structure. Which sub directories are required is determined by this argument. If all of them are found under a dir, that dir is added tp the output list. This list defaults to a list with the single element ‘surf’. If that leads to false positives in your case, you could pass something like <cite>[‘surf’, ‘mri’, ‘label’]</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of the subject identifiers (or directories that were considered as such).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of strings</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Guess which directories under the current SUBJECTS_DIR contain subject data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.nitools</span> <span class="k">as</span> <span class="nn">nit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_subject_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SUBJECTS_DIR&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_ids</span> <span class="o">=</span> <span class="n">nit</span><span class="o">.</span><span class="n">detect_subjects_in_directory</span><span class="p">(</span><span class="n">my_subject_dir</span><span class="p">,</span> <span class="n">ignore_dir_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;fsaverage&#39;</span><span class="p">,</span> <span class="s1">&#39;Copy of subject4&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.nitools.do_subject_files_exist">
+<code class="descclassname">brainload.nitools.</code><code class="descname">do_subject_files_exist</code><span class="sig-paren">(</span><em>subjects_list</em>, <em>subjects_dir</em>, <em>filename=None</em>, <em>filename_template=None</em>, <em>sub_dir='surf'</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.nitools.do_subject_files_exist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for the existance of certain files in each subject directory for a group of subjects.</p>
+<p>Checks for the existance of certain files in the each subject directory for a group of subjects. This is useful to see whether data you intend to work on exists for all subjects you are interested in.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subjects_list</strong> (<em>list of strings</em>) – List of subject ids.</li>
+<li><strong>subjects_dir</strong> (<em>string</em>) – Path to a directory that contains the subject data.</li>
+<li><strong>filename</strong> (<em>string</em>) – A string representing the file name within the <cite>sub_dir</cite> sub directory of each subject, hardcoded. You must supply this or a <cite>filename_template</cite>.</li>
+<li><strong>filename_template</strong> (<em>string</em>) – A string representing the file name within the ‘surf’ sub directory of each subject as a template. You must supply this or a <cite>filename</cite>, but not both. You can use the variable <cite>${SUBJECT_ID}</cite> in the template.</li>
+<li><strong>sub_dir</strong> (<em>string | None</em><em>, </em><em>optional</em>) – The sub directory to look in. You could set any value, but the typical ones are the default FreeSurfer directories, e.g., ‘surf’, ‘mri’, ‘scripts’ and so on. You can set this to <cite>None</cite> if you want to look directly in the subjct’s dir, but FreeSurfer does not seem to store any data there by default. Defaults to ‘surf’.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dictionary. The keys are subjects that are missing the respective file, and the value is the absolute path of the file that is missing. If no files are missing, the dictionary is empty. If none of the subjects have the file, the length of the dictionary is equal to the length of the input <cite>subjects_list</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dictionary</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Check whether a file exists for all subjects:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.nitools</span> <span class="k">as</span> <span class="nn">nit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="s1">&#39;subject4&#39;</span><span class="p">,</span> <span class="s1">&#39;subject7&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;my_study_x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">searched_file</span> <span class="o">=</span> <span class="s1">&#39;lh.area&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">missing</span> <span class="o">=</span> <span class="n">nit</span><span class="o">.</span><span class="n">do_subject_files_exist</span><span class="p">(</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">searched_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;The file &#39;</span><span class="si">%s</span><span class="s2">&#39; exists for </span><span class="si">%d</span><span class="s2"> of the </span><span class="si">%d</span><span class="s2"> subjects.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">searched_file</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">subjects_list</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.nitools.fill_template_filename">
+<code class="descclassname">brainload.nitools.</code><code class="descname">fill_template_filename</code><span class="sig-paren">(</span><em>template_string</em>, <em>substitution_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.nitools.fill_template_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace variables in the template with the respective substitution dict entries.</p>
+<p>Checks the <cite>template_string</cite> for variables (i.e., something like ‘${VAR_NAME}’) that are listed as keys in <cite>substitution_dict</cite>. If such entries are found, they are replaced with the respective values in the <cite>substitution_dict</cite>. This function only calls <cite>ting.Template().substitute()</cite> in the background.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>template_string</strong> (<em>string</em>) – A template string, see the <cite>string.Template</cite> constructor in the standard Python <cite>string</cite> module. Variable names must be enclosed in <cite>${}</cite>. Example: <cite>${SUBJECT_ID}_hardcoded_text</cite>.</li>
+<li><strong>substitution_dict</strong> (<em>dictionary string</em><em>, </em><em>string</em>) – The keys are variable names, values are the replacements. See <cite>string.Template.substitute</cite> in the standard Python <cite>string</cite> module. Example: <cite>{ ‘SUBJECT_ID’ : ‘subject3’ }</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result of the replacement.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">string</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Fill in a template string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.nitools</span> <span class="k">as</span> <span class="nn">nit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">template_str</span> <span class="o">=</span> <span class="s1">&#39;$</span><span class="si">{HEMI}</span><span class="s1">.white&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">substitution_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;HEMI&#39;</span> <span class="p">:</span> <span class="s1">&#39;lh&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">nit</span><span class="o">.</span><span class="n">fill_template_filename</span><span class="p">(</span><span class="n">template_str</span><span class="p">,</span> <span class="n">substitution_dict</span><span class="p">)</span>
+<span class="go">lh.white</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.nitools.read_subjects_file">
+<code class="descclassname">brainload.nitools.</code><code class="descname">read_subjects_file</code><span class="sig-paren">(</span><em>subjects_file</em>, <em>has_header_line=False</em>, <em>index_of_subject_id_field=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.nitools.read_subjects_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the consecutive fields on each line, and will be ignored. Having nothing but the subject id on the line is also fine, of course.</p>
+<p>The file can be a simple text file that contains one <cite>subject_id</cite> per line. It can also be a CSV file that has other data following, but the <cite>subject_id</cite> has to be the first item on each line and the separator must be a comma. So a line is allowed to look like this: <cite>subject1, 35, center1, 147</cite>. No header is allowed. If you have a different format, consider reading the file yourself and pass the result as <cite>subjects_list</cite> instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>subjects_file</strong> (<em>string</em>) – Path to a subjects file (see above for format details).</li>
+<li><strong>has_header_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Whether the first line is a header line and should be skipped. Defaults to ‘False’.</li>
+<li><strong>index_of_subject_id_field</strong> (<em>integer</em><em>, </em><em>optional</em>) – The column index of the field that contains the subject id in each row. Defaults to ‘0’. Changing this only makes sense for CSV files.</li>
+<li><strong>**kwargs</strong> (<em>any</em>) – Any other named arguments will be passed on to the call to the call to the <cite>csv.reader</cite> constructor. That is a class from Python’s standard <cite>csv</cite> module. Example: pass <cite>delimiter=’    ‘</cite> if your CSV file is limited by tabs.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of subject identifiers.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of strings</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Load a list of subjects from a simple text file that contains one subject per line.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.nitools</span> <span class="k">as</span> <span class="nn">nit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_ids</span> <span class="o">=</span> <span class="n">nit</span><span class="o">.</span><span class="n">read_subjects_file</span><span class="p">(</span><span class="s1">&#39;/home/myuser/data/study5/subjects.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-brainload.spatial">
+<span id="brainload-spatial-module"></span><h2>brainload.spatial module<a class="headerlink" href="#module-brainload.spatial" title="Permalink to this headline">¶</a></h2>
+<p>Simple functions for spatial tranformation of 3-dimensional coordinates.</p>
+<p>These functions are helpful if you want to rotate, translate, mirror, or scale (brain) meshes. In general, you would use them roughly like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vert_coords</span><span class="p">,</span> <span class="n">faces</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">coords_a2s</span><span class="p">(</span><span class="n">vert_coords</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you have the coordinates of the mesh vertices in the required format and can call any function from this module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xt</span><span class="p">,</span> <span class="n">yt</span><span class="p">,</span> <span class="n">zt</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">translate_3D_coordinates_along_axes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># or some other function</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="brainload.spatial.coords_a2s">
+<code class="descclassname">brainload.spatial.</code><code class="descname">coords_a2s</code><span class="sig-paren">(</span><em>coords</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.coords_a2s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split single array for all 3 coords into 3 separate ones.</p>
+<p>Split a 2D array with shape (3, n) of coordinates (x, y, z values) into 3 separate 1D arrays of length n.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coords</strong> (<em>Numpy 2D array of numbers</em>) – The merged coordinate array.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Has the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Has the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Has the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">coords_a2s</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">8</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.coords_s2a">
+<code class="descclassname">brainload.spatial.</code><code class="descname">coords_s2a</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.coords_s2a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Separate a single xyz coordinate array into x, y and z arrays.</p>
+<p>Merge 3 arrays of length n with coordinates (x, y, z values) into a single 2D coordinate array of shape (3, n).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The merged coordinate array.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Numpy 2D array of numbers</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coords</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">coords_s2a</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.deg2rad">
+<code class="descclassname">brainload.spatial.</code><code class="descname">deg2rad</code><span class="sig-paren">(</span><em>degrees</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.deg2rad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an angle given in degrees to radians.</p>
+<p>Convert an angle given in degrees to radians. 360 degrees are 2 Pi radians. If negative values or values larger than 360 are passed, use the modulo operation to bring them to a suitable range first. In other words, passing -90 will be transformed to 360 - 90 = 270 degrees, and will thus return 1.5 Pi radians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>degrees</strong> (<em>float</em>) – The angle in degrees.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The angle in radians.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rad</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span>   <span class="c1"># will be Pi</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.mirror_3D_coordinates_at_axis">
+<code class="descclassname">brainload.spatial.</code><code class="descname">mirror_3D_coordinates_at_axis</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>axis</em>, <em>mirror_at_axis_coordinate=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.mirror_3D_coordinates_at_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mirror the given 3D coordinates on the given mirror plane.</p>
+<p>Mirror or reflect the given 3D coordinates on a plane (perpendicular to the axis) at axis coordinate <cite>mirror_at_axis_coordinate</cite> at the given axis. If <cite>mirror_at_axis_coordinate</cite> is not given, the smallest coordinate along the mirror axis in the data is used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
+<li><strong>axis</strong> (<em>string</em><em>, </em><em>one of {'x'</em><em>, </em><em>'y'</em><em>, </em><em>'z'}</em>) – An axis identifier.</li>
+<li><strong>mirror_at_axis_coordinate</strong> (<em>number | None</em>) – The coordinate along the axis <cite>axis</cite> at which the mirror plane should be created. If you set <cite>axis</cite> to ‘x’ and specify <cite>5</cite> for this, a yz-plane will be used at x coordinate 5. If not given, it defaults to the minimal axis coordinate for the respective axis in the data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>x_mirrored</strong> (<em>Numpy array of numbers</em>) – The mirrored x coordinates.</li>
+<li><strong>y_mirrored</strong> (<em>Numpy array of numbers</em>) – The mirrored y coordinates.</li>
+<li><strong>z_mirrored</strong> (<em>Numpy array of numbers</em>) – The mirrored z coordinates.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Mirror at the origin of the x axis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">mirror_3D_coordinates_at_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># -5 7 9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># -6 8 10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.point_mirror_3D_coordinates">
+<code class="descclassname">brainload.spatial.</code><code class="descname">point_mirror_3D_coordinates</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>point_x</em>, <em>point_y</em>, <em>point_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.point_mirror_3D_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point-mirror or reflect the given coordinates at the given point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
+<li><strong>point_x</strong> (<em>number</em>) – The x coordinate of the point used for mirroring.</li>
+<li><strong>point_y</strong> (<em>number</em>) – The y coordinate of the point used for mirroring.</li>
+<li><strong>point_z</strong> (<em>number</em>) – The z coordinate of the point used for mirroring.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>xm</strong> (<em>Numpy array of numbers</em>) – The mirrored x coordinates.</li>
+<li><strong>ym</strong> (<em>Numpy array of numbers</em>) – The mirrored y coordinates.</li>
+<li><strong>zm</strong> (<em>Numpy array of numbers</em>) – The mirrored z coordinates.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Mirror at the origin:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">point_mirror_3D_coordinates</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># -5 -7 -9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ym</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># -6 -8 -10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.rad2deg">
+<code class="descclassname">brainload.spatial.</code><code class="descname">rad2deg</code><span class="sig-paren">(</span><em>rad</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.rad2deg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an angle given in radians to degrees.</p>
+<p>Convert an angle given in radians to degrees. 2 Pi radians are 360 degrees. If negative values or values larger than 2 Pi are passed, use the modulo operation to bring them to a suitable range first. In other words, passing -0.5 * Pi will be transformed to 2 - 0.5 = 1.5 Pi, and will thus return 270 degrees.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rad</strong> (<em>float</em>) – The angle in radians.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The angle in degrees.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">deg</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>   <span class="c1"># will be 360</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.rotate_3D_coordinates_around_axes">
+<code class="descclassname">brainload.spatial.</code><code class="descname">rotate_3D_coordinates_around_axes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>radians_x</em>, <em>radians_y</em>, <em>radians_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.rotate_3D_coordinates_around_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate coordinates around the 3 axes.</p>
+<p>Rotate coordinates around the x, y, and z axes. The rotation values must be given in radians.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays. (See <cite>coords_a2s</cite> if you have a single 2D array containing all 3.)</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays. (See <cite>coords_a2s</cite> if you have a single 2D array containing all 3.)</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays. (See <cite>coords_a2s</cite> if you have a single 2D array containing all 3.)</li>
+<li><strong>radians_x</strong> (<em>number</em>) – A single number, representing the rotation in radians around the x axis.</li>
+<li><strong>radians_y</strong> (<em>number</em>) – A single number, representing the rotation in radians around the y axis.</li>
+<li><strong>radians_z</strong> (<em>number</em>) – A single number, representing the rotation in radians around the z axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>xr</strong> (<em>Numpy array of numbers</em>) – The rotated x coordinates.</li>
+<li><strong>yr</strong> (<em>Numpy array of numbers</em>) – The rotated y coordinates.</li>
+<li><strong>zr</strong> (<em>Numpy array of numbers</em>) – The rotated z coordinates.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xr</span><span class="p">,</span> <span class="n">yr</span><span class="p">,</span> <span class="n">zr</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">rotate_3D_coordinates_around_axes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.scale_3D_coordinates">
+<code class="descclassname">brainload.spatial.</code><code class="descname">scale_3D_coordinates</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>x_scale_factor</em>, <em>y_scale_factor=None</em>, <em>z_scale_factor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.scale_3D_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale coordinates by factors.</p>
+<p>Scale the given coordinates by the given scale factor or factors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
+<li><strong>x_scale_factor</strong> (<em>number</em>) – A single number, representing the scaling factor along the x axis. If the other values are not given, this counts for all axes.</li>
+<li><strong>y_scale_factor</strong> (<em>number | None</em>) – A single number, representing the scaling factor along the y axis. If this is <cite>None</cite>, the value given for <cite>x_scale_factor</cite> is used.</li>
+<li><strong>z_scale_factor</strong> (<em>number | None</em>) – A single number, representing the scaling factor along the z axis. If this is <cite>None</cite>, the value given for <cite>x_scale_factor</cite> is used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>x_scaled</strong> (<em>Numpy array of numbers</em>) – The scaled x coordinates.</li>
+<li><strong>y_scaled</strong> (<em>Numpy array of numbers</em>) – The scaled y coordinates.</li>
+<li><strong>z_scaled</strong> (<em>Numpy array of numbers</em>) – The scaled z coordinates.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">scale_3D_coordinates</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># 15 21 27</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># 18 24 30</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="brainload.spatial.translate_3D_coordinates_along_axes">
+<code class="descclassname">brainload.spatial.</code><code class="descname">translate_3D_coordinates_along_axes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>shift_x</em>, <em>shift_y</em>, <em>shift_z</em><span class="sig-paren">)</span><a class="headerlink" href="#brainload.spatial.translate_3D_coordinates_along_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate coordinates along one or more axes.</p>
+<p>Translate or shift coordinates along one or more axes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>Numpy array of numbers</em>) – A 1D array representing x axis coordinates. Must have the same length as the <cite>y</cite> and <cite>z</cite> arrays.</li>
+<li><strong>y</strong> (<em>Numpy array of numbers</em>) – A 1D array representing y axis coordinates. Must have the same length as the <cite>x</cite> and <cite>z</cite> arrays.</li>
+<li><strong>z</strong> (<em>Numpy array of numbers</em>) – A 1D array, representing z axis coordinates. Must have the same length as the <cite>x</cite> and <cite>y</cite> arrays.</li>
+<li><strong>shift_x</strong> (<em>number</em>) – A single number, representing the shift along the x axis.</li>
+<li><strong>shift_y</strong> (<em>number</em>) – A single number, representing the shift along the y axis.</li>
+<li><strong>shift_z</strong> (<em>number</em>) – A single number, representing the shift along the z axis.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>x_shifted</strong> (<em>Numpy array of numbers</em>) – The shifted x coordinates.</li>
+<li><strong>y_shifted</strong> (<em>Numpy array of numbers</em>) – The shifted y coordinates.</li>
+<li><strong>z_shifted</strong> (<em>Numpy array of numbers</em>) – The shifted z coordinates.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brainload.spatial</span> <span class="k">as</span> <span class="nn">st</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xt</span><span class="p">,</span> <span class="n">yt</span><span class="p">,</span> <span class="n">zt</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">translate_3D_coordinates_along_axes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">zt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>     <span class="c1"># 7 3 9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2"> </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">yt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">zt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>     <span class="c1"># 8 4 10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="workflows.html" class="btn btn-neutral float-right" title="Brainload Example Workflows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to brainload’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'v0.3.0',
+              LANGUAGE:'en',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
