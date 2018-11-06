@@ -14,6 +14,10 @@ build:
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
+  build:
+# The next line 'python {{ python }}' uses all python versions listed on the file conda_build_config.yaml in the same dir.
+# See https://conda.io/docs/user-guide/tasks/build-packages/variants.html.
+    - python {{ python }}
   host:
     - nibabel
     - numpy
