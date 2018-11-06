@@ -12,8 +12,11 @@ source:
 build:
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  noarch_python: True
 
 requirements:
+  build:
+    - python {{ python }}
   host:
     - nibabel
     - numpy
@@ -42,7 +45,7 @@ about:
   home: https://github.com/dfsp-spirit/brainload
   license: MIT
   license_family: MIT
-  license_file:
+  license_file: LICENSE
   summary: Load FreeSurfer brain imaging data with minimal cognitive load.
   doc_url: http://dfsp-spirit.github.io/brainload
   dev_url: https://github.com/dfsp-spirit/brainload
