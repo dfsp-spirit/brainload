@@ -218,16 +218,8 @@ twine upload dist/*                           # will ask for your PyPI credentia
 
 #### Anaconda (build and distribution, recipe)
 
-> WARNING: When trying to build a version of brainload yourself for conda, make sure that you are using the correct recipe version! I.e., make sure you check out the source code for that release, do NOT use the latest HEAD from master! Example for getting the correct recipe for version 0.2.0 (after normal clone/checkout of repo):
 
-```console
-$ cd REPO_ROOT
-$ git tag -l
-v0.2.0
-$ git checkout tags/v0.2.0
-```
-
-If you are experienced with building for conda, all you want to know is maybe the following: the recipe can be found in `REPO_ROOT/develop/anaconda_dist/recipe/meta.yaml`.
+If you are experienced with building for conda, all you want to know is maybe the following: the recipe can be found in `REPO_ROOT/develop/anaconda_dist/recipe/RELEASE/meta.yaml`.
 
 This has been done successfully under Linux and MacOS. It more or less follows the [official conda build instructions](https://conda.io/docs/user-guide/tutorials/build-pkgs.html).
 
@@ -257,11 +249,11 @@ conda env list        # shows available environments, the one marked with an ast
 Now that conda is active, we are in the conda `base` environment. Let's create a new sub environment and install the required tools into it:
 
 ```console
-cd develop/anaconda_dist/recipe
+cd develop/anaconda_dist/recipe/RELEASE/      # replace RELEASE with the release you want to build
 conda update conda
-conda create --name blbuild python=2.7                  # skip if you have done these steps before
-conda activate blbuild
-conda install conda-build anaconda-client conda-verify
+conda create -y --name blbuild2 python=2.7                  # skip if you have done these steps before
+conda activate blbuild2
+conda install -y conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
 CONDA_BLD_PATH=/tmp/condaishacky conda-build .                        # may take a while... will output the full path to the file in the end. You will need this soon.
@@ -285,8 +277,13 @@ Now, you can upload all converted ones, just export the file name first.
 ```
 export PKG_FILENAME="some_name_and_version_here.tar.bz2"
 for ARCH in linux-32 linux-64 linux-ppc64le linux-armv6l linux-armv7l linux-aarch64 osx-64 win-32 win-64; do anaconda upload pkg_converted/${ARCH}/${PKG_FILENAME}; done
+conda deactivate        # leave the blbuild2 environment
 ```
+Note that you will have to repeat all steps listed above again for Python 3 in a new conda environment with Python 3 installed. So start with:
 
+```console
+conda create -y --name blbuild3 python=3.6  
+```
 
 ##### Anaconda: How the recipe was created
 
@@ -297,9 +294,9 @@ It follows the [official guide using the skeleton from PyPI method](https://cond
 ```console
 cd develop/anaconda_dist
 conda update conda
-conda create --name blbuild python=2.7                  # skip if you have done these steps before
+conda create -y --name blbuild python=2.7                  # skip if you have done these steps before
 conda activate blbuild
-conda install conda-build anaconda-client conda-verify
+conda install -y conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
 ```
@@ -307,6 +304,7 @@ CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_V
 The last command created a skeleton version of the conda `meta.yaml` build file based on the `setup.py` file from pip and placed it in a new directory named `brainload`. So you should now have a file at `REPO_ROOT/develop/anaconda_dist/brainload/meta_yaml`. This skeleton version is not ready for usage though and the build will fail with it. To create the final version, the following steps were needed:
 
 - In the `extra` section, full in the `recipe-maintainers` information
+- In the `about` section, full in the `doc_url` and `dev_url` information (http://dfsp-spirit.github.io/brainload and https://github.com/dfsp-spirit/brainload)
 - Setuptools will download some dependencies at install time or later when installing via pip, e.g., pytest-runner, when you run `python setup.py test`. This does not work with conda, so you have to list all these dependencies manually in the `meta.yaml` file for conda. These dependencies currently are the following packages:
     - pytest
     - pytest-cov
