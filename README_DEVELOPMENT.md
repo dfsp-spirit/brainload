@@ -116,7 +116,7 @@ vim setup.py                   # update 'version' in here
 vim doc/conf.py                # update 'version' and 'release' in here
 vim MANIFEST.in                # update the new documentation to include: docs/${NEW_RELEASE}/ (hard-code the number, of course)
 
-git add setup.py doc/conf.py
+git add setup.py doc/conf.py MANIFEST.in
 ```
 
 #### Build docs

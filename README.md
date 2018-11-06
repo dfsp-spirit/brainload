@@ -1,5 +1,5 @@
 # brainload
-A python module designed to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files.
+Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.
 
 ## About
 
@@ -92,7 +92,7 @@ If it is not, you can use the recipe in this repo to build it yourself, see [REA
 
 #### Supported Python versions
 
-Brainload 0.2.0 is available for Python 2.7. Starting from the next release, Brainload will also support Python 3.
+Brainload works on both Python 2 and Python 3. You can see all supported versions in the `.travis.yml` file in this directory.
 
 
 ## What about visualization?
