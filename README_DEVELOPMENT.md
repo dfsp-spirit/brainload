@@ -140,7 +140,7 @@ This will build the documentation in HTML format and place it in `doc/_build/htm
 
 ```console
 cd ..    # back to repo root
-mkdir docs/${NEW_RELEASE)/
+mkdir docs/${NEW_RELEASE}/
 cp -r doc/_build/html/* docs/${NEW_RELEASE}/
 ```
 
@@ -152,7 +152,7 @@ The [Brainload API documentation](http://dfsp-spirit.github.io/brainload) is mad
 Now it's time to add all those changes to git:
 
 ```console
-git add docs/${NEW_RELEASE)
+git add docs/${NEW_RELEASE}
 git add docs/index.html docs/versions.html
 git commit -m "Update version to ${NEW_VERSION}, add generated documentation."
 ```
