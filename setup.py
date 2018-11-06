@@ -8,9 +8,9 @@ except ImportError:
 
 setup(
     name='brainload',
-    version='0.2.0',
-    description='Load FreeSurfer brain imaging data with minimal cognitive load',
-    long_description='Provides a high-level interface for loading FreeSurfer brain imaging data by wrapping around nibabel.',
+    version='0.3.0',
+    description='Load FreeSurfer brain imaging data with minimal cognitive load.',
+    long_description='Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.',
     keywords='neuroimaging freesurfer nibabel load mgh curv',
     author='Tim Schäfer',
     author_email='ts+code@rcmd.org',
@@ -20,9 +20,13 @@ setup(
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
-          'Programming Language :: Python :: 3.6'],
+          'Programming Language :: Python :: 3.6'
+          'Programming Language :: Python :: 3.7'],
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'pytest-cov'],
