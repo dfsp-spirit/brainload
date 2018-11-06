@@ -188,13 +188,17 @@ twine upload --repository-url https://test.pypi.org/legacy/ dist/*     # will as
 Now try it in a fresh virtual environment (you may have to wait a sec for it to become available):
 
 ```console
-deactivate                                  # leave current virtual env
-python -m virtualenv env_for_v2             # create a fresh one
-source env_for_v2/bin/activate              # activate it
-pip install --index-url https://test.pypi.org/simple/ brainload     # install it.
-#now try the example client.
-deactivate
-rm -rf env_for_v2
+$ deactivate                                  # leave current virtual env
+$ python -m virtualenv env_for_v2             # create a fresh one
+$ source env_for_v2/bin/activate              # activate it
+$ pip install --index-url https://test.pypi.org/simple/ brainload     # install it.
+#now try the example client. e.g.:
+$ python
+>>> import brainload as bl
+>>> # do stuff
+>>> quit()
+$ deactivate
+$ rm -rf env_for_v2
 ```
 
 If something is wrong, fix it and commit again. If everything looks fine, tag the current version as the new release:
