@@ -329,6 +329,36 @@ def test_parse_subject_works_with_left_hemisphere_only():
     assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
 
+def test_parse_subject_works_with_single_hemispheres_data_correct():
+    lh_vert_coords, lh_faces, lh_morphometry_data, lh_meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
+    rh_vert_coords, rh_faces, rh_morphometry_data, rh_meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
+    both_vert_coords, both_faces, both_morphometry_data, both_meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='both')
+
+    assert lh_vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, 3)
+    assert lh_faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES, 3)
+    assert lh_morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+
+    assert rh_vert_coords.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
+    assert rh_faces.shape == (SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
+    assert rh_morphometry_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+
+    assert both_vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
+    assert both_faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
+    assert both_morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+
+    for vert_idx in range(5000:5100)
+        assert lh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx][0], 0.1)
+
+    rh_offset = SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    for vert_idx in range(5000:5100)
+        assert rh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx + rh_offset][0], 0.1)
+
+
+
+
+
+
+
 def test_parse_subject_works_with_right_hemisphere_only():
     vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
     assert len(meta_data) == 14
