@@ -346,11 +346,11 @@ def test_parse_subject_works_with_single_hemispheres_data_correct():
     assert both_faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert both_morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
-    for vert_idx in range(5000:5100)
+    for vert_idx in range(5000, 5100):
         assert lh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx][0], 0.1)
 
     rh_offset = SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    for vert_idx in range(5000:5100)
+    for vert_idx in range(5000, 5100):
         assert rh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx + rh_offset][0], 0.1)
 
 
