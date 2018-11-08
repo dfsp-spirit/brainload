@@ -346,17 +346,37 @@ def test_parse_subject_works_with_single_hemispheres_data_correct():
     assert both_faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
     assert both_morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
+    # Test vertices (i.e., their consistency between both, lh and rh data)
     for vert_idx in range(5000, 5100):
-        assert lh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx][0], 0.1)
+        assert lh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx][0], 0.01)   # x coord
+        assert lh_vert_coords[vert_idx][1] == pytest.approx(both_vert_coords[vert_idx][1], 0.01)   # y coord
+        assert lh_vert_coords[vert_idx][2] == pytest.approx(both_vert_coords[vert_idx][2], 0.01)   # z coord
 
-    rh_offset = SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    rh_vertex_offset = SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     for vert_idx in range(5000, 5100):
-        assert rh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx + rh_offset][0], 0.1)
+        assert rh_vert_coords[vert_idx][0] == pytest.approx(both_vert_coords[vert_idx + rh_vertex_offset][0], 0.01)
+        assert rh_vert_coords[vert_idx][1] == pytest.approx(both_vert_coords[vert_idx + rh_vertex_offset][1], 0.01)
+        assert rh_vert_coords[vert_idx][2] == pytest.approx(both_vert_coords[vert_idx + rh_vertex_offset][2], 0.01)
 
+    # Test faces (i.e., their consistency between both, lh and rh data)
+    for face_idx in range(5000, 5100):
+        assert lh_faces[face_idx][0] == both_faces[face_idx][0]   # first vertex index of 3-face. Theses are integers, so no need for approx.
+        assert lh_faces[face_idx][1] == both_faces[face_idx][1]   # second vertex index of 3-face
+        assert lh_faces[face_idx][2] == both_faces[face_idx][2]   # third vertex index of 3-face
 
+    rh_face_offset = SUBJECT1_SURF_LH_WHITE_NUM_FACES
+    for face_idx in range(5000, 5100):
+        assert rh_faces[face_idx][0]+SUBJECT1_SURF_LH_WHITE_NUM_VERTICES == both_faces[face_idx + rh_face_offset][0]
+        assert rh_faces[face_idx][1]+SUBJECT1_SURF_LH_WHITE_NUM_VERTICES == both_faces[face_idx + rh_face_offset][1]
+        assert rh_faces[face_idx][2]+SUBJECT1_SURF_LH_WHITE_NUM_VERTICES == both_faces[face_idx + rh_face_offset][2]
 
+    # Test morphometry data (i.e., their consistency between both, lh and rh data)
+    for vert_data_idx in range(5000, 5100):
+        assert lh_morphometry_data[vert_data_idx] == pytest.approx(both_morphometry_data[vert_data_idx], 0.01)
 
-
+    rh_data_offset = SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    for vert_data_idx in range(5000, 5100):
+        assert rh_morphometry_data[vert_data_idx] == both_morphometry_data[vert_data_idx + rh_data_offset]
 
 
 def test_parse_subject_works_with_right_hemisphere_only():
