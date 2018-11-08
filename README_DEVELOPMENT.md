@@ -115,8 +115,9 @@ git pull
 vim setup.py                   # update 'version' in here
 vim doc/conf.py                # update 'version' and 'release' in here
 vim MANIFEST.in                # update the new documentation to include: docs/${NEW_RELEASE}/ (hard-code the number, of course)
+vim src/brainload/__init__.py  # update __version__ in here.
 
-git add setup.py doc/conf.py MANIFEST.in
+git add setup.py doc/conf.py MANIFEST.in src/brainload/__init__.py
 ```
 
 #### Build docs
@@ -215,6 +216,9 @@ It is finally time to upload it to the real PyPI:
 ```console
 twine upload dist/*                           # will ask for your PyPI credentials for brainload
 ```
+
+Now, update the version information in the source code to the next dev release in `src/brainload/__init__.py`. Example: If you just released `v0.2.0`, set it to `v0.2.1dev` in there. The other files will be updated only at the next release (and the version in init.py will also be changed then, of course). But this allows you to always find out which version of the code somebody is running. Everything labeled as dev is not a release.
+
 
 #### Anaconda (build and distribution, recipe)
 
