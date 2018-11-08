@@ -149,6 +149,15 @@ def test_read_fs_morphometry_data_file_and_record_meta_data_raises_on_wrong_form
     assert 'invalid_format' in str(exc_info.value)
 
 
+def test_load_subject_mesh_files_raises_on_invalid_hemi():
+    lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
+    rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
+    with pytest.raises(ValueError) as exc_info:
+        vert_coords, faces, meta_data = fsd.load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='invalid_hemisphere')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
+
+
 def test_load_subject_mesh_files():
     lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
@@ -436,7 +445,7 @@ def test_parse_subject_does_not_load_surface_when_asked_not_to():
 
 
 def test_parse_subject_does_not_load_morphometry_data_when_asked_not_to():
-    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, load_morphometry_data=False)
     assert len(meta_data) == 14
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
@@ -632,7 +641,7 @@ def test_parse_subject_standard_space_data_does_not_load_morphometry_data_when_a
     if not os.path.isdir(expected_fsaverage_surf_dir):
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
-    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_morhology_data=False)
+    vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, load_morphometry_data=False)
     assert len(meta_data) == 17
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
@@ -1165,3 +1174,7 @@ def test_rhi_raises_on_index_out_of_bounds():
         abs_rh_start = bl.rhi(500000, meta_data_both)
     assert 'out of bounds: right hemisphere has' in str(exc_info.value)
     assert '500000' in str(exc_info.value)
+
+def test_fsaverage_mesh():
+    verts, faces, meta_data = bl.fsaverage_mesh(subjects_dir=TEST_DATA_DIR, use_freesurfer_home_if_missing=True)
+    assert verts.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)

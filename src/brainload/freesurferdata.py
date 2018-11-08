@@ -540,7 +540,7 @@ def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_d
     return vert_coords, faces, meta_data
 
 
-def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morhology_data=True):
+def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morphometry_data=True):
     """
     Load FreeSurfer brain morphometry and/or mesh data for a single subject.
 
@@ -650,7 +650,7 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
         display_surf = None
 
     morphometry_data = None
-    if load_morhology_data:
+    if load_morphometry_data:
         lh_morphometry_file = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphometry_data_suffix_for_surface(surf)))
         rh_morphometry_file = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphometry_data_suffix_for_surface(surf)))
         morphometry_data, meta_data = load_subject_morphometry_data_files(lh_morphometry_file, rh_morphometry_file, hemi=hemi, format='curv', meta_data=meta_data)
@@ -704,7 +704,7 @@ def _merge_meshes(meshes):
     return all_vert_coords, all_faces
 
 
-def subject_avg(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morhology_data=True, custom_morphometry_files=None):
+def subject_avg(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morphometry_data=True, custom_morphometry_files=None):
     """
     Load morphometry data that has been mapped to an average subject for a subject.
 
@@ -834,7 +834,7 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
 
     # Parse the subject's morphometry data, mapped to standard space by FreeSurfer's recon-all.
     morphometry_data = None
-    if load_morhology_data:
+    if load_morphometry_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
         if fwhm is None:    # If the uses explicitely sets fwmh to None, we use the file without any 'fwhmX' part. This data in this file should be identical to the data on the fwhm='0' case, so we expect that this will be rarely used.
             fhwm_tag = ''
