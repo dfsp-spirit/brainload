@@ -516,7 +516,7 @@ def test_parse_subject_standard_space_data():
 
 def test_parse_subject_standard_space_data_raises_on_invalid_hemisphere():
     with pytest.raises(ValueError) as exc_info:
-        vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
+        vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='invalid_hemisphere')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemisphere' in str(exc_info.value)
 
@@ -1176,5 +1176,8 @@ def test_rhi_raises_on_index_out_of_bounds():
     assert '500000' in str(exc_info.value)
 
 def test_fsaverage_mesh():
+    expected_fsaverage_dir = os.path.join(TEST_DATA_DIR, 'fsaverage')
+    if not os.path.isdir(expected_fsaverage_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_dir)
     verts, faces, meta_data = bl.fsaverage_mesh(subjects_dir=TEST_DATA_DIR, use_freesurfer_home_if_missing=True)
     assert verts.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
