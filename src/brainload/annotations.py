@@ -13,7 +13,41 @@ import brainload.nitools as nit
 
 def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
     """
-    Load annotations for mesh vertices. An annotation defined a label string and a color to a set of vertices.
+    Load annotation for the mesh vertices of a single subject.
+
+    An annotation defines a label string and a color to each vertex, it is typically used to define brain regions, e.g., for cortical parcellation.
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier.
+
+    subject_dir: string
+        A string representing the path to the subjects dir.
+
+    annotation: string
+        An annotation to load, part of the file name of the respective file in the subjects label directory. E.g., 'aparc', 'aparc.a2009s', or 'aparc.DKTatlas'.
+
+    hemi: {'both', 'lh', 'rh'}, optional
+        The hemisphere for which data should actually be loaded. Defaults to 'both'.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    Returns
+    -------
+    labels: ndarray, shape (n_vertices,)
+        Contains an annotation_id for each vertex. If the vertex has no annotation, the annotation_id -1 is returned.
+
+    ctab: ndarray, shape (n_labels, 5)
+        RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual, from 0 to 255 per value. T is the transparency, which is defined as 255 - alpha. The number of labels (n_label) cannot be know in advance.
+
+    names: list of strings
+       The names of the labels. The length of the list is n_labels. Note that, contrary to the respective nibabel function, this function will always return this as a list of strings, no matter the Python version used.
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
+            - `?h.annotation_file` : the file that was loaded
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -61,8 +95,6 @@ def _are_label_names_identical(lh_label_names, rh_label_names):
     return True
 
 
-
-
 def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encoding="utf-8"):
     """
     Read annotation file and record meta data for it.
@@ -80,8 +112,8 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     meta_data: dictionary | None, optional
         Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
 
-    decoding: string describing an encoding, optional
-        The encoding to use when decoding the label strings from binary. Only used in Python 3.
+    encoding: string describing an encoding, optional
+        The encoding to use when decoding the label strings from binary. Only used in Python 3. Defaults to 'utf-8'.
 
     Returns
     -------
