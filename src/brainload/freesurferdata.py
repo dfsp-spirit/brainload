@@ -12,6 +12,7 @@ import collections
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 import brainload.nitools as nit
+import brainload.annotations as an
 
 
 def read_mgh_file(mgh_file_name, collect_meta_data=True):
@@ -214,9 +215,6 @@ def read_fs_morphometry_data_file_and_record_meta_data(curv_file, hemisphere_lab
 
     hemisphere_label: {'lh' or 'rh'}
         A string representing the hemisphere this file belongs to. This is used to write the correct meta data.
-
-    hemi: {'both', 'lh', 'rh'}, optional
-        The hemisphere for which data should actually be loaded. Defaults to 'both'.
 
     meta_data: dictionary | None, optional
         Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
@@ -978,6 +976,8 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
     >>> print data[subject4_idx][100000]
 
     """
+
+
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
@@ -1053,6 +1053,7 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
 
         # In the next function call, we discard the first two return values (vert_coords and faces), as these are None anyways because we did not load surface files.
         subject_morphometry_data, subject_meta_data = subject_avg(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, meta_data=subject_meta_data, load_surface_files=False, custom_morphometry_files=custom_morphometry_files)[2:4]
+
         group_meta_data[subject_id] = subject_meta_data
         group_morphometry_data.append(subject_morphometry_data)
     group_morphometry_data = np.array(group_morphometry_data)

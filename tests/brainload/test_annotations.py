@@ -20,8 +20,9 @@ SUBJECT1_SURF_LH_WHITE_NUM_FACES = 298484           # this number is quite arbit
 SUBJECT1_SURF_RH_WHITE_NUM_VERTICES = 153333        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
 SUBJECT1_SURF_RH_WHITE_NUM_FACES = 306662           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
 
-SUBJECT1_SURF_LH_WHITE_APARC_ANNOT_NUM_LABELS = 36
-SUBJECT1_SURF_RH_WHITE_APARC_ANNOT_NUM_LABELS = 36
+NUM_LABELS_APARC = 36
+NUM_LABELS_APARC_A2009S = 76
+NUM_LABELS_APARC_DKTATLAS = 36
 
 
 def test_read_annotation_md_lh():
@@ -30,8 +31,8 @@ def test_read_annotation_md_lh():
     assert len(meta_data) == 1
     assert meta_data['lh.annotation_file'] == annotation_file
     assert labels.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
-    assert ctab.shape == (SUBJECT1_SURF_LH_WHITE_APARC_ANNOT_NUM_LABELS, 5)
-    assert len(names) == SUBJECT1_SURF_LH_WHITE_APARC_ANNOT_NUM_LABELS
+    assert ctab.shape == (NUM_LABELS_APARC, 5)
+    assert len(names) == NUM_LABELS_APARC
     assert names[0] == "unknown"    # The first label is known to be 'unknown'. This also tests whether the object really is a string, i.e., whether the bytes have been coverted to string properly for Python 3. This is the real goal.
 
 
@@ -41,8 +42,8 @@ def test_read_annotation_md_rh():
     assert len(meta_data) == 1
     assert meta_data['rh.annotation_file'] == annotation_file
     assert labels.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
-    assert ctab.shape == (SUBJECT1_SURF_RH_WHITE_APARC_ANNOT_NUM_LABELS, 5)
-    assert len(names) == SUBJECT1_SURF_RH_WHITE_APARC_ANNOT_NUM_LABELS
+    assert ctab.shape == (NUM_LABELS_APARC, 5)
+    assert len(names) == NUM_LABELS_APARC
     assert names[0] == "unknown"    # The first label is known to be 'unknown'. This also tests whether the object really is a string, i.e., whether the bytes have been coverted to string properly for Python 3. This is the real goal.
 
 
@@ -54,9 +55,24 @@ def test_read_annotation_md_raises_on_invalid_hemisphere_label():
     assert 'invalid_hemisphere_label' in str(exc_info.value)
 
 
-def test_annot():
+def test_annot_metadata():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
     assert len(meta_data) == 2
-    assert len(label_names) == SUBJECT1_SURF_RH_WHITE_APARC_ANNOT_NUM_LABELS
+    assert len(label_names) == NUM_LABELS_APARC
     assert vertex_labels.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
-    assert label_colors.shape == (SUBJECT1_SURF_RH_WHITE_APARC_ANNOT_NUM_LABELS, 5)
+    assert label_colors.shape == (NUM_LABELS_APARC, 5)
+
+
+def test_annot_aparc():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
+    assert label_colors.shape == (NUM_LABELS_APARC, 5)
+
+
+def test_annot_aparc_a2009s():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc.a2009s', hemi='both')
+    assert label_colors.shape == (NUM_LABELS_APARC_A2009S, 5)
+
+
+def test_annot_aparc():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc.DKTatlas', hemi='both')
+    assert label_colors.shape == (NUM_LABELS_APARC_DKTATLAS, 5)
