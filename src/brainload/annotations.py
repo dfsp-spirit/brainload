@@ -41,6 +41,10 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
             label_names = lh_label_names    # both are identical, so just pick any
 
         vertex_labels = np.hstack((lh_vertex_labels, rh_vertex_labels))
+
+        if len(rh_label_colors) != len(lh_label_colors):
+            raise ValueError("There are %d colors for the lh labels and %d colors for the rh labels, but they should be identical for annotation '%s'." % (len(lh_label_colors), len(rh_label_colors), annotation))
+
         label_colors = lh_label_colors    # both are identical, so just pick any
     return vertex_labels, label_colors, label_names, meta_data
 
