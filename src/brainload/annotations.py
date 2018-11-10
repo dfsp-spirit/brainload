@@ -65,7 +65,7 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
         Contains an annotation_id for each vertex. If the vertex has no annotation, the annotation_id -1 is returned.
 
     ctab: ndarray, shape (n_labels, 5)
-        RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual. T is the transparency, which is defined as 1 - alpha.
+        RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual, from 0 to 255 per value. T is the transparency, which is defined as 255 - alpha. The number of labels (n_label) cannot be know in advance.
 
     names: list of strings
        The names of the labels. The length of the list is n_labels. Note that, contrary to the respective nibabel function, this function will always return this as a list of strings, no matter the Python version used.
