@@ -260,3 +260,42 @@ def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
         verts_in_label = np.hstack((lh_verts_in_label, rh_verts_in_label_shifted))
 
     return verts_in_label, meta_data
+
+
+def label_to_mask(verts_in_label, num_verts_total, invert=False):
+    """
+    Generate binary mask from vertex indices.
+
+    Generate a binary mask from the list of vertex indices in verts_in_label.
+
+    Parameters
+    ----------
+    verts_in_label: 1D numpy array
+        Array of vertex indices.
+
+    num_verts_total: int
+        The total number of vertices that exist. (Obviously, the highest index in verts_in_label does not need to be the last vertex.)
+
+    invert: boolean, optional
+        Whether the mask should be inverted. If inverse is set to False (or not set at all), vertex indices which occur in verts_in_label will be set to True in the mask. If inverse is set to True, vertex indices which occur in the mask will be set to False in the mask instead.  Defaults to False.
+
+    hemi: {'both', 'lh', 'rh'}, optional
+        The hemisphere for which data should actually be loaded. Defaults to 'both'.
+
+    meta_data: dictionary | None, optional if hemi is 'lh' or 'rh'
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary. If 'hemi' is 'both', this dictionary is required and MUST contain at least one of the keys 'lh.num_vertices' or 'lh.num_data_points', the value of which must contain the number of vertices of the left hemisphere of the subject. Background: If hemi is 'both', the vertex indices of both hemispheres are merged in the return value verts_in_label, and thus we need to know the shift, i.e., the number of vertices in the left hemisphere.
+
+    Returns
+    -------
+    mask: numpy array of booleans
+        The mask array, same shape as the input verts_in_label, but contains Boolean values.
+    """
+    if num_verts_total < len(verts_in_label):
+        raise ValueError("Argument num_verts_total is %d but must be at least the length of verts_in_label, which is %d." % (num_verts_total, len(verts_in_label)))
+
+    mask = np.zeros((num_verts_total), dtype=bool)  # all False, as 0 is False in Python when evaluated in Boolean context
+    mask[verts_in_label] = True
+
+    if invert:
+        mask = np.invert(mask)
+    return mask

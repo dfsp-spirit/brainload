@@ -152,3 +152,48 @@ def test_label_cortex_both():
     assert verts_in_label.shape == (SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH + SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH, )
     # Test whether the list contains duplicate entries, this must NOT be the case as the vertex ids should be merged properly:
     assert len(verts_in_label) == len(set(verts_in_label))
+
+
+def test_label_to_mask_normal():
+    verts_in_label = [3, 4, 6, 9]
+    num_verts_total = 11
+    mask = an.label_to_mask(verts_in_label, num_verts_total)
+    assert len(mask) == num_verts_total
+    assert mask[0] == False
+    assert mask[1] == False
+    assert mask[2] == False
+    assert mask[3] == True
+    assert mask[4] == True
+    assert mask[5] == False
+    assert mask[6] == True
+    assert mask[7] == False
+    assert mask[8] == False
+    assert mask[9] == True
+    assert mask[10] == False
+
+
+def test_label_to_mask_invert():
+    verts_in_label = [3, 4, 6, 9]
+    num_verts_total = 11
+    mask = an.label_to_mask(verts_in_label, num_verts_total, invert=True)
+    assert len(mask) == num_verts_total
+    assert mask[0] == True
+    assert mask[1] == True
+    assert mask[2] == True
+    assert mask[3] == False
+    assert mask[4] == False
+    assert mask[5] == True
+    assert mask[6] == False
+    assert mask[7] == True
+    assert mask[8] == True
+    assert mask[9] == False
+    assert mask[10] == True
+
+
+def test_label_to_mask_raises_on_wrong_input():
+    verts_in_label = [3, 4, 6, 9]
+    num_verts_total = 3
+    with pytest.raises(ValueError) as exc_info:
+        mask = an.label_to_mask(verts_in_label, num_verts_total, invert=True)
+    assert 'Argument num_verts_total is 3' in str(exc_info.value)
+    assert 'must be at least the length of verts_in_label, which is 4' in str(exc_info.value)
