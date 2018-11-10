@@ -1,7 +1,7 @@
 """
 Functions for reading FreeSurfer vertex annotation files.
 
-Their format is awkward, see https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation and
+See https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation and
  http://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.io.read_annotfor more information.
 """
 
