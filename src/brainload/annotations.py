@@ -21,22 +21,41 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
     if meta_data is None:
         meta_data = {}
 
-    lh_annotation_file_name = "lh.%s.annot"
-    rh_annotation_file_name = "rh.%s.annot"
+    lh_annotation_file_name = "lh.%s.annot" % annotation
+    rh_annotation_file_name = "rh.%s.annot" % annotation
     lh_annotation_file = os.path.join(subjects_dir, subject_id, 'label', lh_annotation_file_name)
     rh_annotation_file = os.path.join(subjects_dir, subject_id, 'label', rh_annotation_file_name)
 
     if hemi == 'lh':
-        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(lh_morphometry_data_file, 'lh', meta_data=meta_data)
+        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data)
     elif hemi == 'rh':
-        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(rh_morphometry_data_file, 'rh', meta_data=meta_data)
+        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data)
     else:
-        lh_vertex_labels, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_morphometry_data_file, 'lh', meta_data=meta_data)
-        rh_vertex_labels, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_morphometry_data_file, 'rh', meta_data=meta_data)
-        vertex_labels = merge_vertex_labels(np.array([lh_vertex_labels, rh_vertex_labels]))
-        label_colors = merge_label_colors(np.array([lh_label_colors, rh_label_colors]))
-        label_names = merge_label_names(np.array([lh_label_names, rh_label_names]))
+        lh_vertex_labels, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data)
+        rh_vertex_labels, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data)
+        #vertex_labels = merge_vertex_labels(np.array([lh_vertex_labels, rh_vertex_labels]))
+        #label_colors = merge_label_colors(np.array([lh_label_colors, rh_label_colors]))
+        if not are_label_names_identical(lh_label_names, rh_label_names):
+            raise ValueError("The %d labels for the lh and the %d labels for the rh are not identical for annotation '%s'." % (len(lh_label_names), len(rh_label_names), annotation))
+        else:
+            label_names = lh_label_names    # both are identical, so just pick any
+
+        vertex_labels = np.hstack((lh_vertex_labels, rh_vertex_labels))
+        label_colors = lh_label_colors    # both are identical, so just pick any
     return vertex_labels, label_colors, label_names, meta_data
+
+
+def are_label_names_identical(lh_label_names, rh_label_names):
+    """
+    """
+    if len(lh_label_names) != len(rh_label_names):
+        return False
+    for idx, label in enumerate(lh_label_names):
+        if lh_label_names[idx] != rh_label_names[idx]:
+            return False
+    return True
+
+
 
 
 def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encoding="utf-8"):
