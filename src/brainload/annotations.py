@@ -88,7 +88,11 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     # The nibabel read_annot function returns string under Python 2 and bytes under Python 3, see http://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.io.read_annot.
     # We convert this to strings here so we always return strings.
     try:
-        names = names.decode(encoding)
+        names_decoded = []
+        for name in names:
+            name_str = name.decode(encoding)
+            names_decoded.append(name_str)
+        names = names_decoded
     except AttributeError:
         pass
 
