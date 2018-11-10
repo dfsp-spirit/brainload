@@ -215,8 +215,8 @@ def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
     hemi: {'both', 'lh', 'rh'}, optional
         The hemisphere for which data should actually be loaded. Defaults to 'both'.
 
-    meta_data: dictionary | None, optional
-        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+    meta_data: dictionary | None, optional if hemi is 'lh' or 'rh'
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary. If 'hemi' is 'both', this dictionary is required and MUST contain at least one of the keys 'lh.num_vertices' or 'lh.num_data_points', the value of which must contain the number of vertices of the left hemisphere of the subject. Background: If hemi is 'both', the vertex indices of both hemispheres are merged in the return value verts_in_label, and thus we need to know the shift, i.e., the number of vertices in the left hemisphere.
 
     Returns
     -------
@@ -231,7 +231,18 @@ def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
 
     if meta_data is None:
+        if hemi == 'both':
+            raise ValueError("Argument 'hemi' is set to 'both'. In this case, the meta_data argument is required. See the doc string for details.")
         meta_data = {}
+
+    if hemi == 'both':
+        if 'lh.num_vertices' in meta_data:
+            rh_shift = meta_data['lh.num_vertices']
+        elif 'lh.num_data_points' in meta_data:
+            rh_shift = meta_data['lh.num_data_points']
+        else:
+            raise ValueError("Argument 'hemi' is set to 'both'. In this case, the meta_data argument is required and must contain the key 'lh.num_data_points' or 'lh.num_vertices'. See the doc string for details.")
+
 
     lh_label_file_name = "lh.%s.label" % label
     rh_label_file_name = "rh.%s.label" % label
@@ -245,6 +256,7 @@ def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
     else:
         lh_verts_in_label, meta_data = read_label_md(lh_label_file, 'lh', meta_data=meta_data)
         rh_verts_in_label, meta_data = read_label_md(rh_label_file, 'rh', meta_data=meta_data)
-        verts_in_label = np.hstack((lh_verts_in_label, rh_verts_in_label))
+        rh_verts_in_label_shifted = rh_verts_in_label + rh_shift
+        verts_in_label = np.hstack((lh_verts_in_label, rh_verts_in_label_shifted))
 
     return verts_in_label, meta_data

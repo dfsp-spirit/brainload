@@ -20,6 +20,9 @@ SUBJECT1_SURF_LH_WHITE_NUM_FACES = 298484           # this number is quite arbit
 SUBJECT1_SURF_RH_WHITE_NUM_VERTICES = 153333        # this number is quite arbitrary: the number of vertices is specific for this subject and surface.
 SUBJECT1_SURF_RH_WHITE_NUM_FACES = 306662           # this number is quite arbitrary: the number of faces is specific for this subject and surface.
 
+SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH = 140891
+SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH =144884
+
 NUM_LABELS_APARC = 36
 NUM_LABELS_APARC_A2009S = 76
 NUM_LABELS_APARC_DKTATLAS = 36
@@ -122,8 +125,9 @@ def test_read_label_md_metadata_lh():
     verts_in_label, meta_data = an.read_label_md(label_file, 'lh')
     assert len(meta_data) == 1
     assert meta_data['lh.label_file'] == label_file
-    assert verts_in_label.shape == (140891, )
+    assert verts_in_label.shape == (SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH, )
     assert len(verts_in_label) < SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert len(verts_in_label) == len(set(verts_in_label)) # Test for duplicate entries
 
 
 def test_read_label_md_metadata_rh():
@@ -131,13 +135,20 @@ def test_read_label_md_metadata_rh():
     verts_in_label, meta_data = an.read_label_md(label_file, 'rh')
     assert len(meta_data) == 1
     assert meta_data['rh.label_file'] == label_file
-    assert verts_in_label.shape == (144884, )
+    assert verts_in_label.shape == (SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH, )
     assert len(verts_in_label) < SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+    assert len(verts_in_label) == len(set(verts_in_label))
+
 
 def test_label_cortex_both():
     expected_lh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'lh.cortex.label')
     expected_rh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
-    verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='both')
-    assert len(meta_data) == 2
+    meta_data = {'lh.num_vertices': SUBJECT1_SURF_LH_WHITE_NUM_VERTICES}
+    verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='both', meta_data=meta_data)
+    assert len(meta_data) == 3
     assert meta_data['lh.label_file'] == expected_lh_label_file
     assert meta_data['rh.label_file'] == expected_rh_label_file
+    assert meta_data['lh.num_vertices'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES # should be conserved
+    assert verts_in_label.shape == (SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH + SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH, )
+    # Test whether the list contains duplicate entries, this must NOT be the case as the vertex ids should be merged properly:
+    assert len(verts_in_label) == len(set(verts_in_label))
