@@ -35,7 +35,7 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
         rh_vertex_labels, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data)
         #vertex_labels = merge_vertex_labels(np.array([lh_vertex_labels, rh_vertex_labels]))
         #label_colors = merge_label_colors(np.array([lh_label_colors, rh_label_colors]))
-        if not are_label_names_identical(lh_label_names, rh_label_names):
+        if not _are_label_names_identical(lh_label_names, rh_label_names):
             raise ValueError("The %d labels for the lh and the %d labels for the rh are not identical for annotation '%s'." % (len(lh_label_names), len(rh_label_names), annotation))
         else:
             label_names = lh_label_names    # both are identical, so just pick any
@@ -45,8 +45,9 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
     return vertex_labels, label_colors, label_names, meta_data
 
 
-def are_label_names_identical(lh_label_names, rh_label_names):
+def _are_label_names_identical(lh_label_names, rh_label_names):
     """
+    Checks whether the two string lists have the same elements in same order.
     """
     if len(lh_label_names) != len(rh_label_names):
         return False
