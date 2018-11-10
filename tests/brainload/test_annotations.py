@@ -31,3 +31,4 @@ def test_read_annotation_md():
     assert labels.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
     assert ctab.shape == (SUBJECT1_SURF_LH_WHITE_APARC_ANNOT_NUM_LABELS, 5)
     assert len(names) == SUBJECT1_SURF_LH_WHITE_APARC_ANNOT_NUM_LABELS
+    assert names[0] == "unknown"    # first label is known to be unknown
