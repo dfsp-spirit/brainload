@@ -61,9 +61,6 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
 
     Returns
     -------
-    labels: numpy array
-        A 1D array containing one scalar value per vertex.
-
     labels: ndarray, shape (n_vertices,)
         Contains an annotation_id for each vertex. If the vertex has no annotation, the annotation_id -1 is returned.
 
@@ -83,7 +80,7 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     if meta_data is None:
         meta_data = {}
 
-    labels, ctab, names = fsio.read_annot(annotation_file_lh, orig_ids=False)
+    labels, ctab, names = fsio.read_annot(annotation_file, orig_ids=False)
 
     label_file = hemisphere_label + '.annotation_file'
     meta_data[label_file] = annotation_file
