@@ -55,11 +55,27 @@ def test_read_annotation_md_raises_on_invalid_hemisphere_label():
     assert 'invalid_hemisphere_label' in str(exc_info.value)
 
 
-def test_annot_metadata():
+def test_annot_metadata_both_hemispheres():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
     assert len(meta_data) == 2
     assert len(label_names) == NUM_LABELS_APARC
     assert vertex_labels.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert label_colors.shape == (NUM_LABELS_APARC, 5)
+
+
+def test_annot_metadata_single_hemi_lh():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='lh')
+    assert len(meta_data) == 1
+    assert len(label_names) == NUM_LABELS_APARC
+    assert vertex_labels.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+    assert label_colors.shape == (NUM_LABELS_APARC, 5)
+
+
+def test_annot_metadata_single_hemi_rh():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='rh')
+    assert len(meta_data) == 1
+    assert len(label_names) == NUM_LABELS_APARC
+    assert vertex_labels.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
     assert label_colors.shape == (NUM_LABELS_APARC, 5)
 
 
