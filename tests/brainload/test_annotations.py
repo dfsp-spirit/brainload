@@ -107,3 +107,37 @@ def test_are_label_names_identical_with_not_identical():
 def test_are_label_names_identical_with_diff_sizes():
     res = an._are_label_names_identical(["same"], ["same", "same"])
     assert res == False
+
+
+def test_read_label_md_raises_on_invalid_hemisphere_label():
+    label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
+    with pytest.raises(ValueError) as exc_info:
+        verts_in_label, meta_data = an.read_label_md(label_file, 'invalid_hemisphere_label')
+    assert 'hemisphere_label must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere_label' in str(exc_info.value)
+
+
+def test_read_label_md_metadata_lh():
+    label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'lh.cortex.label')
+    verts_in_label, meta_data = an.read_label_md(label_file, 'lh')
+    assert len(meta_data) == 1
+    assert meta_data['lh.label_file'] == label_file
+    assert verts_in_label.shape == (140891, )
+    assert len(verts_in_label) < SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+
+
+def test_read_label_md_metadata_rh():
+    label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
+    verts_in_label, meta_data = an.read_label_md(label_file, 'rh')
+    assert len(meta_data) == 1
+    assert meta_data['rh.label_file'] == label_file
+    assert verts_in_label.shape == (144884, )
+    assert len(verts_in_label) < SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+
+def test_label_cortex_both():
+    expected_lh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'lh.cortex.label')
+    expected_rh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
+    verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='both')
+    assert len(meta_data) == 2
+    assert meta_data['lh.label_file'] == expected_lh_label_file
+    assert meta_data['rh.label_file'] == expected_rh_label_file

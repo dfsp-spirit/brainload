@@ -153,3 +153,98 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
         pass
 
     return labels, ctab, names, meta_data
+
+
+def read_label_md(label_file, hemisphere_label, meta_data=None):
+    """
+    Read label file and record meta data for it.
+
+    A label file is a FreeSurfer text file like 'subject/label/lh.cortex.label' that contains a list of vertex ids (with RAS coordinates) that are part of the label. It may optionally contain a scalar values for each vertex, but that is currently ignored by this function.
+
+    Parameters
+    ----------
+    label_file: string
+        A string representing a path to a FreeSurfer vertex annotation file (e.g., the path to 'lh.cortex.label').
+
+    hemisphere_label: {'lh' or 'rh'}
+        A string representing the hemisphere this file belongs to. This is used to write the correct meta data.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    Returns
+    -------
+    verts_in_label: ndarray, shape (num_labeled_verts,)
+        Contains an array of vertex ids, one id for each vertex that is part of the label.
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
+            - `?h.label_file` : the file that was loaded
+    """
+    if hemisphere_label not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemisphere_label must be one of {'lh', 'rh'} but is '%s'." % hemisphere_label)
+
+    if meta_data is None:
+        meta_data = {}
+
+    verts_in_label = fsio.read_label(label_file, read_scalars=False)
+
+    key_for_label_file = hemisphere_label + '.label_file'
+    meta_data[key_for_label_file] = label_file
+
+    return verts_in_label, meta_data
+
+
+def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
+    """
+    Load annotation for the mesh vertices of a single subject.
+
+    An annotation defines a label string and a color to each vertex, it is typically used to define brain regions, e.g., for cortical parcellation.
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier.
+
+    subject_dir: string
+        A string representing the path to the subjects dir.
+
+    label: string
+        A label to load, part of the file name of the respective file in the subjects label directory. E.g., 'cortex'.
+
+    hemi: {'both', 'lh', 'rh'}, optional
+        The hemisphere for which data should actually be loaded. Defaults to 'both'.
+
+    meta_data: dictionary | None, optional
+        Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
+
+    Returns
+    -------
+    verts_in_label: ndarray, shape (n_vertices,)
+        Contains the ids of all vertices included in the label.
+
+    meta_data: dictionary
+        Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
+            - `?h.label_file` : the file that was loaded
+    """
+    if hemi not in ('lh', 'rh', 'both'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
+
+    if meta_data is None:
+        meta_data = {}
+
+    lh_label_file_name = "lh.%s.label" % label
+    rh_label_file_name = "rh.%s.label" % label
+    lh_label_file = os.path.join(subjects_dir, subject_id, 'label', lh_label_file_name)
+    rh_label_file = os.path.join(subjects_dir, subject_id, 'label', rh_label_file_name)
+
+    if hemi == 'lh':
+        verts_in_label, meta_data = read_label_md(lh_label_file, 'lh', meta_data=meta_data)
+    elif hemi == 'rh':
+        verts_in_label, meta_data = read_label_md(rh_label_file, 'rh', meta_data=meta_data)
+    else:
+        lh_verts_in_label, meta_data = read_label_md(lh_label_file, 'lh', meta_data=meta_data)
+        rh_verts_in_label, meta_data = read_label_md(rh_label_file, 'rh', meta_data=meta_data)
+        verts_in_label = np.hstack((lh_verts_in_label, rh_verts_in_label))
+
+    return verts_in_label, meta_data
