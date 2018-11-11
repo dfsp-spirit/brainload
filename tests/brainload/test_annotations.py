@@ -58,6 +58,13 @@ def test_read_annotation_md_raises_on_invalid_hemisphere_label():
     assert 'invalid_hemisphere_label' in str(exc_info.value)
 
 
+def test_annot_raises_on_invalid_hemisphere():
+    with pytest.raises(ValueError) as exc_info:
+        vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='invalid_hemisphere')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
+
+
 def test_annot_metadata_both_hemispheres():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
     assert len(meta_data) == 2
@@ -74,9 +81,12 @@ def test_annot_metadata_single_hemi_lh():
     assert label_colors.shape == (NUM_LABELS_APARC, 5)
 
 
-def test_annot_metadata_single_hemi_rh():
-    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='rh')
-    assert len(meta_data) == 1
+def test_annot_metadata_single_hemi_rh_and_keep_metadata():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='rh', meta_data={'todo': 'keep_this'})
+    expected_annot_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.aparc.annot')
+    assert len(meta_data) == 2
+    assert meta_data['rh.annotation_file'] == expected_annot_file
+    assert meta_data['todo'] == 'keep_this'
     assert len(label_names) == NUM_LABELS_APARC
     assert vertex_labels.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
     assert label_colors.shape == (NUM_LABELS_APARC, 5)
@@ -140,7 +150,7 @@ def test_read_label_md_metadata_rh():
     assert len(verts_in_label) == len(set(verts_in_label))
 
 
-def test_label_cortex_both():
+def test_label_cortex_both_with_meta_data_entry_lh_num_vertices():
     expected_lh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'lh.cortex.label')
     expected_rh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
     meta_data = {'lh.num_vertices': SUBJECT1_SURF_LH_WHITE_NUM_VERTICES}
@@ -152,6 +162,47 @@ def test_label_cortex_both():
     assert verts_in_label.shape == (SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH + SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH, )
     # Test whether the list contains duplicate entries, this must NOT be the case as the vertex ids should be merged properly:
     assert len(verts_in_label) == len(set(verts_in_label))
+
+
+def test_label_cortex_both_with_meta_data_entry_lh_num_data_points():
+    expected_lh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'lh.cortex.label')
+    expected_rh_label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
+    meta_data = {'lh.num_data_points': SUBJECT1_SURF_LH_WHITE_NUM_VERTICES}
+    verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='both', meta_data=meta_data)
+    assert len(meta_data) == 3
+    assert meta_data['lh.label_file'] == expected_lh_label_file
+    assert meta_data['rh.label_file'] == expected_rh_label_file
+    assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES # should be conserved
+    assert verts_in_label.shape == (SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH + SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH, )
+    # Test whether the list contains duplicate entries, this must NOT be the case as the vertex ids should be merged properly:
+    assert len(verts_in_label) == len(set(verts_in_label))
+
+
+def test_label_raises_on_invalid_hemisphere():
+    with pytest.raises(ValueError) as exc_info:
+        verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='invalid_hemisphere')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemisphere' in str(exc_info.value)
+
+
+def test_label_raises_on_missing_meta_data_if_hemi_is_both():
+    with pytest.raises(ValueError) as exc_info:
+        verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex')
+    assert 'the meta_data argument is required' in str(exc_info.value)
+
+
+def test_label_raises_on_missing_meta_data_content_if_hemi_is_both():
+    with pytest.raises(ValueError) as exc_info:
+        verts_in_label, meta_data = an.label('subject1', TEST_DATA_DIR, 'cortex', meta_data={'not_the': 'right_keys'})
+    assert 'the meta_data argument is required' in str(exc_info.value)
+    assert 'must contain the key' in str(exc_info.value)
+
+
+def test_label_is_ok_with_missing_meta_data_if_hemi_is_not_both():
+    verts_in_label_lh, meta_data_lh = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='lh')
+    verts_in_label_rh, meta_data_rh = an.label('subject1', TEST_DATA_DIR, 'cortex', hemi='rh')
+    assert len(verts_in_label_lh) == SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_LH
+    assert len(verts_in_label_rh) == SUBJECT1_NUM_VERTICES_IN_LABEL_CORTEX_RH
 
 
 def test_label_to_mask_normal():

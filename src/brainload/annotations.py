@@ -283,6 +283,10 @@ def label_to_mask(verts_in_label, num_verts_total, invert=False):
     -------
     mask: numpy array of booleans
         The mask array, length is num_verts_total.
+
+    See also
+    --------
+    The `mask_data_using_label` function.
     """
     if num_verts_total < len(verts_in_label):
         raise ValueError("Argument num_verts_total is %d but must be at least the length of verts_in_label, which is %d." % (num_verts_total, len(verts_in_label)))
