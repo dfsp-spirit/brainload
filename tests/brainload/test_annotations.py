@@ -197,3 +197,51 @@ def test_label_to_mask_raises_on_wrong_input():
         mask = an.label_to_mask(verts_in_label, num_verts_total, invert=True)
     assert 'Argument num_verts_total is 3' in str(exc_info.value)
     assert 'must be at least the length of verts_in_label, which is 4' in str(exc_info.value)
+
+
+def test_create_and_use_binary_mask_example():
+    data = np.array([.1, 3.0, 2.1, 7.8, 6.34, 3.0], dtype=float)
+    verts_in_label = [0, 4, 5]
+    mask = an.label_to_mask(verts_in_label, len(data))
+    assert len(mask) == len(data)
+    assert mask[0] == True
+    assert mask[1] == False
+    assert mask[2] == False
+    assert mask[3] == False
+    assert mask[4] == True
+    assert mask[5] == True
+    data[mask == False] = np.nan
+    assert data[0] == pytest.approx(.1, 0.01)
+    assert np.isnan(data[1])
+    assert np.isnan(data[2])
+    assert np.isnan(data[3])
+    assert data[4] == pytest.approx(6.34, 0.01)
+    assert data[5] == pytest.approx(3.0, 0.01)
+
+
+def test_mask_data_using_label():
+    data = np.array([.1, 3.0, 2.1, 7.8, 6.34, 3.0], dtype=float)
+    verts_in_label = [0, 4, 5]
+    masked_data = an.mask_data_using_label(data, verts_in_label)
+    assert masked_data[0] == pytest.approx(.1, 0.01)
+    assert np.isnan(masked_data[1])
+    assert np.isnan(masked_data[2])
+    assert np.isnan(masked_data[3])
+    assert masked_data[4] == pytest.approx(6.34, 0.01)
+    assert masked_data[5] == pytest.approx(3.0, 0.01)
+    # make sure the original data was not changed
+    assert_allclose(data, np.array([.1, 3.0, 2.1, 7.8, 6.34, 3.0], dtype=float))
+
+
+def test_mask_data_using_label_with_invert():
+    data = np.array([.1, 3.0, 2.1, 7.8, 6.34, 3.0], dtype=float)
+    verts_in_label = [0, 4, 5]
+    masked_data = an.mask_data_using_label(data, verts_in_label, invert=True)
+    assert np.isnan(masked_data[0])
+    assert masked_data[1] == pytest.approx(3.0, 0.01)
+    assert masked_data[2] == pytest.approx(2.1, 0.01)
+    assert masked_data[3] == pytest.approx(7.8, 0.01)
+    assert np.isnan(masked_data[4])
+    assert np.isnan(masked_data[5])
+    # make sure the original data was not changed
+    assert_allclose(data, np.array([.1, 3.0, 2.1, 7.8, 6.34, 3.0], dtype=float))
