@@ -17,6 +17,16 @@ brainload.freesurferdata module
     :undoc-members:
     :show-inheritance:
 
+
+brainload.annotations module
+----------------------------
+
+.. automodule:: brainload.annotations
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 brainload.nitools module
 ------------------------
 

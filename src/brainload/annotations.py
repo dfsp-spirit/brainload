@@ -1,8 +1,6 @@
 """
 Functions for reading FreeSurfer vertex annotation files.
 
-See https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation and
- http://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.io.read_annotfor more information.
 """
 
 import os
@@ -48,6 +46,32 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
     meta_data: dictionary
         Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
             - `?h.annotation_file` : the file that was loaded
+
+    Examples
+    --------
+    Load cortical parcellation annotations for both hemispheres of a subject from the Desikan-Killiany ('aparc') atlas:
+
+    >>> import brainload as bl; import os
+    >>> subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
+    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc', hemi='both')
+    >>> print meta_data['lh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.annot
+    >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/rh.aparc.annot
+
+
+    Now load cortical parcellation annotations for the left hemisphere of a subject from the Destrieux ('aparc.a2009s') atlas:
+
+    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.a2009s', hemi='lh')
+    >>> print meta_data['lh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.a2009s.annot
+
+
+    Now load cortical parcellation annotations for the right hemisphere of a subject from the DKT ('aparc.DKTatlas40') atlas:
+
+    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.DKTatlas40', hemi='rh')
+    >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.DKTatlas40.annot
+
+    References
+    ----------
+    Atlas information is available at https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -226,6 +250,21 @@ def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
     meta_data: dictionary
         Contains detailed information on the data that was loaded. The following keys are available (replace `?h` with the value of the argument `hemisphere_label`, which must be 'lh' or 'rh').
             - `?h.label_file` : the file that was loaded
+
+    Examples
+    --------
+    Load the cortex label for the left hemisphere of a subject:
+
+    >>> import brainload as bl; import os
+    >>> subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
+    >>> verts_in_label, meta_data = bl.label('subject1', subjects_dir, 'cortex', hemi='lh')
+    >>> print meta_data['lh.label_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.cortex.label
+
+    You could now use the label information to mask your morphology data.
+
+    See also
+    --------
+    mask_data_using_label: Mask data using a label.
     """
     if hemi not in ('lh', 'rh', 'both'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -286,7 +325,7 @@ def label_to_mask(verts_in_label, num_verts_total, invert=False):
 
     See also
     --------
-    The `mask_data_using_label` function.
+    mask_data_using_label: Mask data using a label.
     """
     if num_verts_total < len(verts_in_label):
         raise ValueError("Argument num_verts_total is %d but must be at least the length of verts_in_label, which is %d." % (num_verts_total, len(verts_in_label)))
