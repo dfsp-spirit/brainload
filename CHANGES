@@ -1,6 +1,13 @@
 Brainload Changes
 =================
 
+
+Version 0.3.1
+--------------
+- Added support for loading FreeSurfer annotation files. This allows one to load cortical parcellation information from an Atlas, e.g., from the Desikan atlas from the '?h.aparc.annot' files.
+- Added support for loading FreeSurfer label files. This allows one to sets of vertices assigned to a group, e.g., the list of all vertices which belong to the cortex from the files '?h.cortex.label'.
+- Add support for masking data using an arbitrary mask, i.e., set the data values to NaN at a list of indices. Typically this is used to mask out the medial wall in brain morphometry data. You can use any data, e.g., a loaded label, to build the mask.
+
 Version 0.3.0
 --------------
 - Added support for Python 3. We now test for Python 2.7, Python 3.5 and Python 3.6 on Travis CI.
