@@ -259,6 +259,8 @@ def read_fs_morphometry_data_file_and_record_meta_data(curv_file, hemisphere_lab
     else:
         per_vertex_data = fsio.read_morph_data(curv_file)
 
+    per_vertex_data = per_vertex_data.astype(float)
+
     label_num_values = hemisphere_label + '.num_data_points'
     meta_data[label_num_values] = per_vertex_data.shape[0]
 
