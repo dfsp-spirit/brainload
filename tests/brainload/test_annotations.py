@@ -128,6 +128,13 @@ def test_annot_get_label_index():
     label_name = label_names[idx]
     assert label_name == "lateraloccipital"
 
+def test_color_rgbt_to_rgba():
+    c1 = (20, 30, 140, 0)
+    c2 = (1, 2, 3, 100)
+    c3 = (240, 240, 240, 240)
+    assert an.color_rgbt_to_rgba(c1) == (20, 30, 140, 255)
+    assert an.color_rgbt_to_rgba(c2) == (1, 2, 3, 155)
+    assert an.color_rgbt_to_rgba(c3) == (240, 240, 240, 15)
 
 def test_annot_get_label_indices():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)

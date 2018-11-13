@@ -134,6 +134,34 @@ def get_annot_label_and_color_for_vertex_label_color(req_vertex_label_color, lab
     return None, None
 
 
+def color_rgbt_to_rgba(rgbt):
+    """
+    Convert RGBT color to RGBA.
+
+    Convert an RGBT color given as (r, g, b, t) with all values in range [0.255] to the respective color in RGBA. The T is for transparency, an defined as 1 - alpha, where alpha is the RGBA value A.
+
+    Parameters
+    ----------
+    rgbt: tupel of 4 integers (in range 0..255)
+        The color according to RGBT definition, where T is transparency.
+
+    Returns
+    -------
+    tupel of 4 integers (in range 0..255)
+        The color in RGBA notation.
+
+    Examples
+    --------
+    Convert a color from RGBT to RGBA:
+
+    >>> import brainload.annotations as an
+    >>> an.color_rgbt_to_rgba((120, 0, 240, 40))
+    (120, 0, 240, 215)
+    """
+    rgba = (rgbt[0], rgbt[1], rgbt[2], 255 - rgbt[3])
+    return rgba
+
+
 def get_annot_label_index(req_vertex_label_color, label_colors):
     """
     Retrieve relevant index in the label_colors and label_names datastructures for a single vertex.
