@@ -136,9 +136,9 @@ def get_label_and_color_for_vertex_label_color(req_vertex_label_color, label_col
 
 def get_label_index(req_vertex_label_color, label_colors):
     relevant_row = label_colors[:, 4]
-    idx_arr = np.where(relevant_row == req_vertex_label_color)
-    if len(idx_arr) == 1:
-        return idx_arr[0][0]
+    idx_tpl = np.where(relevant_row == req_vertex_label_color)
+    if len(idx_tpl) == 1:
+        return idx_tpl[0][0]
     return -1
 
 
