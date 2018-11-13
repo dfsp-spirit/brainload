@@ -115,7 +115,7 @@ def get_int_encoding_for_color(r, g, b):
     return r + (g * 256) + (b * (256**2))
 
 
-def get_annot_label_and_color_for_vertex_label_color(req_vertex_label_color, label_colors):
+def get_color_for_vlabel(req_vertex_label_color, label_colors):
     """
     req_vertex_label_color is the vertex_label_color for a single vertex
 
@@ -130,8 +130,8 @@ def get_annot_label_and_color_for_vertex_label_color(req_vertex_label_color, lab
         #enc = get_int_encoding_for_color(r, g, b)
         if label_id == req_vertex_label_color:
             color_rgbt = (r, g, b, t)
-            return label_id, color_rgbt
-    return None, None
+            return color_rgbt
+    return None
 
 
 def color_rgbt_to_rgba(rgbt):
@@ -182,8 +182,11 @@ def get_annot_label_indices(req_vertex_label_colors, label_colors):
     Retrieve the relevant index in the label_colors and label_names datastructures for the labels carried by the vertices in vertex_label_colors.
     """
     relevant_row = label_colors[:, 4]
-    bool_ar = np.isin(relevant_row, label_colors)
-    return np.where(bool_ar)[0]
+    unique_vlabels = np.unique(req_vertex_label_colors)
+    indices = np.ones(len(unique_vlabels)) - 2         # default to -1
+    for idx, vlabel in enumerate(unique_vlabels):
+        indices[idx] = get_annot_label_index(vlabel, label_colors)
+    return indices
 
 
 def _are_label_names_identical(lh_label_names, rh_label_names):
