@@ -9,7 +9,7 @@ import nibabel.freesurfer.io as fsio
 import brainload.nitools as nit
 
 
-def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
+def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, orig_ids=False):
     """
     Load annotation for the mesh vertices of a single subject.
 
@@ -32,15 +32,18 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
     meta_data: dictionary | None, optional
         Meta data to merge into the output `meta_data`. Defaults to the empty dictionary.
 
+    orig_ids: boolean, optional
+        Passed on to nibabel.freesurfer.io.read_annot function. From the documentation of that function: 'Whether to return the vertex ids as stored in the annotation file or the positional colortable ids. With orig_ids=False vertices with no id have an id set to -1.' Defaults to False.
+
     Returns
     -------
-    labels: ndarray, shape (n_vertices,)
-        Contains an annotation_id for each vertex. If the vertex has no annotation, the annotation_id -1 is returned.
+    vertex_label_colors: ndarray, shape (n_vertices,)
+        Contains an annotation color id for each vertex listed in the annotation file. If orig_ids is False (the default), and some vertex has no annotation, -1 is returned for it. IMPORTANT: The annotation value in here is NOT the label id. It is the color for the vertex, encoded in a weird way! Yes, this is ugly. See https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation for details, especially the section 'Annotation file design surprise'. The color is encoded as a single number. Quoting the linked document, the numer is the 'RGB value combined into a single 32-bit integer: annotation value = (B * 256^2) + (G * 256) + (R)'. From this it follows that, quoting the doc once more, 'Code that loads an annotation file ... has to compare annotation values to the color values in the ColorLUT part of the annotation file to discover what parcellation label code (ie: structure code) corresponds.'
 
-    ctab: ndarray, shape (n_labels, 5)
-        RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual, from 0 to 255 per value. T is the transparency, which is defined as 255 - alpha. The number of labels (n_label) cannot be know in advance.
+    label_colors: ndarray, shape (n_labels, 5)
+        RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual, from 0 to 255 per value. T is the transparency, which is defined as 255 - alpha. The last value represents the label id. The number of labels (n_label) cannot be know in advance by this function in the general case (but the user can know based on the Atlas he is loading, e.g., the Desikan-Killiany Atlas has 36 labels).
 
-    names: list of strings
+    label_names: list of strings
        The names of the labels. The length of the list is n_labels. Note that, contrary to the respective nibabel function, this function will always return this as a list of strings, no matter the Python version used.
 
     meta_data: dictionary
@@ -53,20 +56,20 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
 
     >>> import brainload as bl; import os
     >>> subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
-    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc', hemi='both')
+    >>> vertex_color_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc', hemi='both')
     >>> print meta_data['lh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.annot
     >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/rh.aparc.annot
 
 
     Now load cortical parcellation annotations for the left hemisphere of a subject from the Destrieux ('aparc.a2009s') atlas:
 
-    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.a2009s', hemi='lh')
+    >>> vertex_color_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.a2009s', hemi='lh')
     >>> print meta_data['lh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.a2009s.annot
 
 
     Now load cortical parcellation annotations for the right hemisphere of a subject from the DKT ('aparc.DKTatlas40') atlas:
 
-    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.DKTatlas40', hemi='rh')
+    >>> vertex_color_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.DKTatlas40', hemi='rh')
     >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.DKTatlas40.annot
 
     References
@@ -85,12 +88,12 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
     rh_annotation_file = os.path.join(subjects_dir, subject_id, 'label', rh_annotation_file_name)
 
     if hemi == 'lh':
-        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data)
+        vertex_label_colors, label_colors, label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
     elif hemi == 'rh':
-        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data)
+        vertex_label_colors, label_colors, label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
     else:
-        lh_vertex_labels, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data)
-        rh_vertex_labels, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data)
+        lh_vertex_label_colors, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
+        rh_vertex_label_colors, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
         #vertex_labels = merge_vertex_labels(np.array([lh_vertex_labels, rh_vertex_labels]))
         #label_colors = merge_label_colors(np.array([lh_label_colors, rh_label_colors]))
         if not _are_label_names_identical(lh_label_names, rh_label_names):
@@ -98,13 +101,45 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None):
         else:
             label_names = lh_label_names    # both are identical, so just pick any
 
-        vertex_labels = np.hstack((lh_vertex_labels, rh_vertex_labels))
+        vertex_label_colors = np.hstack((lh_vertex_label_colors, rh_vertex_label_colors))
 
         if len(rh_label_colors) != len(lh_label_colors):
             raise ValueError("There are %d colors for the lh labels and %d colors for the rh labels, but they should be identical for annotation '%s'." % (len(lh_label_colors), len(rh_label_colors), annotation))
 
         label_colors = lh_label_colors    # both are identical, so just pick any
-    return vertex_labels, label_colors, label_names, meta_data
+
+    return vertex_label_colors, label_colors, label_names, meta_data
+
+
+def get_int_encoding_for_color(r, g, b):
+    return r + (g * 256) + (b * (256**2))
+
+
+def get_label_and_color_for_vertex_label_color(req_vertex_label_color, label_colors):
+    """
+    req_vertex_label_color is the vertex_label_color for a single vertex
+
+    label_colors os the cmap or lookup-table
+    """
+    for row in label_colors:
+        r = row[0]
+        g = row[1]
+        b = row[2]
+        t = row[3]
+        label_id = row[4]
+        #enc = get_int_encoding_for_color(r, g, b)
+        if label_id == req_vertex_label_color:
+            color_rgbt = (r, g, b, t)
+            return label_id, color_rgbt
+    return None, None
+
+
+def get_label_index(req_vertex_label_color, label_colors):
+    relevant_row = label_colors[:, 4]
+    idx_arr = np.where(relevant_row == req_vertex_label_color)
+    if len(idx_arr) == 1:
+        return idx_arr[0][0]
+    return -1
 
 
 def _are_label_names_identical(lh_label_names, rh_label_names):
@@ -119,7 +154,7 @@ def _are_label_names_identical(lh_label_names, rh_label_names):
     return True
 
 
-def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encoding="utf-8"):
+def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encoding="utf-8", orig_ids=False):
     """
     Read annotation file and record meta data for it.
 
@@ -139,15 +174,18 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     encoding: string describing an encoding, optional
         The encoding to use when decoding the label strings from binary. Only used in Python 3. Defaults to 'utf-8'.
 
+    orig_ids: boolean, optional
+        Passed on to nibabel.freesurfer.io.read_annot function. From the documentation of that function: 'Whether to return the vertex ids as stored in the annotation file or the positional colortable ids. With orig_ids=False vertices with no id have an id set to -1.' Defaults to False.
+
     Returns
     -------
-    labels: ndarray, shape (n_vertices,)
-        Contains an annotation_id for each vertex. If the vertex has no annotation, the annotation_id -1 is returned.
+    vertex_label_colors: ndarray, shape (n_vertices,)
+        Contains an annotation color id for each vertex listed in the annotation file. If orig_ids is False (the default), and some vertex has no annotation, -1 is returned for it. IMPORTANT: The annotation value in here is NOT the label id. It is the color for the vertex, encoded in a weird way! Yes, this is ugly. See https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation for details, especially the section 'Annotation file design surprise'. The color is encoded as a single number. Quoting the linked document, the numer is the 'RGB value combined into a single 32-bit integer: annotation value = (B * 256^2) + (G * 256) + (R)'. From this it follows that, quoting the doc once more, 'Code that loads an annotation file ... has to compare annotation values to the color values in the ColorLUT part of the annotation file to discover what parcellation label code (ie: structure code) corresponds.'
 
-    ctab: ndarray, shape (n_labels, 5)
+    label_colors: ndarray, shape (n_labels, 5)
         RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual, from 0 to 255 per value. T is the transparency, which is defined as 255 - alpha. The number of labels (n_label) cannot be know in advance.
 
-    names: list of strings
+    label_names: list of strings
        The names of the labels. The length of the list is n_labels. Note that, contrary to the respective nibabel function, this function will always return this as a list of strings, no matter the Python version used.
 
     meta_data: dictionary
@@ -160,7 +198,7 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     if meta_data is None:
         meta_data = {}
 
-    labels, ctab, names = fsio.read_annot(annotation_file, orig_ids=False)
+    vertex_label_colors, label_colors, label_names = fsio.read_annot(annotation_file, orig_ids=orig_ids)
 
     label_file = hemisphere_label + '.annotation_file'
     meta_data[label_file] = annotation_file
@@ -168,15 +206,15 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     # The nibabel read_annot function returns string under Python 2 and bytes under Python 3, see http://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.io.read_annot.
     # We convert this to strings here so we always return strings.
     try:
-        names_decoded = []
-        for name in names:
+        label_names_decoded = []
+        for name in label_names:
             name_str = name.decode(encoding)
-            names_decoded.append(name_str)
-        names = names_decoded
+            label_names_decoded.append(name_str)
+        label_names = label_names_decoded
     except AttributeError:
         pass
 
-    return labels, ctab, names, meta_data
+    return vertex_label_colors, label_colors, label_names, meta_data
 
 
 def read_label_md(label_file, hemisphere_label, meta_data=None):

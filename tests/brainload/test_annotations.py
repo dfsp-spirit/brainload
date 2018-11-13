@@ -1,7 +1,7 @@
 import os
 import pytest
 import numpy as np
-from numpy.testing import assert_array_equal, assert_allclose
+from numpy.testing import assert_raises, assert_array_equal, assert_allclose
 import brainload.nitools as nit
 import brainload.annotations as an
 
@@ -66,7 +66,7 @@ def test_annot_raises_on_invalid_hemisphere():
 
 
 def test_annot_metadata_both_hemispheres():
-    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert len(meta_data) == 2
     assert len(label_names) == NUM_LABELS_APARC
     assert vertex_labels.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
@@ -95,6 +95,45 @@ def test_annot_metadata_single_hemi_rh_and_keep_metadata():
 def test_annot_aparc():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
     assert label_colors.shape == (NUM_LABELS_APARC, 5)
+
+
+def test_annot_aparc_orig_ids():
+    vertex_labels_mod, label_colors_mod, label_names_mod, meta_data_mod = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both')
+    vertex_labels_orig, label_colors_orig, label_names_orig, meta_data_orig = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    # these should not diff
+    assert label_colors_mod.shape == (NUM_LABELS_APARC, 5)
+    assert label_colors_mod.shape == label_colors_orig.shape
+    assert label_names_mod == label_names_orig
+    assert meta_data_mod == meta_data_orig
+    assert vertex_labels_mod.shape == vertex_labels_orig.shape
+    # now for the parts that should be different between the two
+    assert_raises(AssertionError, assert_array_equal, vertex_labels_mod, vertex_labels_orig)
+
+
+def test_annot_aparc_data_makes_sense():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    assert len(np.unique(vertex_labels)) == NUM_LABELS_APARC - 1
+    print "vertex_labels[0]=%d" % vertex_labels[0]
+    print "---vertex_labels---"
+    print vertex_labels
+    print "---label_colors LUT---"
+    print label_colors
+    print "---label_names---"
+    print label_names
+
+    label_id, color = an.get_label_and_color_for_vertex_label_color(vertex_labels[0], label_colors)
+    assert label_id == vertex_labels[0]
+    assert color == (20, 30, 140, 0)
+
+    idx = an.get_label_index(vertex_labels[0], label_colors)
+    assert idx == 11
+    # this index can now be used to retrieve the color and the label name:
+    color_rgbt = (label_colors[idx,0], label_colors[idx, 1], label_colors[idx, 2], label_colors[idx, 3])
+    assert color_rgbt == (20, 30, 140, 0)
+    label_name = label_names[idx]
+    assert label_name == "lateraloccipital"
+
+
 
 
 def test_annot_aparc_a2009s():
