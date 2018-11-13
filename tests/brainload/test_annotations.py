@@ -113,14 +113,6 @@ def test_annot_aparc_orig_ids():
 def test_annot_aparc_data_makes_sense():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert len(np.unique(vertex_labels)) == NUM_LABELS_APARC - 1
-    print "vertex_labels[0]=%d" % vertex_labels[0]
-    print "---vertex_labels---"
-    print vertex_labels
-    print "---label_colors LUT---"
-    print label_colors
-    print "---label_names---"
-    print label_names
-
     label_id, color = an.get_label_and_color_for_vertex_label_color(vertex_labels[0], label_colors)
     assert label_id == vertex_labels[0]
     assert color == (20, 30, 140, 0)
