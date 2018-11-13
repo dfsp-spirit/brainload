@@ -170,7 +170,7 @@ def get_annot_label_index(req_vertex_label_color, label_colors):
     """
     relevant_row = label_colors[:, 4]
     idx_tpl = np.where(relevant_row == req_vertex_label_color)
-    if len(idx_tpl) == 1:
+    if len(idx_tpl[0]) == 1:
         return idx_tpl[0][0]
     return -1
 
@@ -184,6 +184,7 @@ def get_annot_label_indices(req_vertex_label_colors, label_colors):
     relevant_row = label_colors[:, 4]
     unique_vlabels = np.unique(req_vertex_label_colors)
     indices = np.ones(len(unique_vlabels)) - 2         # default to -1
+    # BUG: indices in the line above are SORTED indices, as np.unique() orts them (see doc). This is why the order gets messed up.
     for idx, vlabel in enumerate(unique_vlabels):
         indices[idx] = get_annot_label_index(vlabel, label_colors)
     return indices
