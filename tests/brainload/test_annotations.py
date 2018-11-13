@@ -113,11 +113,14 @@ def test_annot_aparc_orig_ids():
 def test_annot_aparc_data_makes_sense():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert len(np.unique(vertex_labels)) == NUM_LABELS_APARC - 1
-    label_id, color = an.get_label_and_color_for_vertex_label_color(vertex_labels[0], label_colors)
+    label_id, color = an.get_annot_label_and_color_for_vertex_label_color(vertex_labels[0], label_colors)
     assert label_id == vertex_labels[0]
     assert color == (20, 30, 140, 0)
 
-    idx = an.get_label_index(vertex_labels[0], label_colors)
+
+def test_annot_get_label_index():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    idx = an.get_annot_label_index(vertex_labels[0], label_colors)
     assert idx == 11
     # this index can now be used to retrieve the color and the label name:
     color_rgbt = (label_colors[idx,0], label_colors[idx, 1], label_colors[idx, 2], label_colors[idx, 3])
@@ -126,6 +129,10 @@ def test_annot_aparc_data_makes_sense():
     assert label_name == "lateraloccipital"
 
 
+def test_annot_get_label_indices():
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    indices = an.get_annot_label_indices(vertex_labels, label_colors)
+    assert len(indices) == len(label_colors)
 
 
 def test_annot_aparc_a2009s():

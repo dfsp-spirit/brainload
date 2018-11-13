@@ -115,7 +115,7 @@ def get_int_encoding_for_color(r, g, b):
     return r + (g * 256) + (b * (256**2))
 
 
-def get_label_and_color_for_vertex_label_color(req_vertex_label_color, label_colors):
+def get_annot_label_and_color_for_vertex_label_color(req_vertex_label_color, label_colors):
     """
     req_vertex_label_color is the vertex_label_color for a single vertex
 
@@ -134,12 +134,18 @@ def get_label_and_color_for_vertex_label_color(req_vertex_label_color, label_col
     return None, None
 
 
-def get_label_index(req_vertex_label_color, label_colors):
+def get_annot_label_index(req_vertex_label_color, label_colors):
     relevant_row = label_colors[:, 4]
     idx_tpl = np.where(relevant_row == req_vertex_label_color)
     if len(idx_tpl) == 1:
         return idx_tpl[0][0]
     return -1
+
+
+def get_annot_label_indices(req_vertex_label_colors, label_colors):
+    relevant_row = label_colors[:, 4]
+    bool_ar = np.isin(relevant_row, label_colors)
+    return np.where(bool_ar)[0]
 
 
 def _are_label_names_identical(lh_label_names, rh_label_names):
