@@ -120,6 +120,7 @@ def test_annot_aparc_data_makes_sense():
 
 def test_annot_get_label_index():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    assert vertex_labels[0] == 9182740
     idx = an.get_annot_label_index(vertex_labels[0], label_colors)
     assert idx == 11
     # this index can now be used to retrieve the color and the label name:
@@ -138,8 +139,11 @@ def test_color_rgbt_to_rgba():
 
 def test_annot_get_label_indices():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    assert vertex_labels[0] == 9182740
     indices = an.get_annot_label_indices(vertex_labels, label_colors)
     assert len(indices) == len(label_colors)
+    assert len(indices) == len(label_names)
+    assert indices[0] == 11
 
 
 def test_annot_aparc_a2009s():
