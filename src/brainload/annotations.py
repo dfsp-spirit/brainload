@@ -135,6 +135,11 @@ def get_annot_label_and_color_for_vertex_label_color(req_vertex_label_color, lab
 
 
 def get_annot_label_index(req_vertex_label_color, label_colors):
+    """
+    Retrieve relevant index in the label_colors and label_names datastructures for a single vertex.
+
+    Retreive the relevant index in the label_colors and label_names datastructures for the label carried by a single vertex (in vertex_label_colors). This function can most likely be removed, get_annot_label_indices does the same for all at once.
+    """
     relevant_row = label_colors[:, 4]
     idx_tpl = np.where(relevant_row == req_vertex_label_color)
     if len(idx_tpl) == 1:
@@ -143,6 +148,11 @@ def get_annot_label_index(req_vertex_label_color, label_colors):
 
 
 def get_annot_label_indices(req_vertex_label_colors, label_colors):
+    """
+    Retrieve relevant indices in the label_colors and label_names datastructures for all vertices.
+
+    Retrieve the relevant index in the label_colors and label_names datastructures for the labels carried by the vertices in vertex_label_colors.
+    """
     relevant_row = label_colors[:, 4]
     bool_ar = np.isin(relevant_row, label_colors)
     return np.where(bool_ar)[0]
