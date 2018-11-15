@@ -86,7 +86,8 @@ I started building conda packages for different operating systems, check https:/
 conda install -c dfspspirit brainload
 ```
 
-[![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/version.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/platforms.svg)](https://anaconda.org/dfspspirit/brainload) [![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/license.svg)](https://anaconda.org/dfspspirit/brainload)
+[![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/version.svg)](https://anaconda.org/dfspspirit/brainload)
+
 
 If it is not, you can use the recipe in this repo to build it yourself, see [README_DEVELOPMENT](README_DEVELOPMENT.md).
 

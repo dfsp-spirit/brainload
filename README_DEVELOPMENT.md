@@ -351,6 +351,10 @@ You have to add them in the following three sections:
 
 Save the file `meta.yaml`, and you should have a working recipe.
 
+### Release on GitHub
+
+Create a new release from the tag on Github and upload the source and binary distributions created for PyPI. They are in `REPO_ROOT/dist/`.
+
 ## Python 3
 
 ### Running the dev version
