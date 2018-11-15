@@ -113,14 +113,14 @@ def test_annot_aparc_orig_ids():
 def test_annot_aparc_data_makes_sense():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert len(np.unique(vertex_labels)) == NUM_LABELS_APARC - 1
-    color = an.get_color_for_vlabel(vertex_labels[0], label_colors)
+    color = an._get_color_for_vlabel(vertex_labels[0], label_colors)
     assert color == (20, 30, 140, 0)
 
 
 def test_annot_get_label_index():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert vertex_labels[0] == 9182740
-    idx = an.get_annot_label_index(vertex_labels[0], label_colors)
+    idx = an._get_annot_label_index(vertex_labels[0], label_colors)
     assert idx == 11
     # this index can now be used to retrieve the color and the label name:
     color_rgbt = (label_colors[idx,0], label_colors[idx, 1], label_colors[idx, 2], label_colors[idx, 3])
@@ -138,10 +138,22 @@ def test_color_rgbt_to_rgba():
     assert an.color_rgbt_to_rgba(c3) == (240, 240, 240, 15)
 
 
+def test_annot_with_different_orig_ids_settings():
+    vertex_labels_orig, label_colors_orig, label_names_orig, meta_data_orig = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=False)
+    assert len(vertex_labels_orig) <= len(vertex_labels)
+    assert label_colors_orig.shape == label_colors.shape
+    assert len(label_names_orig) == len(label_names)
+    assert_array_equal(label_names_orig, label_names)
+    assert_array_equal(label_colors_orig, label_colors)
+    assert vertex_labels[0] == 11      # the proper index into the label_colors and label_names datastructures for this vertex, pre-computed for us.
+    assert vertex_labels_orig[0] == 9182740      # the original ID
+
+
 def test_annot_get_label_indices():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert vertex_labels[0] == 9182740
-    idx_map = an.get_indices_for_unique_vlabels(vertex_labels, label_colors)
+    idx_map = an._get_indices_for_unique_vlabels(vertex_labels, label_colors)
     assert len(idx_map) == len(label_colors) - 1
     assert len(idx_map) == len(label_names) - 1
     assert idx_map[9182740] == 11

@@ -109,7 +109,7 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
     return vertex_label_colors, label_colors, label_names, meta_data
 
 
-def get_color_for_vlabel(vc_code, label_colors):
+def _get_color_for_vlabel(vc_code, label_colors):
     """
     req_vertex_label_color is the vertex_label_color for a single vertex
 
@@ -155,7 +155,7 @@ def color_rgbt_to_rgba(rgbt):
     return rgba
 
 
-def get_annot_label_index(req_vertex_label_color, label_colors):
+def _get_annot_label_index(req_vertex_label_color, label_colors):
     """
     Retrieve relevant index in the label_colors and label_names datastructures for a single vertex.
 
@@ -168,7 +168,7 @@ def get_annot_label_index(req_vertex_label_color, label_colors):
     return -1
 
 
-def get_indices_for_unique_vlabels(all_vlabels, label_colors):
+def _get_indices_for_unique_vlabels(all_vlabels, label_colors):
     """
     Retrieve relevant indices in the label_colors and label_names datastructures for all vertices.
 
@@ -181,7 +181,7 @@ def get_indices_for_unique_vlabels(all_vlabels, label_colors):
     unique_vlabels = np.unique(all_vlabels)
     vlabel_to_idx_map = {}
     for idx, uvl in enumerate(unique_vlabels):
-        vlabel_to_idx_map[uvl] = get_annot_label_index(uvl, label_colors)
+        vlabel_to_idx_map[uvl] = _get_annot_label_index(uvl, label_colors)
     return vlabel_to_idx_map
 
 
