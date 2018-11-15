@@ -57,11 +57,11 @@ print group_meta_data['subject1']['hemi']                           # will print
 
 Whatever function you used, you can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
 
-## Full API Documentation
+## Full Documentation
 
-The brainload API documentation is now available:
-- [Brainload API documentation for the latest release](http://dfsp-spirit.github.io/brainload)
-- [Brainload API documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
+Brainload is fully documented. The full API documentation and some workflow examples can be found here:
+- [Brainload documentation for the latest release](http://dfsp-spirit.github.io/brainload)
+- [Brainload documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
 
 
 ## Installation
