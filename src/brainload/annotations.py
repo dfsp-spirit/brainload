@@ -37,8 +37,10 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
 
     Returns
     -------
-    vertex_label_colors: ndarray, shape (n_vertices,)
-        Contains an annotation color id for each vertex listed in the annotation file. If orig_ids is False (the default), and some vertex has no annotation, -1 is returned for it. IMPORTANT: The annotation value in here is NOT the label id. It is the color for the vertex, encoded in a weird way! Yes, this is ugly. See https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation for details, especially the section 'Annotation file design surprise'. The color is encoded as a single number. Quoting the linked document, the numer is the 'RGB value combined into a single 32-bit integer: annotation value = (B * 256^2) + (G * 256) + (R)'. From this it follows that, quoting the doc once more, 'Code that loads an annotation file ... has to compare annotation values to the color values in the ColorLUT part of the annotation file to discover what parcellation label code (ie: structure code) corresponds.'
+    vertex_labels: ndarray, shape (n_vertices,)
+        If orig_ids is False (the default), returns the index (for each vertex) into the label_colors and label_names datastructures to retrieve the color and name. If some vertex has no annotation, -1 is returned for it.
+
+        If orig_ids is True, returns an annotation color id for each vertex listed in the annotation file. IMPORTANT: The annotation value in here is NOT the label id. It is a code based on the color for the vertex. Yes, this is ugly. See https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles#Annotation for details, especially the section 'Annotation file design surprise'. The color is encoded as a single number. Quoting the linked document, the numer is the 'RGB value combined into a single 32-bit integer: annotation value = (B * 256^2) + (G * 256) + (R)'. From this it follows that, quoting the doc once more, 'Code that loads an annotation file ... has to compare annotation values to the color values in the ColorLUT part of the annotation file to discover what parcellation label code (ie: structure code) corresponds.' (Basically this has already been done for you if you simply set orig_ids to False.)
 
     label_colors: ndarray, shape (n_labels, 5)
         RGBT + label id colortable array. The first 4 values encode the label color: RGB is red, green, blue as usual, from 0 to 255 per value. T is the transparency, which is defined as 255 - alpha. The last value represents the label id. The number of labels (n_label) cannot be know in advance by this function in the general case (but the user can know based on the Atlas he is loading, e.g., the Desikan-Killiany Atlas has 36 labels).
@@ -56,20 +58,20 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
 
     >>> import brainload as bl; import os
     >>> subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'my_study_x')
-    >>> vertex_color_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc', hemi='both')
+    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc', hemi='both')
     >>> print meta_data['lh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.annot
     >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/rh.aparc.annot
 
 
     Now load cortical parcellation annotations for the left hemisphere of a subject from the Destrieux ('aparc.a2009s') atlas:
 
-    >>> vertex_color_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.a2009s', hemi='lh')
+    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.a2009s', hemi='lh')
     >>> print meta_data['lh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.a2009s.annot
 
 
     Now load cortical parcellation annotations for the right hemisphere of a subject from the DKT ('aparc.DKTatlas40') atlas:
 
-    >>> vertex_color_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.DKTatlas40', hemi='rh')
+    >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.DKTatlas40', hemi='rh')
     >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.DKTatlas40.annot
 
     References
@@ -88,43 +90,26 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
     rh_annotation_file = os.path.join(subjects_dir, subject_id, 'label', rh_annotation_file_name)
 
     if hemi == 'lh':
-        vertex_label_colors, label_colors, label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
+        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
     elif hemi == 'rh':
-        vertex_label_colors, label_colors, label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
+        vertex_labels, label_colors, label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
     else:
-        lh_vertex_label_colors, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
-        rh_vertex_label_colors, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
+        lh_vertex_labels, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
+        rh_vertex_labels, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
         if not _are_label_names_identical(lh_label_names, rh_label_names):
             raise ValueError("The %d labels for the lh and the %d labels for the rh are not identical for annotation '%s'." % (len(lh_label_names), len(rh_label_names), annotation))
         else:
             label_names = lh_label_names    # both are identical, so just pick any
 
-        vertex_label_colors = np.hstack((lh_vertex_label_colors, rh_vertex_label_colors))
+        vertex_labels = np.hstack((lh_vertex_labels, rh_vertex_labels))
 
         if len(rh_label_colors) != len(lh_label_colors):
             raise ValueError("There are %d colors for the lh labels and %d colors for the rh labels, but they should be identical for annotation '%s'." % (len(lh_label_colors), len(rh_label_colors), annotation))
 
         label_colors = lh_label_colors    # both are identical, so just pick any
 
-    return vertex_label_colors, label_colors, label_names, meta_data
+    return vertex_labels, label_colors, label_names, meta_data
 
-
-def _get_color_for_vlabel(vc_code, label_colors):
-    """
-    req_vertex_label_color is the vertex_label_color for a single vertex
-
-    label_colors os the cmap or lookup-table
-    """
-    for row in label_colors:
-        r = row[0]
-        g = row[1]
-        b = row[2]
-        t = row[3]
-        label_id = row[4]
-        if label_id == vc_code:
-            color_rgbt = (r, g, b, t)
-            return color_rgbt
-    return None
 
 
 def color_rgbt_to_rgba(rgbt):
@@ -155,20 +140,20 @@ def color_rgbt_to_rgba(rgbt):
     return rgba
 
 
-def _get_annot_label_index(req_vertex_label_color, label_colors):
+def _get_annot_label_index(vertex_label, label_colors):
     """
     Retrieve relevant index in the label_colors and label_names datastructures for a single vertex.
 
     Retrieve the relevant index in the label_colors and label_names datastructures for the label carried by a single vertex (in vertex_label_colors). This function can most likely be removed, get_annot_label_indices does the same for all at once.
     """
     relevant_row = label_colors[:, 4]
-    idx_tpl = np.where(relevant_row == req_vertex_label_color)
+    idx_tpl = np.where(relevant_row == vertex_label)
     if len(idx_tpl[0]) == 1:
         return idx_tpl[0][0]
     return -1
 
 
-def _get_indices_for_unique_vlabels(all_vlabels, label_colors):
+def _get_indices_for_unique_vertex_labels(all_vertex_labels, label_colors):
     """
     Retrieve relevant indices in the label_colors and label_names datastructures for all vertices.
 
@@ -178,7 +163,7 @@ def _get_indices_for_unique_vlabels(all_vlabels, label_colors):
     Dict of int, int
         A dictionary that maps each unique vc_code to an index. The indices can be used to access the corresponding label_color and label_name.
     """
-    unique_vlabels = np.unique(all_vlabels)
+    unique_vlabels = np.unique(all_vertex_labels)
     vlabel_to_idx_map = {}
     for idx, uvl in enumerate(unique_vlabels):
         vlabel_to_idx_map[uvl] = _get_annot_label_index(uvl, label_colors)

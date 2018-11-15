@@ -111,9 +111,12 @@ def test_annot_aparc_orig_ids():
 
 
 def test_annot_aparc_data_makes_sense():
-    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
+    vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=False)
     assert len(np.unique(vertex_labels)) == NUM_LABELS_APARC - 1
-    color = an._get_color_for_vlabel(vertex_labels[0], label_colors)
+    index_for_first_vertex = vertex_labels[0]
+    assert index_for_first_vertex > 0     # make sure it has a valid ID (-1 means has no label and color)
+    assert index_for_first_vertex == 11
+    color = (label_colors[index_for_first_vertex, 0], label_colors[index_for_first_vertex, 1], label_colors[index_for_first_vertex, 2], label_colors[index_for_first_vertex, 3])
     assert color == (20, 30, 140, 0)
 
 
@@ -153,7 +156,7 @@ def test_annot_with_different_orig_ids_settings():
 def test_annot_get_label_indices():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert vertex_labels[0] == 9182740
-    idx_map = an._get_indices_for_unique_vlabels(vertex_labels, label_colors)
+    idx_map = an._get_indices_for_unique_vertex_labels(vertex_labels, label_colors)
     assert len(idx_map) == len(label_colors) - 1
     assert len(idx_map) == len(label_names) - 1
     assert idx_map[9182740] == 11
