@@ -1,6 +1,7 @@
 """
-Functions for reading FreeSurfer vertex annotation files.
+Raed FreeSurfer vertex label and annotation files.
 
+Functions for reading FreeSurfer vertex annotation files. These are the file in the label sub directory of a subject, with file extensions '.label' and '.annot'. Examples are 'lh.aparc.annot' and 'lh.cortex.label'.
 """
 
 import os
@@ -73,6 +74,14 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
 
     >>> vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc.DKTatlas40', hemi='rh')
     >>> print meta_data['rh.annotation_file']     # will print /home/someuser/data/my_study_x/subject1/label/lh.aparc.DKTatlas40.annot
+
+    Print the color and the annotation name for an example vertex:
+
+    >>> vert_idx = 0     # We'll take the first vertex as an example.
+    >>> if vertex_labels[vert_idx] >= 0:     # it is -1 if the vertex is not assigned any label/color
+    >>>     i = vertex_labels[vert_idx]
+    >>>     print "label for vertex %d is %s" % (vert_idx, label_names[i])
+    >>>     print "color for vertex %d in RGBA is (%d %d %d %d)" % (vert_idx, label_colors[idx, 0], label_colors[idx, 1], label_colors[idx, 2], (255 - label_colors[idx, 3]))
 
     References
     ----------
