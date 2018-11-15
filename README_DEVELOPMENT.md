@@ -196,7 +196,9 @@ $ pip install --index-url https://test.pypi.org/simple/ brainload     # install 
 #now try the example client. e.g.:
 $ python
 >>> import brainload as bl
->>> # do stuff
+>>> print bl.__version__
+v0.2.0
+>>> # do more stuff
 >>> quit()
 $ deactivate
 $ rm -rf env_for_v2
