@@ -1,7 +1,7 @@
 """
 Raed FreeSurfer vertex label and annotation files.
 
-Functions for reading FreeSurfer vertex annotation files. These are the file in the label sub directory of a subject, with file extensions '.label' and '.annot'. Examples are 'lh.aparc.annot' and 'lh.cortex.label'.
+Functions for reading FreeSurfer vertex annotation files. These are the file in the label sub directory of a subject, with file extensions '.label' and '.annot'. Examples are 'lh.aparc.annot' and 'lh.cortex.label'. A label is a set of vertices. An annotation consists of several sets of vertices, each of which is assigned a label and a color. 
 """
 
 import os
@@ -14,7 +14,7 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
     """
     Load annotation for the mesh vertices of a single subject.
 
-    An annotation defines a label string and a color to each vertex, it is typically used to define brain regions, e.g., for cortical parcellation.
+    An annotation defines a label string and a color to each vertex, it is typically used to define brain regions, e.g., for cortical parcellation. An annotation consists of several groups of vertices, each of which is assigned a label and a color.
 
     Parameters
     ----------
