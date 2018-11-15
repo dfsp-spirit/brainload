@@ -1,0 +1,55 @@
+{% set name = "brainload" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ca84e1a9a08a047d3b448d2ac52ec75180ed7a5107ca9968baa6f7630034a60f
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+  noarch_python: True
+
+requirements:
+  build:
+    - python
+  host:
+    - nibabel
+    - numpy
+    - pip
+    - python
+    - pytest
+    - pytest-runner
+    - pytest-cov
+  run:
+    - nibabel
+    - numpy
+    - python {{ python }}
+    - pytest
+    - pytest-runner
+    - pytest-cov
+
+test:
+  imports:
+    - brainload
+  requires:
+    - pytest
+    - pytest-runner
+    - pytest-cov
+
+about:
+  home: https://github.com/dfsp-spirit/brainload
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Load FreeSurfer brain imaging data with minimal cognitive load.
+  doc_url: http://dfsp-spirit.github.io/brainload
+  dev_url: https://github.com/dfsp-spirit/brainload
+
+extra:
+  recipe-maintainers:
+    - dfsp-spirit
