@@ -192,12 +192,13 @@ Now try it in a fresh virtual environment (you may have to wait a sec for it to 
 $ deactivate                                  # leave current virtual env
 $ python -m virtualenv env_for_v2             # create a fresh one
 $ source env_for_v2/bin/activate              # activate it
+$ pip install nibabel six        # these are not on test.pypi.org
 $ pip install --index-url https://test.pypi.org/simple/ brainload     # install it.
 #now try the example client. e.g.:
 $ python
 >>> import brainload as bl
 >>> print bl.__version__
-v0.2.0
+0.2.0
 >>> # do more stuff
 >>> quit()
 $ deactivate
@@ -231,6 +232,8 @@ This has been done successfully under Linux and MacOS. It more or less follows t
 
 > IMPORTANT: This builds the anaconda package based on the PyPI package, so you have to upload to PyPI before starting this.
 
+##### Prepare environment
+
 Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into ${CONDA_DIR}`, which could be something like `~/software/anaconda2`.
 
 The first step is to activate conda if it is not yet active. Type `conda --version` to check whether the `conda` command is available. If the command is not found:
@@ -255,14 +258,40 @@ conda env list        # shows available environments, the one marked with an ast
 Now that conda is active, we are in the conda `base` environment. Let's create a new sub environment and install the required tools into it:
 
 ```console
-cd develop/anaconda_dist/recipe/RELEASE/      # replace RELEASE with the release you want to build
+cd develop/anaconda_dist/recipe/
 conda update conda
 conda create -y --name blbuild2 python=2.7                  # skip if you have done these steps before
 conda activate blbuild2
 conda install -y conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
-CONDA_BLD_PATH=/tmp/condaishacky conda-build .                        # may take a while... will output the full path to the file in the end. You will need this soon.
+```
+
+##### Prepare new recipe
+
+If no recipe exists for the release (i.e., you are currently creating the recipe: there is no directory `develop/anaconda_dist/recipe/${NEW_RELEASE}`), follow this sub section. Otherwise, skip to `Build the conda package` below.
+
+Create a new dir for the release, copy the old `meta.yaml` file in there. Create a new skeleton file just to get the new hash of the file on PyPI, then update the hash in the new `meta.yaml` file and you're ready to go. If you introduced or changed dependencies, you will have to do more, of course.
+
+```console
+# we are still in REPO_ROOT/develop/anaconda_dist/recipe/
+mkdir ${NEW_RELEASE}
+cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the last release
+mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
+CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
+```
+
+This created a new skeleton file at  `REPO_ROOT/develop/anaconda_dist/recipe/brainload/meta.yaml`. Copy the hash from there.
+
+```console
+vim ${NEW_RELEASE}/meta.yaml         # Update the version AND the hash in here. Save and you have a new recipe.
+```
+
+
+##### Build the conda package
+
+```console
+CONDA_BLD_PATH=/tmp/condaishacky conda-build ${NEW_RELEASE}                        # may take a while... will output the full path to the file in the end. You will need this soon.
 ```
 
 Since brainload is a pure python package, we can easily convert it for other platforms:
