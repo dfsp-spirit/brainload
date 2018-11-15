@@ -94,8 +94,6 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
     else:
         lh_vertex_label_colors, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
         rh_vertex_label_colors, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
-        #vertex_labels = merge_vertex_labels(np.array([lh_vertex_labels, rh_vertex_labels]))
-        #label_colors = merge_label_colors(np.array([lh_label_colors, rh_label_colors]))
         if not _are_label_names_identical(lh_label_names, rh_label_names):
             raise ValueError("The %d labels for the lh and the %d labels for the rh are not identical for annotation '%s'." % (len(lh_label_names), len(rh_label_names), annotation))
         else:
@@ -111,11 +109,7 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
     return vertex_label_colors, label_colors, label_names, meta_data
 
 
-def get_int_encoding_for_color(r, g, b):
-    return r + (g * 256) + (b * (256**2))
-
-
-def get_color_for_vlabel(req_vertex_label_color, label_colors):
+def get_color_for_vlabel(vc_code, label_colors):
     """
     req_vertex_label_color is the vertex_label_color for a single vertex
 
@@ -127,8 +121,7 @@ def get_color_for_vlabel(req_vertex_label_color, label_colors):
         b = row[2]
         t = row[3]
         label_id = row[4]
-        #enc = get_int_encoding_for_color(r, g, b)
-        if label_id == req_vertex_label_color:
+        if label_id == vc_code:
             color_rgbt = (r, g, b, t)
             return color_rgbt
     return None
@@ -166,7 +159,7 @@ def get_annot_label_index(req_vertex_label_color, label_colors):
     """
     Retrieve relevant index in the label_colors and label_names datastructures for a single vertex.
 
-    Retreive the relevant index in the label_colors and label_names datastructures for the label carried by a single vertex (in vertex_label_colors). This function can most likely be removed, get_annot_label_indices does the same for all at once.
+    Retrieve the relevant index in the label_colors and label_names datastructures for the label carried by a single vertex (in vertex_label_colors). This function can most likely be removed, get_annot_label_indices does the same for all at once.
     """
     relevant_row = label_colors[:, 4]
     idx_tpl = np.where(relevant_row == req_vertex_label_color)
@@ -175,19 +168,22 @@ def get_annot_label_index(req_vertex_label_color, label_colors):
     return -1
 
 
-def get_annot_label_indices(req_vertex_label_colors, label_colors):
+def get_indices_for_unique_vlabels(all_vlabels, label_colors):
     """
     Retrieve relevant indices in the label_colors and label_names datastructures for all vertices.
 
     Retrieve the relevant index in the label_colors and label_names datastructures for the labels carried by the vertices in vertex_label_colors.
+    Returns
+    -------
+    Dict of int, int
+        A dictionary that maps each unique vc_code to an index. The indices can be used to access the corresponding label_color and label_name.
     """
-    relevant_row = label_colors[:, 4]
-    unique_vlabels = np.unique(req_vertex_label_colors)
-    indices = np.ones(len(unique_vlabels)) - 2         # default to -1
-    # BUG: indices in the line above are SORTED indices, as np.unique() orts them (see doc). This is why the order gets messed up.
-    for idx, vlabel in enumerate(unique_vlabels):
-        indices[idx] = get_annot_label_index(vlabel, label_colors)
-    return indices
+    unique_vlabels = np.unique(all_vlabels)
+    vlabel_to_idx_map = {}
+    for idx, uvl in enumerate(unique_vlabels):
+        vlabel_to_idx_map[uvl] = get_annot_label_index(uvl, label_colors)
+    return vlabel_to_idx_map
+
 
 
 def _are_label_names_identical(lh_label_names, rh_label_names):

@@ -128,6 +128,7 @@ def test_annot_get_label_index():
     label_name = label_names[idx]
     assert label_name == "lateraloccipital"
 
+
 def test_color_rgbt_to_rgba():
     c1 = (20, 30, 140, 0)
     c2 = (1, 2, 3, 100)
@@ -136,13 +137,14 @@ def test_color_rgbt_to_rgba():
     assert an.color_rgbt_to_rgba(c2) == (1, 2, 3, 155)
     assert an.color_rgbt_to_rgba(c3) == (240, 240, 240, 15)
 
+
 def test_annot_get_label_indices():
     vertex_labels, label_colors, label_names, meta_data = an.annot('subject1', TEST_DATA_DIR, 'aparc', hemi='both', orig_ids=True)
     assert vertex_labels[0] == 9182740
-    indices = an.get_annot_label_indices(vertex_labels, label_colors)
-    assert len(indices) == len(label_colors) - 1
-    assert len(indices) == len(label_names) - 1
-    #assert indices[0] == 11  TODO: This function is broken
+    idx_map = an.get_indices_for_unique_vlabels(vertex_labels, label_colors)
+    assert len(idx_map) == len(label_colors) - 1
+    assert len(idx_map) == len(label_names) - 1
+    assert idx_map[9182740] == 11
 
 
 def test_annot_aparc_a2009s():
