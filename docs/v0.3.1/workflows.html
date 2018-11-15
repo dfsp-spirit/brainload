@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Brainload :: Documentation &mdash; brainload v0.3.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Brainload API Documentation" href="brainload.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> brainload
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="brainload.html">Brainload API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Brainload Example Workflows</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#loading-data-for-a-single-subject">Loading data for a single subject</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#load-brain-mesh-and-morphometry-data-for-a-single-subject-in-subject-space">Load brain mesh and morphometry data for a single subject in subject space</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#load-morphometry-data-for-a-single-subject-that-has-been-mapped-to-a-common-subject">Load morphometry data for a single subject that has been mapped to a common subject</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">brainload</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Brainload :: Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="brainload-example-workflows">
+<h1>Brainload Example Workflows<a class="headerlink" href="#brainload-example-workflows" title="Permalink to this headline">¶</a></h1>
+<p>This document illustrates example workflows for common tasks.</p>
+<div class="section" id="loading-data-for-a-single-subject">
+<h2>Loading data for a single subject<a class="headerlink" href="#loading-data-for-a-single-subject" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="load-brain-mesh-and-morphometry-data-for-a-single-subject-in-subject-space">
+<h3>Load brain mesh and morphometry data for a single subject in subject space<a class="headerlink" href="#load-brain-mesh-and-morphometry-data-for-a-single-subject-in-subject-space" title="Permalink to this headline">¶</a></h3>
+<p>In this example, we will load area data for each vertex of the example subject bert that comes with FreeSurfer from the files <code class="docutils literal notranslate"><span class="pre">?h.area</span></code>. We will not rely on the environment variable SUBJECTS_DIR, but explicitly specify the directory containing the data.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">freesurfer_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;usr&#39;</span><span class="p">,</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="s1">&#39;freesurfer&#39;</span><span class="p">)</span>  <span class="c1"># or wherever your FREESURFER_HOME is</span>
+<span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">freesurfer_dir</span><span class="p">,</span> <span class="s1">&#39;subjects&#39;</span><span class="p">)</span>
+
+<span class="n">vert_coords</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">per_vertex_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject</span><span class="p">(</span><span class="s1">&#39;bert&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;area&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This operation loaded 4 files: the 2 brain mesh files (one for the hemisphere, one for the right hemisphere) and the 2 morphometry data files. The mesh data are in the variables <em>vert_coords</em> and <em>faces</em>, and the morphometry data can be found in <em>per_vertex_data</em>. The <em>meta_data</em> contains information on the loaded data. Let’s use it to see exactly which files were loaded.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.curv_file&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;rh.curv_file&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.morphometry_file&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;rh.morphometry_file&#39;</span><span class="p">])</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">freesurfer</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">bert</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">lh</span><span class="o">.</span><span class="n">white</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">freesurfer</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">bert</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">rh</span><span class="o">.</span><span class="n">white</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">freesurfer</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">bert</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">lh</span><span class="o">.</span><span class="n">area</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">freesurfer</span><span class="o">/</span><span class="n">subjects</span><span class="o">/</span><span class="n">bert</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">rh</span><span class="o">.</span><span class="n">area</span>
+</pre></div>
+</div>
+<p>This way you always know what data you are working with. See the API documentation for more options. You can specify a different surface, load only one hemisphere, or not load the mesh at all when using this function.</p>
+</div>
+<div class="section" id="load-morphometry-data-for-a-single-subject-that-has-been-mapped-to-a-common-subject">
+<h3>Load morphometry data for a single subject that has been mapped to a common subject<a class="headerlink" href="#load-morphometry-data-for-a-single-subject-that-has-been-mapped-to-a-common-subject" title="Permalink to this headline">¶</a></h3>
+<p>In this example, we will load morphometry data that have been mapped to a common subject, in this case, the fsaverage subject from FreeSurfer. The data have to be mapped using the <code class="docutils literal notranslate"><span class="pre">recon-all</span> <span class="pre">...</span> <span class="pre">-qcache</span></code> FreeSurfer command. We assume the data already exist for your subject in files like <em>?h.area.fwhm20.fsaverage.mgh</em>.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">brainload</span> <span class="k">as</span> <span class="nn">bl</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;HOME&#39;</span><span class="p">),</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;mystudy&#39;</span><span class="p">)</span>
+
+<span class="n">vert_coords</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">morphometry_data</span><span class="p">,</span> <span class="n">meta_data</span> <span class="o">=</span> <span class="n">bl</span><span class="o">.</span><span class="n">subject_avg</span><span class="p">(</span><span class="s1">&#39;subject1&#39;</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">measure</span><span class="o">=</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">fwhm</span><span class="o">=</span><span class="s1">&#39;20&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This operation loaded 4 files: the 2 brain mesh files of the fsaverage subject and the 2 morphometry data files of subject1. The mesh data are in the variables <em>vert_coords</em> and <em>faces</em>, and the morphometry data can be found in <em>per_vertex_data</em>. The <em>meta_data</em> contains information on the loaded data. Let’s use it to see exactly which files were loaded.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.curv_file&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;rh.curv_file&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;lh.morphometry_file&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;rh.morphometry_file&#39;</span><span class="p">])</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">me</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">mystudy</span><span class="o">/</span><span class="n">fsaverage</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">lh</span><span class="o">.</span><span class="n">white</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">me</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">mystudy</span><span class="o">/</span><span class="n">fsaverage</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">rh</span><span class="o">.</span><span class="n">white</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">me</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">mystudy</span><span class="o">/</span><span class="n">subject1</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">lh</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">fwhm20</span><span class="o">.</span><span class="n">fsaverage</span><span class="o">.</span><span class="n">mgh</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">me</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">mystudy</span><span class="o">/</span><span class="n">subject1</span><span class="o">/</span><span class="n">surf</span><span class="o">/</span><span class="n">rh</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">fwhm20</span><span class="o">.</span><span class="n">fsaverage</span><span class="o">.</span><span class="n">mgh</span>
+</pre></div>
+</div>
+<p>See the API documentation for more options. You can specify a different surface, load only one hemisphere, not load the mesh at all, or chose a custom average subject when using this function.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="brainload.html" class="btn btn-neutral" title="Brainload API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
