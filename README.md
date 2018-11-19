@@ -8,6 +8,9 @@ Python module to reduce your brain load while accessing FreeSurfer brain surface
 `brainload` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the respective files and then uses [nibabel](http://nipy.org/nibabel/) to open them. It provides an easy-to-use functional interface to neuroimaging data on multiple levels, from accessing individual files to loading group data for a directory filled with hundreds of subjects.
 
 [![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
+[![Build status](https://ci.appveyor.com/api/projects/status/smuegt2hbqw7cy94/branch/master?svg=true)](https://ci.appveyor.com/project/dfsp-spirit/brainload/branch/master)
+
+
 
 ## Development stage
 
