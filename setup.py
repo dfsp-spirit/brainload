@@ -11,7 +11,7 @@ setup(
     version='0.3.1',
     description='Load FreeSurfer brain imaging data with minimal cognitive load.',
     long_description='Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.',
-    keywords='neuroimaging freesurfer nibabel load mgh curv',
+    keywords='neuroimaging freesurfer nibabel load mgh curv MRI morphometry',
     author='Tim Schäfer',
     author_email='ts+code@rcmd.org',
     url='https://github.com/dfsp-spirit/brainload',
