@@ -79,6 +79,11 @@ The easiest it to use the integration into `setup.py`, as this will install all 
 python setup.py test
 ```
 
+#### Test coverage
+
+Test coverage statistics are displayed automatically when running the tests as described above. To see the coverage line by line, run `coverage html` and then open `htmlcov/index.html` in your favorite browser.
+
+
 
 ### Continuous Integration
 
