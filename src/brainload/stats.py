@@ -51,7 +51,7 @@ def _table_meta_data(line, table_meta_data):
         line_entries = line.split(None, 4)
         column_index = line_entries[2]
         header_keyword = line_entries[3]
-        header_value = line_entries[4]
+        header_value = line_entries[4].rstrip()
         if not column_index in table_meta_data['column_info'].keys():
             table_meta_data['column_info'][column_index] = {}
         table_meta_data['column_info'][column_index][header_keyword] = header_value
