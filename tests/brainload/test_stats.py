@@ -13,14 +13,13 @@ TEST_DATA_DIR = os.getenv('BRAINLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
 
 def test_measure():
     line = '# Measure BrainSeg, BrainSegVol, Brain Segmentation Volume, 1243340.000000, mm^3'
-    measures = {}
-    st._measure(line, measures)
-    assert len(measures) == 1
-    assert 'BrainSeg' in measures.keys()
-    assert measures['BrainSeg'][0] == 'BrainSegVol'
-    assert measures['BrainSeg'][1] == 'Brain Segmentation Volume'
-    assert measures['BrainSeg'][2] == '1243340.000000'
-    assert measures['BrainSeg'][3] == 'mm^3'
+    measure = st._measure(line)
+    assert len(measure) == 5
+    assert measure[0] == 'BrainSeg'
+    assert measure[1] == 'BrainSegVol'
+    assert measure[2] == 'Brain Segmentation Volume'
+    assert measure[3] == '1243340.000000'
+    assert measure[4] == 'mm^3'
 
 
 def test_table_row():
@@ -56,7 +55,7 @@ def test_table_meta_data_other():
     assert md['NRows'] == '45'
 
 
-def test_read_stats_file():
+def test_read_stats_file_aseg():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
     stats = st.read_stats_file(stats_file)
     assert len(stats) == 4
@@ -71,15 +70,18 @@ def test_read_stats_file():
     # check measures
     measures = stats['measures']
     assert len(measures) == 22
-    for measure_data_list in measures.values():
-        assert len(measure_data_list) == 4
-    for expected_measure in ['BrainSeg', 'BrainSegNotVent', 'BrainSegNotVentSurf', 'VentricleChoroidVol', 'lhCortex', 'rhCortex', 'Cortex', 'lhCerebralWhiteMatter', 'rhCerebralWhiteMatter', 'CerebralWhiteMatter', 'SubCortGray', 'TotalGray', 'SupraTentorial', 'SupraTentorialNotVent', 'SupraTentorialNotVentVox', 'Mask', 'BrainSegVol-to-eTIV', 'MaskVol-to-eTIV', 'lhSurfaceHoles', 'rhSurfaceHoles', 'SurfaceHoles', 'EstimatedTotalIntraCranialVol']:
-        assert expected_measure in measures.keys()
+    expected_measures = ['BrainSeg', 'BrainSegNotVent', 'BrainSegNotVentSurf', 'VentricleChoroidVol', 'lhCortex', 'rhCortex', 'Cortex', 'lhCerebralWhiteMatter', 'rhCerebralWhiteMatter', 'CerebralWhiteMatter', 'SubCortGray', 'TotalGray', 'SupraTentorial', 'SupraTentorialNotVent', 'SupraTentorialNotVentVox', 'Mask', 'BrainSegVol-to-eTIV', 'MaskVol-to-eTIV', 'lhSurfaceHoles', 'rhSurfaceHoles', 'SurfaceHoles', 'EstimatedTotalIntraCranialVol']
+    for measure_data_list in measures:
+        assert len(measure_data_list) == 5
+        measure_name = measure_data_list[0]
+        assert measure_name in expected_measures
+
     # fully test a single measure
-    assert measures['BrainSeg'][0] == 'BrainSegVol'
-    assert measures['BrainSeg'][1] == 'Brain Segmentation Volume'
-    assert measures['BrainSeg'][2] == '1243340.000000'
-    assert measures['BrainSeg'][3] == 'mm^3'
+    assert measures[0][0] == 'BrainSeg'
+    assert measures[0][1] == 'BrainSegVol'
+    assert measures[0][2] == 'Brain Segmentation Volume'
+    assert measures[0][3] == '1243340.000000'
+    assert measures[0][4] == 'mm^3'
 
     # check table_data
     table_data = stats['table_data']
@@ -114,3 +116,87 @@ def test_read_stats_file():
     assert second_column_header['ColHeader'] == "SegId"
     assert second_column_header['FieldName'] == "Segmentation Id"
     assert second_column_header['Units'] == "NA"
+
+
+def test_read_stats_file_lh_aparc():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.stats')
+    stats = st.read_stats_file(stats_file)
+    assert len(stats) == 4
+    assert len(stats['ignored_lines']) == 18
+    assert len(stats['measures']) == 10
+    assert len(stats['table_data']) == 34
+    assert len(stats['table_meta_data']) == 3
+    assert 'ColHeaders' in stats['table_meta_data']
+    assert 'NTableCols' in stats['table_meta_data']
+    assert 'column_info' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info']) == 10
+
+
+def test_read_stats_file_rh_aparc():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'rh.aparc.stats')
+    stats = st.read_stats_file(stats_file)
+    assert len(stats) == 4
+    assert len(stats['ignored_lines']) == 18
+    assert len(stats['measures']) == 10
+    assert len(stats['table_data']) == 34
+    assert len(stats['table_meta_data']) == 3
+    assert 'ColHeaders' in stats['table_meta_data']
+    assert 'NTableCols' in stats['table_meta_data']
+    assert 'column_info' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info']) == 10
+
+
+def test_read_stats_file_lh_aparc_a2009s():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.a2009s.stats')
+    stats = st.read_stats_file(stats_file)
+    assert len(stats) == 4
+    assert len(stats['ignored_lines']) == 18
+    assert len(stats['measures']) == 10
+    assert len(stats['table_data']) == 74
+    assert len(stats['table_meta_data']) == 3
+    assert 'ColHeaders' in stats['table_meta_data']
+    assert 'NTableCols' in stats['table_meta_data']
+    assert 'column_info' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info']) == 10
+
+
+def test_read_stats_file_rh_aparc_a2009s():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.a2009s.stats')
+    stats = st.read_stats_file(stats_file)
+    assert len(stats) == 4
+    assert len(stats['ignored_lines']) == 18
+    assert len(stats['measures']) == 10
+    assert len(stats['table_data']) == 74
+    assert len(stats['table_meta_data']) == 3
+    assert 'ColHeaders' in stats['table_meta_data']
+    assert 'NTableCols' in stats['table_meta_data']
+    assert 'column_info' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info']) == 10
+
+
+def test_read_stats_file_lh_aparc_DKTatlas():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = st.read_stats_file(stats_file)
+    assert len(stats) == 4
+    assert len(stats['ignored_lines']) == 18
+    assert len(stats['measures']) == 10
+    assert len(stats['table_data']) == 31
+    assert len(stats['table_meta_data']) == 3
+    assert 'ColHeaders' in stats['table_meta_data']
+    assert 'NTableCols' in stats['table_meta_data']
+    assert 'column_info' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info']) == 10
+
+
+def test_read_stats_file_rh_aparc_DKTatlas():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'rh.aparc.DKTatlas.stats')
+    stats = st.read_stats_file(stats_file)
+    assert len(stats) == 4
+    assert len(stats['ignored_lines']) == 18
+    assert len(stats['measures']) == 10
+    assert len(stats['table_data']) == 31
+    assert len(stats['table_meta_data']) == 3
+    assert 'ColHeaders' in stats['table_meta_data']
+    assert 'NTableCols' in stats['table_meta_data']
+    assert 'column_info' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info']) == 10

@@ -13,13 +13,13 @@ def read_stats_file(file_name):
 
 def parse_stats_lines(lines):
     ignored_lines = []
-    measures = {}
+    measures = []
     table_rows = []
     table_meta_data = {}
     for line in lines:
         if line.startswith('#'):
             if line.startswith('# Measure '):
-                _measure(line, measures)
+                measures.append(_measure(line))
             elif line.startswith('# TableCol') or line.startswith('# NRows') or line.startswith('# NTableCols') or line.startswith('# ColHeaders'):
                 table_meta_data = _table_meta_data(line, table_meta_data)
             else:
@@ -34,10 +34,8 @@ def parse_stats_lines(lines):
     return results
 
 
-def _measure(line, measures):
-    line_data = line[10:].split(', ')
-    measure = line_data.pop(0)
-    measures[measure] = line_data
+def _measure(line):
+    return line[10:].split(', ')
 
 
 def _table_row(line):
