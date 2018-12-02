@@ -2,6 +2,7 @@ import os
 import pytest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
+import brainload as bl
 import brainload.stats as st
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -57,7 +58,7 @@ def test_table_meta_data_other():
 
 def test_read_stats_file_aseg():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert 'measures' in stats
     assert 'table_data' in stats
@@ -120,7 +121,7 @@ def test_read_stats_file_aseg():
 
 def test_read_stats_file_lh_aparc():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
@@ -134,7 +135,7 @@ def test_read_stats_file_lh_aparc():
 
 def test_read_stats_file_rh_aparc():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'rh.aparc.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
@@ -148,7 +149,7 @@ def test_read_stats_file_rh_aparc():
 
 def test_read_stats_file_lh_aparc_a2009s():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.a2009s.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
@@ -162,7 +163,7 @@ def test_read_stats_file_lh_aparc_a2009s():
 
 def test_read_stats_file_rh_aparc_a2009s():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.a2009s.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
@@ -176,7 +177,7 @@ def test_read_stats_file_rh_aparc_a2009s():
 
 def test_read_stats_file_lh_aparc_DKTatlas():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
@@ -190,7 +191,7 @@ def test_read_stats_file_lh_aparc_DKTatlas():
 
 def test_read_stats_file_rh_aparc_DKTatlas():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'rh.aparc.DKTatlas.stats')
-    stats = st.read_stats_file(stats_file)
+    stats = st.stat(stats_file)
     assert len(stats) == 4
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
