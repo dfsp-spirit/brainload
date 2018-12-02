@@ -1,7 +1,6 @@
 import os
 import pytest
-import numpy as np
-from numpy.testing import assert_array_equal, assert_allclose
+import warnings
 import brainload as bl
 import brainload.stats as st
 
@@ -43,8 +42,8 @@ def test_table_meta_data_TableCol():
     table_meta_data = {}
     md = st._table_meta_data(line, table_meta_data)
     assert len(md) == 1
-    assert 'column_info' in md.keys()
-    assert md['column_info']['6']['ColHeader'] == 'normMean'
+    assert 'column_info_' in md.keys()
+    assert md['column_info_']['6']['ColHeader'] == 'normMean'
 
 
 def test_table_meta_data_other():
@@ -107,10 +106,10 @@ def test_read_stats_file_aseg():
     table_meta_data = stats['table_meta_data']
     assert table_meta_data['NRows'] == "45"
     assert table_meta_data['NTableCols'] == "10"
-    assert 'column_info' in table_meta_data
-    assert len(table_meta_data['column_info']) == 10
+    assert 'column_info_' in table_meta_data
+    assert len(table_meta_data['column_info_']) == 10
     # fully test a single column info
-    second_column_header = table_meta_data['column_info']['2']
+    second_column_header = table_meta_data['column_info_']['2']
     assert len(second_column_header) == 3
     for expected_key in ['ColHeader', 'FieldName', 'Units']:
         assert expected_key in second_column_header.keys()
@@ -129,8 +128,8 @@ def test_read_stats_file_lh_aparc():
     assert len(stats['table_meta_data']) == 3
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
-    assert 'column_info' in stats['table_meta_data']
-    assert len(stats['table_meta_data']['column_info']) == 10
+    assert 'column_info_' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info_']) == 10
 
 
 def test_read_stats_file_rh_aparc():
@@ -143,8 +142,8 @@ def test_read_stats_file_rh_aparc():
     assert len(stats['table_meta_data']) == 3
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
-    assert 'column_info' in stats['table_meta_data']
-    assert len(stats['table_meta_data']['column_info']) == 10
+    assert 'column_info_' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info_']) == 10
 
 
 def test_read_stats_file_lh_aparc_a2009s():
@@ -157,8 +156,8 @@ def test_read_stats_file_lh_aparc_a2009s():
     assert len(stats['table_meta_data']) == 3
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
-    assert 'column_info' in stats['table_meta_data']
-    assert len(stats['table_meta_data']['column_info']) == 10
+    assert 'column_info_' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info_']) == 10
 
 
 def test_read_stats_file_rh_aparc_a2009s():
@@ -171,8 +170,8 @@ def test_read_stats_file_rh_aparc_a2009s():
     assert len(stats['table_meta_data']) == 3
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
-    assert 'column_info' in stats['table_meta_data']
-    assert len(stats['table_meta_data']['column_info']) == 10
+    assert 'column_info_' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info_']) == 10
 
 
 def test_read_stats_file_lh_aparc_DKTatlas():
@@ -185,8 +184,8 @@ def test_read_stats_file_lh_aparc_DKTatlas():
     assert len(stats['table_meta_data']) == 3
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
-    assert 'column_info' in stats['table_meta_data']
-    assert len(stats['table_meta_data']['column_info']) == 10
+    assert 'column_info_' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info_']) == 10
 
 
 def test_read_stats_file_rh_aparc_DKTatlas():
@@ -199,5 +198,59 @@ def test_read_stats_file_rh_aparc_DKTatlas():
     assert len(stats['table_meta_data']) == 3
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
-    assert 'column_info' in stats['table_meta_data']
-    assert len(stats['table_meta_data']['column_info']) == 10
+    assert 'column_info_' in stats['table_meta_data']
+    assert len(stats['table_meta_data']['column_info_']) == 10
+
+
+def test_sorted_header_indices():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    header_indices = st._sorted_header_indices(stats['table_meta_data'])
+    assert len(header_indices) == 10
+    assert header_indices[0] == '1'
+    assert header_indices[5] == '6'
+    assert header_indices[9] == '10'
+
+
+def test_header_line():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    hdr_string = st._header_line(stats['table_meta_data'])
+    assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])
+
+
+def test_header_line_missing_col_headers_warns():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    del stats['table_meta_data']['ColHeaders']
+    with pytest.warns(UserWarning, match='Stats data is missing some header data'):
+        hdr_string = st._header_line(stats['table_meta_data'])
+    assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])
+
+
+def test_header_line_missing_column_info_warns():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    del stats['table_meta_data']['column_info_']
+    with pytest.warns(UserWarning, match='Stats data is missing some header data'):
+        hdr_string = st._header_line(stats['table_meta_data'])
+    assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])
+
+
+def test_header_line_raises_on_both_missing():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    del stats['table_meta_data']['column_info_']
+    del stats['table_meta_data']['ColHeaders']
+    with pytest.raises(ValueError) as exc_info:
+        hdr_string = st._header_line(stats['table_meta_data'])
+    assert 'Could not determine header line' in str(exc_info.value)
+
+
+def test_header_line_inconsistent_warns():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    stats['table_meta_data']['ColHeaders'] = 'StructName NumVertBROKEN SurfArea GrayVol ThickAvg ThickStd MeanCurv GausCurv FoldInd CurvInd' # mess with data, add 'BROKEN' to 2nd header column
+    with pytest.warns(UserWarning, match='Stats data regarding table header is inconsistent between ColHeaders and TableCol->ColHeader entries'):
+        hdr_string = st._header_line(stats['table_meta_data'])
+    assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])

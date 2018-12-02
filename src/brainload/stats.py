@@ -4,6 +4,7 @@ Functions for parsing FreeSurfer brain stat files.
 You can use these to read files like `subject/stats/aseg.stats`.
 """
 
+import warnings
 
 def stat(file_name):
     """
@@ -23,7 +24,7 @@ def stat(file_name):
             - 'ignored_lines': list of strings. The list of lines that were not parsed in a special way. This is raw data.
             - 'measures': string list of dimension (n, m) if there are n measures with m properties each stored in the stats file.
             - 'table_data': string list of dimension (i, j) when there are i lines containing j values each in the table stored in the stats file.
-            - 'table_meta_data': dictionary. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key 'column_info', which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
+            - 'table_meta_data': dictionary. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key 'column_info_', which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
 
     Examples
     --------
@@ -46,9 +47,9 @@ def stat(file_name):
 
     >>> print stats['table_meta_data']['NTableCols']   # will print "10" (from a simple table property stored directly in the dictionary).
 
-    Information on the individual columns can be found under the special `column_info` key:
+    Information on the individual columns can be found under the special `column_info_` key:
 
-    >>> column2_info_dict = stats['table_meta_data']['column_info']['2']
+    >>> column2_info_dict = stats['table_meta_data']['column_info_']['2']
     >>> print(column2_info_dict['some_key'])          # will print the value
 
     Note that all data is returned as string type, you will need to covert it to float (or whatever) yourself.
@@ -95,7 +96,7 @@ def _measure(line):
     list of strings
         A list of strings, containing the data on the line. The prefix, '# Measure', is discarded.
     """
-    return line[10:].split(', ')
+    return line[10:].split(', ')    # ignore first 10 characters, the '# Measure' prefix.
 
 
 def _table_row(line):
@@ -124,19 +125,80 @@ def _table_meta_data(line, table_meta_data):
     Returns
     -------
     dictionary
-        The result of parsing the line, as a key value pair of strings. If the line is a TableCol line, the information gets stored into a sub dictionary structure called 'column_info[index]'. Otherwise, it gets stored directly in the result dictionary.
+        The result of parsing the line, as a key value pair of strings. If the line is a TableCol line, the information gets stored into a sub dictionary structure called 'column_info_[index]'. Otherwise, it gets stored directly in the result dictionary.
     """
+    key_string = _get_column_info_keystring()
     if line.startswith('# TableCol'):
-        if not 'column_info' in table_meta_data.keys():
-            table_meta_data['column_info'] = {}
+        if not key_string in table_meta_data.keys():
+            table_meta_data[key_string] = {}
         line_entries = line.split(None, 4)
         column_index = line_entries[2]
         header_keyword = line_entries[3]
         header_value = line_entries[4].rstrip()
-        if not column_index in table_meta_data['column_info'].keys():
-            table_meta_data['column_info'][column_index] = {}
-        table_meta_data['column_info'][column_index][header_keyword] = header_value
+        if not column_index in table_meta_data[key_string].keys():
+            table_meta_data[key_string][column_index] = {}
+        table_meta_data[key_string][column_index][header_keyword] = header_value
     else:
         line_entries = line.split(None, 2)
         table_meta_data[line_entries[1]] = line_entries[2].rstrip()
     return table_meta_data
+
+
+def _get_column_info_keystring():
+    return 'column_info_'
+
+
+def _sorted_header_indices(table_meta_data):
+    key_string = _get_column_info_keystring()
+    sorted_field_list = table_meta_data[key_string].keys()
+    sorted_field_list.sort(key=int)
+    return sorted_field_list
+
+
+def _header_line(table_meta_data, field_separator='\t'):
+    """
+    Return the table header line in a csv format.
+
+    Return the table header line in a csv format, using the given field_separator.
+    """
+    return field_separator.join(_header_line_elements(table_meta_data))
+
+
+def _header_line_elements(table_meta_data):
+    """
+    Return a list of the table header entries.
+
+    Return a list of the table header entries in the correct order.
+    """
+    key_string = _get_column_info_keystring()
+
+    # If possible, retrieve the column headers from the 'ColHeaders' line
+    header_elements_from_col_headers = None
+    if 'ColHeaders' in table_meta_data:
+        try:
+            header_elements_from_col_headers = table_meta_data['ColHeaders'].split()
+        except:
+            pass
+
+    # The same information can be retrieved from all the individual 'TableCol' lines
+    header_elements_from_table_col = None
+    try:
+        column_indices = _sorted_header_indices(table_meta_data)
+        header_elements_from_table_col = []
+        for column_index in column_indices:
+            header_elements_from_table_col.append(table_meta_data[key_string][column_index]['ColHeader'])
+    except:
+        pass
+
+    if header_elements_from_col_headers is None and header_elements_from_table_col is None:
+        raise ValueError('Could not determine header line: stats file contains no table header information. Broken stats file?')
+    if header_elements_from_col_headers is None or header_elements_from_table_col is None:
+        warnings.warn('Stats data is missing some header data.', UserWarning)
+        if header_elements_from_col_headers is None:
+            return header_elements_from_table_col
+        else:
+            return header_elements_from_col_headers
+    else:
+        if not header_elements_from_table_col == header_elements_from_col_headers:
+            warnings.warn('Stats data regarding table header is inconsistent between ColHeaders and TableCol->ColHeader entries. Returning data based on TableCol->ColHeader entries.', UserWarning)
+        return header_elements_from_table_col
