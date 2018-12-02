@@ -58,11 +58,12 @@ def test_table_meta_data_other():
 def test_read_stats_file_aseg():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert 'measures' in stats
     assert 'table_data' in stats
     assert 'table_meta_data' in stats
     assert 'ignored_lines' in stats
+    assert 'table_column_headers' in stats
     # check ignored lines
     ignored_lines = stats['ignored_lines']
     assert len(ignored_lines) == 25
@@ -121,11 +122,12 @@ def test_read_stats_file_aseg():
 def test_read_stats_file_lh_aparc():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
     assert len(stats['table_data']) == 34
     assert len(stats['table_meta_data']) == 3
+    assert len(stats['table_column_headers']) == 10
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
     assert 'column_info_' in stats['table_meta_data']
@@ -135,11 +137,12 @@ def test_read_stats_file_lh_aparc():
 def test_read_stats_file_rh_aparc():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'rh.aparc.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
     assert len(stats['table_data']) == 34
     assert len(stats['table_meta_data']) == 3
+    assert len(stats['table_column_headers']) == 10
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
     assert 'column_info_' in stats['table_meta_data']
@@ -149,11 +152,12 @@ def test_read_stats_file_rh_aparc():
 def test_read_stats_file_lh_aparc_a2009s():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.a2009s.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
     assert len(stats['table_data']) == 74
     assert len(stats['table_meta_data']) == 3
+    assert len(stats['table_column_headers']) == 10
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
     assert 'column_info_' in stats['table_meta_data']
@@ -163,11 +167,12 @@ def test_read_stats_file_lh_aparc_a2009s():
 def test_read_stats_file_rh_aparc_a2009s():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.a2009s.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
     assert len(stats['table_data']) == 74
     assert len(stats['table_meta_data']) == 3
+    assert len(stats['table_column_headers']) == 10
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
     assert 'column_info_' in stats['table_meta_data']
@@ -177,11 +182,12 @@ def test_read_stats_file_rh_aparc_a2009s():
 def test_read_stats_file_lh_aparc_DKTatlas():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
     assert len(stats['table_data']) == 31
     assert len(stats['table_meta_data']) == 3
+    assert len(stats['table_column_headers']) == 10
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
     assert 'column_info_' in stats['table_meta_data']
@@ -191,11 +197,13 @@ def test_read_stats_file_lh_aparc_DKTatlas():
 def test_read_stats_file_rh_aparc_DKTatlas():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'rh.aparc.DKTatlas.stats')
     stats = st.stat(stats_file)
-    assert len(stats) == 4
+    assert len(stats) == 5
     assert len(stats['ignored_lines']) == 18
     assert len(stats['measures']) == 10
     assert len(stats['table_data']) == 31
     assert len(stats['table_meta_data']) == 3
+    assert len(stats['table_column_headers']) == 10
+    assert stats['table_column_headers'] == ['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd']
     assert 'ColHeaders' in stats['table_meta_data']
     assert 'NTableCols' in stats['table_meta_data']
     assert 'column_info_' in stats['table_meta_data']
@@ -252,5 +260,14 @@ def test_header_line_inconsistent_warns():
     stats = bl.stat(stats_file)
     stats['table_meta_data']['ColHeaders'] = 'StructName NumVertBROKEN SurfArea GrayVol ThickAvg ThickStd MeanCurv GausCurv FoldInd CurvInd' # mess with data, add 'BROKEN' to 2nd header column
     with pytest.warns(UserWarning, match='Stats data regarding table header is inconsistent between ColHeaders and TableCol->ColHeader entries'):
+        hdr_string = st._header_line(stats['table_meta_data'])
+    assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])
+
+
+def test_header_line_does_not_raise_on_broken_col_headers():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    stats['table_meta_data']['ColHeaders'] = 1  # ruin data: cannot split an int
+    with pytest.warns(UserWarning, match='Stats data is missing some header data'):
         hdr_string = st._header_line(stats['table_meta_data'])
     assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])

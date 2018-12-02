@@ -24,7 +24,8 @@ def stat(file_name):
             - 'ignored_lines': list of strings. The list of lines that were not parsed in a special way. This is raw data.
             - 'measures': string list of dimension (n, m) if there are n measures with m properties each stored in the stats file.
             - 'table_data': string list of dimension (i, j) when there are i lines containing j values each in the table stored in the stats file.
-            - 'table_meta_data': dictionary. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key 'column_info_', which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
+            - 'table_column_headers': string list. The names for the columns for the table_data. This information is parsed from the table_meta_data and given here for convenience.
+            - 'table_meta_data': dictionary. The full table_meta_data. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key 'column_info_', which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
 
     Examples
     --------
@@ -47,7 +48,15 @@ def stat(file_name):
 
     >>> print stats['table_meta_data']['NTableCols']   # will print "10" (from a simple table property stored directly in the dictionary).
 
-    Information on the individual columns can be found under the special `column_info_` key:
+    Get the names of all the data columns:
+
+    >>> print ",".join(stats['table_column_headers'])
+
+    Get the name of the first column:
+
+    >>> first_column_name = stats['table_column_headers'][0]
+
+    More detailed information on the individual columns can be found under the special `column_info_` key if needed:
 
     >>> column2_info_dict = stats['table_meta_data']['column_info_']['2']
     >>> print(column2_info_dict['some_key'])          # will print the value
@@ -82,6 +91,7 @@ def _parse_stats_lines(lines):
     results['measures'] = measures
     results['table_data'] = table_rows
     results['table_meta_data'] = table_meta_data
+    results['table_column_headers'] = _header_line_elements(table_meta_data)
     return results
 
 
