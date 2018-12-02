@@ -5,6 +5,7 @@ You can use these to read files like `subject/stats/aseg.stats`.
 """
 
 import warnings
+import numpy as np
 
 def stat(file_name):
     """
@@ -222,3 +223,69 @@ def _header_line_elements(table_meta_data):
         if not header_elements_from_table_col == header_elements_from_col_headers:
             warnings.warn('Stats data regarding table header is inconsistent between ColHeaders and TableCol->ColHeader entries. Returning data based on TableCol->ColHeader entries.', UserWarning)
         return header_elements_from_table_col
+
+
+def typelist_for_aseg_stats():
+    """
+    Determine list of numpy data types for the table in an `aseg.stats` file.
+
+    Determine list of numpy data types for the table in an `aseg.stats` file. The 10 columns in this file are: Index SegId NVoxels Volume_mm3 StructName normMean normStdDev normMin normMax normRange.
+
+    Returns
+    -------
+    list of numpy data types
+        List of the proper numpy data types to use for each data column in the file.
+    """
+    f = np.float32
+    i = np.int32
+    s = np.string_
+    return [i, i, i, f, s, f, f, f, f, f]
+
+
+def typelist_for_aparc_atlas_stats():
+    """
+    Determine list of numpy data types for the table in an aparc atlas file.
+
+    Determine list of numpy data types for the table in an aparc atlas file. The type list is identical for the files `?h.aparc.stats`, `?h.aparc.2009s.stats`, and `?h.aparc.DKTatlas.stats`. The 10 columns in each file are: StructName NumVert SurfArea GrayVol ThickAvg ThickStd MeanCurv GausCurv FoldInd CurvInd
+
+    Returns
+    -------
+    list of numpy data types
+        List of the proper numpy data types to use for each data column in the file.
+    """
+    f = np.float32
+    i = np.int32
+    s = np.string_
+    return [s, i, i, i, f, f, f, f, i, f]
+
+
+def stats_table_to_numpy(stat, type_list):
+    """
+    Given types, convert the string matrix to a dictionary of numpy arrays.
+
+    Given types, convert the string matrix to a dictionary of numpy arrays. The stat dictionary is returned by the stat function, and you have to specify a list of numpy types, one for each column, to convert this. The type list is specific for the file that has been parsed, i.e., it differs between asge.stats and lh.aparc.stats. Determine it by looking at the file data. See the `typelist_for_*` functions in this module for pre-defined type lists for commonly parsed FreeSurfer stats files.
+
+    Parameters
+    ----------
+    stats: dictionary
+        The data returned by the stat() function. Must contain the keys 'table_data' (2D list of strings, dimension n x m for n rows with m columns each) and 'table_column_headers' (1D list of m strings).
+
+    type_list: list of numpy types
+        List of numpy types with length m. Types must be listed in the order in which they should be applied to the columns.
+
+    Returns
+    -------
+    dictionary of string, numpy array
+        Each key is a column name, and each value is a numpy column array containing the typed data.
+    """
+    table = stat['table_data']
+    header = stat['table_column_headers']
+    if not (len(type_list) == len(header)):
+        raise ValueError('Length of type_list (%d) must match number of stat[table_column_headers] (%d).' % (len(type_list), len(header)))
+    result = {}
+    numpy_string_matrix = np.array(table)
+    for column_index, column_name in enumerate(header):
+        numpy_string_array_column = numpy_string_matrix[:,column_index]
+        numpy_typed_array_column = numpy_string_array_column.astype(type_list[column_index])
+        result[column_name] = numpy_typed_array_column
+    return result

@@ -3,6 +3,7 @@ import pytest
 import warnings
 import brainload as bl
 import brainload.stats as st
+import numpy as np
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
@@ -271,3 +272,37 @@ def test_header_line_does_not_raise_on_broken_col_headers():
     with pytest.warns(UserWarning, match='Stats data is missing some header data'):
         hdr_string = st._header_line(stats['table_meta_data'])
     assert hdr_string == '\t'.join(['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd'])
+
+
+def test_stats_table_to_numpy_aparc_dktatlas_stats():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'lh.aparc.DKTatlas.stats')
+    stats = bl.stat(stats_file)
+    types = st.typelist_for_aparc_atlas_stats()
+    numpy_data = st.stats_table_to_numpy(stats, types)
+    assert len(numpy_data) == 10        # 10 columns
+    assert 'StructName' in numpy_data
+    assert 'NumVert' in numpy_data
+    for column_name in numpy_data:
+        assert len(numpy_data[column_name]) == 31
+
+
+def test_stats_table_to_numpy_aseg_stats():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
+    stats = bl.stat(stats_file)
+    types = st.typelist_for_aseg_stats()
+    numpy_data = st.stats_table_to_numpy(stats, types)
+    assert len(numpy_data) == 10        # 10 columns
+    assert 'Index' in numpy_data
+    assert 'SegId' in numpy_data
+    for column_name in numpy_data:
+        assert len(numpy_data[column_name]) == 45       # 45 rows
+
+
+def test_stats_table_to_numpy_raises_on_invalied_type_count():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
+    stats = bl.stat(stats_file)
+    types = [np.string_, np.string_]        # wrong number of types!
+    with pytest.raises(ValueError) as exc_info:
+        numpy_data = st.stats_table_to_numpy(stats, types)
+    assert 'Length of type_list' in str(exc_info.value)
+    assert 'must match number of' in str(exc_info.value)
