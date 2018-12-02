@@ -23,7 +23,7 @@ def stat(file_name):
         The result dictionary, containing the following 4 keys:
             - 'ignored_lines': list of strings. The list of lines that were not parsed in a special way. This is raw data.
             - 'measures': string list of dimension (n, m) if there are n measures with m properties each stored in the stats file.
-            - 'table_data': string list of dimension (i, j) when there are i lines containing j values each in the table stored in the stats file.
+            - 'table_data': string list of dimension (i, j) when there are i lines containing j values each in the table stored in the stats file. You may want to convert the columns to the proper data types and put the result into several numpy arrays or a single Pandas data frame.
             - 'table_column_headers': string list. The names for the columns for the table_data. This information is parsed from the table_meta_data and given here for convenience.
             - 'table_meta_data': dictionary. The full table_meta_data. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key 'column_info_', which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
 
@@ -155,10 +155,20 @@ def _table_meta_data(line, table_meta_data):
 
 
 def _get_column_info_keystring():
+    """
+    Define the special key name within the table_meta_data dictionary for columns.
+
+    Define the special key name within the table_meta_data dictionary that is used to hold information on all columns (parsed from the '# TableCol' lines). Could be any string, as long as it does not clash with other meta data entries in the stats file.
+    """
     return 'column_info_'
 
 
 def _sorted_header_indices(table_meta_data):
+    """
+    Return the header indices from table_meta_data['column_info_'] sorted.
+
+    Return the header indices from table_meta_data['column_info_'] sorted. The keys of that dictionary are strings originating from the column labels in the stats file ('1', '2', ...). This functions sorts them as if they were integers.
+    """
     key_string = _get_column_info_keystring()
     sorted_field_list = table_meta_data[key_string].keys()
     sorted_field_list.sort(key=int)
