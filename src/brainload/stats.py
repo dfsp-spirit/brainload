@@ -178,7 +178,7 @@ def _sorted_header_indices(table_meta_data):
     """
     key_string = _get_column_info_keystring()
     sorted_field_list = table_meta_data[key_string].keys()
-    sorted_field_list.sort(key=int)
+    sorted_field_list = sorted(sorted_field_list, key=int)
     return sorted_field_list
 
 
