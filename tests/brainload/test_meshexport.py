@@ -176,3 +176,27 @@ def test_scalars_to_colors_matplotlib_linear():
     scalars = np.array([.0, .010, .002, 0.013, 10.])
     colors = me.scalars_to_colors_matplotlib(scalars, 'Spectral')
     assert colors.shape[0] == scalars.shape[0]
+
+
+def test_scalars_to_colors_matplotlib_log():
+    try:
+        import matplotlib.cm as mpl_cm
+        import matplotlib.colors as mpl_colors
+    except:
+        pytest.skip("Please install matplotlib to test this function.")
+    scalars = np.array([.05, .010, .002, 0.013, 10.])    # values must be  > 0.0 for log, of course
+    colors = me.scalars_to_colors_matplotlib(scalars, 'Spectral', data_normalization='log')
+    assert colors.shape[0] == scalars.shape[0]
+
+
+def test_scalars_to_colors_matplotlib_raises_on_invalid_data_normalization():
+    try:
+        import matplotlib.cm as mpl_cm
+        import matplotlib.colors as mpl_colors
+    except:
+        pytest.skip("Please install matplotlib to test this function.")
+    scalars = np.array([.0, .010, .002, 0.013, 10.])
+    with pytest.raises(ValueError) as exc_info:
+        colors = me.scalars_to_colors_matplotlib(scalars, 'Spectral', data_normalization='invalid_data_normalization')
+    assert 'data_normalization must be one of' in str(exc_info.value)
+    assert 'invalid_data_normalization' in str(exc_info.value)

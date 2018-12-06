@@ -79,7 +79,7 @@ def _ply_faces(faces):
     return '\n'.join(face_reps) + '\n'
 
 
-def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization='linear'):
+def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization='linear', custom_cmap=None):
     """
     Assign colors to scalars using a colormap from matplotlib.
 
@@ -91,10 +91,13 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization=
         The scalars data, each data point will be assigned a color.
 
     matplotlib_cmap_name: string
-        A valid name of a matplotlib colormap. Example: 'Spectral'
+        A valid name of a matplotlib colormap. Example: 'Spectral'. Note that it is important to chose the color map based on the data and your application. For sequential data, try 'viridis' or 'plasma'. For diverging data, try 'Spectral' or 'coolwarm'. For qualitative color maps, try 'tab10' or 'tab20'. See https://matplotlib.org/users/colormaps.html for details. If the parameter custom_cmap is given, this can be a freeform name for your that colormap.
 
     data_normalization: string, one of ('linear', 'log'), optional
         How the data should be normalized to match the range of the color map. Defaults to 'linear'.
+
+    custom_cmap: matplotlib colormap instance, optional
+        A custom matplotlib colormap, e.g., one created using LinearSegmentedColormap.from_list() or other matplotlib functions. Optional. If given, takes precedence over matplotlib_cmap_name.
 
     Returns
     -------
@@ -113,19 +116,26 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization=
     except:
         raise ImportError('The package matplotlib is not installed. While matplotlib is not a hard dependency of Brainload, you need to have it installed if you use the scalars_to_colors_matplotlib function.')
 
-    cmap = mpl_cm.get_cmap(name=matplotlib_cmap_name)
+    if custom_cmap is None:
+        cmap = mpl_cm.get_cmap(name=matplotlib_cmap_name)
+    else:
+        cmap = custom_cmap
+
     if data_normalization == 'linear':
         norm = mpl_colors.Normalize(vmin=data_min, vmax=data_max)
     else:
         norm = mpl_colors.LogNorm(vmin=data_min, vmax=data_max)
 
     num_scalars = data.shape[0]
-    assigned_colors = np.zeros((num_scalars, 4))
+    assigned_colors = np.zeros((num_scalars, 4), dtype=np.float_)
 
     it = np.nditer(data, flags=['f_index'])
     while not it.finished:
-        assigned_colors[it.index][:] = cmap(norm(it[0]))
+        color = cmap(norm(it[0]))
+        #print("assigning color %s for value %f" % (color, it[0]))
+        assigned_colors[it.index][:] = color
         it.iternext()
+    assigned_colors = np.round(assigned_colors * 255.0)   # matplotlib colors are in range 0. to 1., transform to 0 to 255
     return assigned_colors
 
 
