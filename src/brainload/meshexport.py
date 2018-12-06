@@ -79,17 +79,61 @@ def _ply_faces(faces):
     return '\n'.join(face_reps) + '\n'
 
 
-def _cmap():
+def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization='linear'):
     """
-    Return a colormap.
+    Assign colors to scalars using a colormap from matplotlib.
+
+    Assign colors to scalars using functions and a colormap from matplotlib. This requires matplotlib to be installed, which is NOT a hard dependency of brainload. If you want to use this function, you need to install matplotlib.
+
+    Parameters
+    ----------
+    data: 1D numpy array of numerical data, length n.
+        The scalars data, each data point will be assigned a color.
+
+    matplotlib_cmap_name: string
+        A valid name of a matplotlib colormap. Example: 'Spectral'
+
+    data_normalization: string, one of ('linear', 'log'), optional
+        How the data should be normalized to match the range of the color map. Defaults to 'linear'.
+
+    Returns
+    -------
+    numpy float array of shape (n, 4)
+        An array that assigns one RGBA color to each value from the scalars parameter (use the index). A color is given as 4 floats (RGBA), each in range 0.0 to 1.0.
     """
-    import matplotlib.colors
-    return matplotlib.colors.LinearSegmentedColormap.from_list("", ["yellow", "orange", "red", "violet", "blue"])
+    if data_normalization not in ('linear', 'log'):
+        raise ValueError("ERROR: data_normalization must be one of {'linear', 'log'} but is '%s'." % data_normalization)
+
+    data_min = np.min(data)
+    data_max = np.max(data)
+
+    try:
+        import matplotlib.cm as mpl_cm
+        import matplotlib.colors as mpl_colors
+    except:
+        raise ImportError('The package matplotlib is not installed. While matplotlib is not a hard dependency of Brainload, you need to have it installed if you use the scalars_to_colors_matplotlib function.')
+
+    cmap = mpl_cm.get_cmap(name=matplotlib_cmap_name)
+    if data_normalization == 'linear':
+        norm = mpl_colors.Normalize(vmin=data_min, vmax=data_max)
+    else:
+        norm = mpl_colors.LogNorm(vmin=data_min, vmax=data_max)
+
+    num_scalars = data.shape[0]
+    assigned_colors = np.zeros((num_scalars, 4))
+
+    it = np.nditer(data, flags=['f_index'])
+    while not it.finished:
+        assigned_colors[it.index][:] = cmap(norm(it[0]))
+        it.iternext()
+    return assigned_colors
 
 
 def _normalize_to_range_zero_one(data):
     """
     Normalize the given data to the range [0, 1].
+
+    Normalize the given data to the range [0, 1] in a linear fashion. If the given data is constant (i.e, all values in the array are identical), maps all values to 1.0.
 
     Parameters
     ----------
@@ -97,8 +141,9 @@ def _normalize_to_range_zero_one(data):
         1D numpy array of numerical data, length n.
 
     Returns
+    -------
     numpy array
-        1D numpy array of floats in range [0, 1] with length n. The normalized data.
+        The normalized data: 1D numpy array of floats in range [0, 1] with length n. If the given data is constant (i.e, all values in the array are identical), all values in the array are 1.0.
     """
     data=np.array(data)
     if np.unique(data).shape[0]==1:
@@ -107,45 +152,85 @@ def _normalize_to_range_zero_one(data):
         return (data - np.min(data)) / np.ptp(data)
 
 
-def scalars_to_colors(scalars, cmap):
+def scalars_to_colors_clist(scalars, color_list):
     """
-    Given scalar values and a color map, assign a color to each scalar value.
+    Given scalar values and a color list, assign a color to each scalar value.
 
-    Given scalar values and a color map, assign a color to each scalar value. This is useful for exporting vertex colored brain meshes.
+    Given scalar values and a color list, assign a color to each scalar value. This is useful for exporting vertex colored brain meshes.
 
     Parameters
     ----------
     scalars: scalar numpy array of shape (i, ).
         1D array of i scalar values.
 
-    cmap: numpy int array of shape n, m
-        Array containing n colors, each of which is defined by m values (e.g., m=3 for RGB colors, m=4 for RGBA colors)
+    cmap: numpy array of shape (n, m)
+        Array containing n colors, each of which is defined by m values (e.g., m=3 for RGB colors, m=4 for RGBA colors, but this function does not care for the meaning in any way).
 
     Returns
     -------
     numpy int array of shape (i, m)
         An array that assigns one color to each value from the scalars parameter (use the index).
     """
-    num_colors = cmap.shape[0]
-    num_color_channels = cmap.shape[1]      # 3 or 4, depending on whether an alpha channel is included
+    num_colors = color_list.shape[0]
+    num_color_channels = color_list.shape[1]      # 3 or 4, depending on whether an alpha channel is included
     scalars = np.array(scalars)
     norm_scalars = _normalize_to_range_zero_one(scalars)
-    min_scalar = 0.0
-    max_scalar = 1.0
+    min_scalar = np.min(norm_scalars) # 0.0
+    max_scalar = np.max(norm_scalars) # 1.0
     num_scalars = norm_scalars.shape[0]
     assigned_colors = np.zeros((num_scalars, num_color_channels))
 
     it = np.nditer(norm_scalars, flags=['f_index'])
     while not it.finished:
-        scalar = it[0]
-        if scalar < min_scalar:
-            assigned_colors[it.index][:] = cmap[0][:]       # assign first color in color map
-        elif scalar > max_scalar:
-            assigned_colors[it.index][:] = cmap[-1][:]      # assign last color in color map
-        else:
-            cmap_index = int(np.floor(num_colors * ((scalar - min_scalar) / (max_scalar - min_scalar))))
-            if cmap_index >= num_colors:
-                cmap_index = num_colors - 1
-            assigned_colors[it.index][:] = cmap[cmap_index][:]
+        assigned_colors[it.index][:] = _color_from_clist(it[0], color_list)
         it.iternext()
     return assigned_colors
+
+
+def _color_from_clist(scalar_in_range_zero_to_one, color_list):
+    """
+    Given a scalar value between 0.0 and 1.0, return its entry from a color list.
+
+    Given a scalar value between 0.0 and 1.0, return its entry from a color list. Note that you can normalize your data to the range [0, 1] in whatever way you see fit (linear, log) before calling this function.
+
+    Parameters
+    ----------
+    scalar_in_range_zero_to_one: float
+        A scalar value in range 0.0 to 1.0. It is assumed that your data array (the source of this single value) has been normalized to the range already.
+
+    color_list: numpy array of shape (n, m)
+        An array defining n colors. Each color is given by m channel values. Note: `m` could be 4 and refer to the RGBA channels, but this function does not care.
+
+    """
+    num_colors = color_list.shape[0]
+    color_list_index = _color_index_from_clist(scalar_in_range_zero_to_one, num_colors)
+    return color_list[color_list_index][:]
+
+
+def _color_index_from_clist(scalar_in_range_zero_to_one, num_colors):
+    """
+    Given a scalar value between 0.0 and 1.0, return the index of the color in the color list for that value.
+
+    Parameters
+    ----------
+    scalar_in_range_zero_to_one: float
+        A scalar value in range 0.0 to 1.0. It is assumed that your data array (the source of this single value) has been normalized to the range already.
+
+    num_colors: int
+        The number of colors in your color list.
+
+    Returns
+    -------
+    int: the index into the color map
+    """
+    min_scalar = 0.0
+    max_scalar = 1.0
+    if scalar_in_range_zero_to_one < min_scalar:
+        return 0       # assign first color in color map
+    elif scalar_in_range_zero_to_one > max_scalar:
+        return -1      # assign last color in color map
+    else:
+        color_list_index = int(np.floor(num_colors * ((scalar_in_range_zero_to_one - min_scalar) / (max_scalar - min_scalar))))
+        if color_list_index >= num_colors:
+            color_list_index = num_colors - 1
+        return color_list_index

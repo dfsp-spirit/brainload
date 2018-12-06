@@ -136,10 +136,10 @@ def test_normalize_to_range_zero_one_constant():
     assert np.max(values_norm) == pytest.approx(1., 0.0001)
 
 
-def test_scalars_to_colors_even():
+def test_scalars_to_colors_clist_even():
     scalars = np.arange(10.0)
-    cmap = np.array([[255, 0, 0, 255], [255, 0, 0, 235], [255, 0, 0, 215], [255, 0, 0, 195], [255, 0, 0, 175]])
-    vertex_colors = me.scalars_to_colors(scalars, cmap)
+    clist = np.array([[255, 0, 0, 255], [255, 0, 0, 235], [255, 0, 0, 215], [255, 0, 0, 195], [255, 0, 0, 175]])
+    vertex_colors = me.scalars_to_colors_clist(scalars, clist)
     assert vertex_colors.shape[0] == scalars.shape[0]     # one color for each value
     assert vertex_colors.shape[1] == 4     # RGBA
     assert np.array_equal(vertex_colors[0][:], np.array([255, 0, 0, 255]))
@@ -154,10 +154,10 @@ def test_scalars_to_colors_even():
     assert np.array_equal(vertex_colors[9][:], np.array([255, 0, 0, 175]))
 
 
-def test_scalars_to_colors_all_except_one_first_color():
+def test_scalars_to_colors_clist_all_except_one_first_color():
     scalars = np.array([.0, .010, .002, 0.013, 10.])
-    cmap = np.array([[255, 0, 0, 255], [255, 0, 0, 235], [255, 0, 0, 215], [255, 0, 0, 195], [255, 0, 0, 175]])
-    vertex_colors = me.scalars_to_colors(scalars, cmap)
+    clist = np.array([[255, 0, 0, 255], [255, 0, 0, 235], [255, 0, 0, 215], [255, 0, 0, 195], [255, 0, 0, 175]])
+    vertex_colors = me.scalars_to_colors_clist(scalars, clist)
     assert vertex_colors.shape[0] == scalars.shape[0]     # one color for each value
     assert vertex_colors.shape[1] == 4     # RGBA
     assert np.array_equal(vertex_colors[0][:], np.array([255, 0, 0, 255]))
@@ -165,3 +165,14 @@ def test_scalars_to_colors_all_except_one_first_color():
     assert np.array_equal(vertex_colors[2][:], np.array([255, 0, 0, 255]))
     assert np.array_equal(vertex_colors[3][:], np.array([255, 0, 0, 255]))
     assert np.array_equal(vertex_colors[4][:], np.array([255, 0, 0, 175]))
+
+
+def test_scalars_to_colors_matplotlib_linear():
+    try:
+        import matplotlib.cm as mpl_cm
+        import matplotlib.colors as mpl_colors
+    except:
+        pytest.skip("Please install matplotlib to test this function.")
+    scalars = np.array([.0, .010, .002, 0.013, 10.])
+    colors = me.scalars_to_colors_matplotlib(scalars, 'Spectral')
+    assert colors.shape[0] == scalars.shape[0]
