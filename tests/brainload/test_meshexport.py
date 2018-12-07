@@ -54,6 +54,13 @@ def test_ply_verts_no_color():
     assert vert_rep == expected
 
 
+def test_ply_verts_empty():
+    verts = np.array([])
+    vert_rep = me._ply_verts(verts)
+    expected = ""
+    assert vert_rep == expected
+
+
 def test_ply_verts_color():
     verts = np.array([[1.5, 1.5, 1.5], [2.5, 2.5, 2.5], [3.5, 3.5, 3.5]])
     colors = np.array([[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255]])
@@ -66,6 +73,13 @@ def test_ply_faces():
     faces = np.array([[0, 1, 2], [2, 3, 4], [4, 5, 6]])
     face_rep = me._ply_faces(faces)
     expected = "3 0 1 2\n3 2 3 4\n3 4 5 6\n"
+    assert face_rep == expected
+
+
+def test_ply_faces_empty():
+    faces = np.array([])
+    face_rep = me._ply_faces(faces)
+    expected = ""
     assert face_rep == expected
 
 
@@ -178,6 +192,18 @@ def test_scalars_to_colors_matplotlib_linear():
     assert colors.shape[0] == scalars.shape[0]
 
 
+def test_scalars_to_colors_matplotlib_custom_cmap():
+    try:
+        import matplotlib.cm as mpl_cm
+        import matplotlib.colors as mpl_colors
+    except:
+        pytest.skip("Please install matplotlib to test this function.")
+    scalars = np.array([.0, .010, .002, 0.013, 10.])
+    cmap = mpl_cm.get_cmap(name='viridis')
+    colors = me.scalars_to_colors_matplotlib(scalars, 'A greenish cmap', custom_cmap=cmap)
+    assert colors.shape[0] == scalars.shape[0]
+
+
 def test_scalars_to_colors_matplotlib_log():
     try:
         import matplotlib.cm as mpl_cm
@@ -200,3 +226,28 @@ def test_scalars_to_colors_matplotlib_raises_on_invalid_data_normalization():
         colors = me.scalars_to_colors_matplotlib(scalars, 'Spectral', data_normalization='invalid_data_normalization')
     assert 'data_normalization must be one of' in str(exc_info.value)
     assert 'invalid_data_normalization' in str(exc_info.value)
+
+
+def test_get_example_colorlist():
+    colorlist = me._get_example_colorlist(300)
+    assert colorlist.shape == (300, 4)
+
+
+def test_color_index_from_clist_within_range_start():
+    color_index = me._color_index_from_clist(0.01, 10)
+    assert color_index == 0     # For a value range of 0.0 to 1.0, the value 0.01 should result in the first color being selected.
+
+
+def test_color_index_from_clist_within_range_end():
+    color_index = me._color_index_from_clist(0.99, 10)
+    assert color_index == 9
+
+
+def test_color_index_from_clist_below_range():
+    color_index = me._color_index_from_clist(-0.1, 10)  # Out of range value smaller than lowest value in range should be mapped to first color
+    assert color_index == 0
+
+
+def test_color_index_from_clist_above_range():
+    color_index = me._color_index_from_clist(1.5, 10)  # Out of range value larger than highest value in range should be mapped to last color
+    assert color_index == 9

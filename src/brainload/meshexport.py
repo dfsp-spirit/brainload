@@ -217,6 +217,30 @@ def _color_from_clist(scalar_in_range_zero_to_one, color_list):
     return color_list[color_list_index][:]
 
 
+def _get_example_colorlist(n=256):
+    """
+    Return an example color list.
+
+    Return an example color list with n values. Each colors is given as 4 integers in range 0 - 255, representing the four RGBA channels. This is a toy map that manipulates colors in RGB space, which is not a good idea and will not produce perceptually linear colors. You may want to look into other color spaces to create your own map.
+
+    Parameters
+    ----------
+    int
+        The number of colors you want.
+
+    Returns
+    -------
+    numpy array of ints, dimension (n, 4)
+        The color list.
+    """
+    cmap = np.zeros((n, 4), dtype=int)
+    cmap[:,0] = np.arange(n)
+    cmap[:,1] = np.flip(np.arange(n))
+    cmap[:][2] = 150
+    cmap[:][3] = 255    # always full alpha
+    return cmap
+
+
 def _color_index_from_clist(scalar_in_range_zero_to_one, num_colors):
     """
     Given a scalar value between 0.0 and 1.0, return the index of the color in the color list for that value.
@@ -238,7 +262,7 @@ def _color_index_from_clist(scalar_in_range_zero_to_one, num_colors):
     if scalar_in_range_zero_to_one < min_scalar:
         return 0       # assign first color in color map
     elif scalar_in_range_zero_to_one > max_scalar:
-        return -1      # assign last color in color map
+        return num_colors - 1      # assign last color in color map
     else:
         color_list_index = int(np.floor(num_colors * ((scalar_in_range_zero_to_one - min_scalar) / (max_scalar - min_scalar))))
         if color_list_index >= num_colors:
