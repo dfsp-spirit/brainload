@@ -235,7 +235,7 @@ def _get_example_colorlist(n=256):
     """
     cmap = np.zeros((n, 4), dtype=int)
     cmap[:,0] = np.arange(n)
-    cmap[:,1] = np.flip(np.arange(n))
+    cmap[:,1] = np.arange(n)
     cmap[:][2] = 150
     cmap[:][3] = 255    # always full alpha
     return cmap
