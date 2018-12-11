@@ -295,11 +295,11 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
 
     Returns
     -------
-    vert_coords: numpy array
-        A 2D array containing 3 coordinates for each vertex. If the argument `hemi` was 'both', this includes vertices from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_vertices']` and  `meta_data['rh.num_vertices']`.
+    vert_coords: numpy array of floats
+        A 2D array containing 3 coordinates for each vertex. Dimension is (n, 3) for n vertices. If the argument `hemi` was 'both', this includes vertices from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_vertices']` and  `meta_data['rh.num_vertices']`.
 
-    faces: numpy array
-        A 2D array containing 3 vertex indices per face. Look at the respective indices in `vert_coords` to get the vertex coordinates. If the argument `hemi` was 'both', this includes faces from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_faces']` and  `meta_data['rh.num_faces']`.
+    faces: numpy array of integers
+        A 2D array containing 3 vertex indices per face. Dimension is (m, 3) for m faces. Look at the respective indices in `vert_coords` to get the vertex coordinates. If the argument `hemi` was 'both', this includes faces from several meshes. You can check the `meta_data` return values to get the border between meshes, see `meta_data['lh.num_faces']` and  `meta_data['rh.num_faces']`.
 
     meta_data: dictionary
         Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
