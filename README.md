@@ -14,7 +14,22 @@ Python module to reduce your brain load while accessing FreeSurfer brain surface
 
 ## Development stage
 
-This is now (October 24, 2018) in alpha stage and ready for usage. The API is not 100% stable yet though, so be prepared for changes in the future.
+This is now (December 10, 2018) in alpha stage and ready for usage. The API is not 100% stable yet, be prepared for minor changes in the future.
+
+
+## Features
+
+* Load FreeSurfer meshes (like `lh.white`, `lh.pial`) and/or morphometry data (like `lh.area` or `lh.thickness`) for a single subject or groups of subjects
+* Determine which subjects to load for a study directory full of subjects (FreeSurfer SUBJECTS_DIR) based on one of the following:
+  - A **subjects file** or demographics file in text format as commonly used in neuroimaging (can be just a list of subjects directories or a CSV file that includes other data for each subject in additional rows)
+  - A **custom list of subject names** (you can get this by whatever means necessary, e.g., from a database query, the internet or whatever)
+  - **Auto-detect** all valid FreeSurfer subject directories within the SUBJECTS_DIR
+* Uses knowledge on the standard FreeSurfer directory structure, file names and file extensions so you do not have to specify the full path to files (e.g., it knows that the pial surface for a subject is stored in subject/surf/lh.pial and subject/surf/rh.pial for the two hemispheres). If you prefer to specify everything manually, that is also possible of course.
+* Support for loading annotations (brain atlases) and labels (surface patches).
+* Support for loading statistical information from FreeSurfer stats files (e.g., total brain volume, average thickness, total surface area for subjects).
+* Can export brain meshes to standard 3D modeling software formats (e.g. OBJ and PLY formats, for advanced visualization). With matplotlib installed, you can even export vertex-colored meshes using any matplotlib colormap.
+* Good documentation
+* A suite of unit tests with high test coverage
 
 
 ## Interface Examples
@@ -60,7 +75,8 @@ print group_meta_data['subject1']['hemi']                           # will print
 
 Whatever function you used, you can now use the data for statistical analysis in python, e.g., using Pandas, Statsmodels, or whatever you prefer. You could also load the mesh into PyMesh and mess with it.
 
-## Full Documentation
+
+## Full Documentation (API, examples)
 
 Brainload is fully documented. The full API documentation and some workflow examples can be found here:
 - [Brainload documentation for the latest release](http://dfsp-spirit.github.io/brainload)

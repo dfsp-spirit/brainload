@@ -1,6 +1,10 @@
 Brainload Changes
 =================
 
+Version 0.3.2
+--------------
+- Added support for exporting meshes to formats used by standard 3D modeling software like Blender in formats OBJ (Wavefront object) and Stanford PLY.
+
 
 Version 0.3.1
 --------------
