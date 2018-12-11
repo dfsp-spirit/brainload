@@ -270,7 +270,7 @@ def test_obj_verts_empty():
 def test_obj_faces():
     faces = np.array([[0, 1, 2], [2, 3, 4], [4, 5, 6]])
     face_rep = me._obj_faces(faces)
-    expected = "f 0 1 2\nf 2 3 4\nf 4 5 6\n"
+    expected = "f 1 2 3\nf 3 4 5\nf 5 6 7\n"
     assert face_rep == expected
 
 
@@ -289,8 +289,8 @@ def test_mesh_to_obj():
 v 1.500000 1.500000 1.500000
 v 2.500000 2.500000 2.500000
 v 3.500000 3.500000 3.500000
-f 0 1 2
-f 2 3 4
-f 4 5 6
+f 1 2 3
+f 3 4 5
+f 5 6 7
 """
     assert obj == expected

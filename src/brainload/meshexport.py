@@ -69,7 +69,7 @@ def _obj_faces(faces):
     """
     if faces.shape[0] == 0:
         return ''
-    face_reps = ["f %d %d %d" % (f[0], f[1], f[2]) for f in faces]                    # the 3 vertex indices defining the face
+    face_reps = ["f %d %d %d" % (f[0]+1, f[1]+1, f[2]+1) for f in faces]                    # the 3 vertex indices defining the face, starting at 1
     return '\n'.join(face_reps) + '\n'
 
 
