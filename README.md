@@ -24,12 +24,13 @@ This is now (December 10, 2018) in alpha stage and ready for usage. The API is n
   - A **subjects file** or demographics file in text format as commonly used in neuroimaging (can be just a list of subjects directories or a CSV file that includes other data for each subject in additional rows)
   - A **custom list of subject names** (you can get this by whatever means necessary, e.g., from a database query, the internet or whatever)
   - **Auto-detect** all valid FreeSurfer subject directories within the SUBJECTS_DIR
-* Uses knowledge on the standard FreeSurfer directory structure, file names and file extensions so you do not have to specify the full path to files (e.g., it knows that the pial surface for a subject is stored in subject/surf/lh.pial and subject/surf/rh.pial for the two hemispheres). If you prefer to specify everything manually, that is also possible of course.
-* Support for loading annotations (brain atlases) and labels (surface patches).
-* Support for loading statistical information from FreeSurfer stats files (e.g., total brain volume, average thickness, total surface area for subjects).
+* Uses knowledge on the standard FreeSurfer directory structure, file names and file extensions so you do not have to specify the full path to files (e.g., it knows that the pial surface for a subject is stored in `subject/surf/lh.pial` and `subject/surf/rh.pial` for the two hemispheres). If you prefer to specify everything manually, that is also possible of course.
+* Support for loading annotations (brain atlases, e.g., `lh.aparc.annot`) and labels (surface patches, e.g., `lh.cortex.label`).
+* Support for loading statistical information from FreeSurfer stats files (e.g., total brain volume, average thickness, total surface area for subjects from `aseg.stats` or atlas-specific information from files like `lh.aparc.stats`).
 * Can export brain meshes to standard 3D modeling software formats (e.g. OBJ and PLY formats, for advanced visualization). With matplotlib installed, you can even export vertex-colored meshes using any matplotlib colormap.
 * Good documentation
 * A suite of unit tests with high test coverage
+* Very permissive license
 
 
 ## Interface Examples
