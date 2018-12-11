@@ -32,7 +32,7 @@ def stat(file_name):
             - 'measures': string list of dimension (n, m) if there are n measures with m properties each stored in the stats file.
             - 'table_data': string list of dimension (i, j) when there are i lines containing j values each in the table stored in the stats file. You may want to convert the columns to the proper data types and put the result into several numpy arrays or a single Pandas data frame.
             - 'table_column_headers': string list. The names for the columns for the table_data. This information is parsed from the table_meta_data and given here for convenience.
-            - 'table_meta_data': dictionary. The full table_meta_data. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key 'column_info_', which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
+            - 'table_meta_data': dictionary. The full table_meta_data. Stores properties in key, value sub dictionaries. For simple table properties, the dictionaries are keys of the returned dictionary. The only exception is the information on the table columns (header data). This information can be found under the key `column_info_`, which contains one dictionary for each column. In these dictionaries, data is stored as explained for simple table properties.
 
     Examples
     --------

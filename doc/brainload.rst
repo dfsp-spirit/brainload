@@ -42,3 +42,11 @@ brainload.spatial module
     :members:
     :undoc-members:
     :show-inheritance:
+
+brainload.meshexport module
+---------------------------
+
+.. automodule:: brainload.meshexport
+    :members:
+    :undoc-members:
+    :show-inheritance:

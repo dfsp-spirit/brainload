@@ -12,7 +12,7 @@ def mesh_to_obj(vertex_coords, faces):
     """
     Write an OBJ format string of a mesh.
 
-    Write an OBJ PLY format string of a mesh. The format is the Wavefront object format, see https://en.wikipedia.org/wiki/Wavefront_.obj_file for details. This exporter only writes the geometry, vertex colors are not a standard OBJ feature and are not included. Use mesh_to_ply to get vertex colors.
+    Write an OBJ PLY format string of a mesh. The format is the Wavefront object format, see `https://en.wikipedia.org/wiki/Wavefront_.obj_file` for details. This exporter only writes the geometry, vertex colors are not a standard OBJ feature and are not included. Use mesh_to_ply to get vertex colors.
 
     Parameters
     ----------
