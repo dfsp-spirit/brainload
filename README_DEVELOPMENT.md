@@ -205,10 +205,10 @@ $ source env_for_v2/bin/activate              # activate it
 $ pip install nibabel six        # these are not on test.pypi.org
 $ pip install --index-url https://test.pypi.org/simple/ brainload     # install it.
 #now try the example client. e.g.:
+$ python -c 'import brainload as bl; print(bl.__version__)'
+0.2.0
 $ python
 >>> import brainload as bl
->>> print bl.__version__
-0.2.0
 >>> # do more stuff
 >>> quit()
 $ deactivate
@@ -286,15 +286,15 @@ Create a new dir for the release, copy the old `meta.yaml` file in there. Create
 ```console
 # we are still in REPO_ROOT/develop/anaconda_dist/recipe/
 mkdir ${NEW_RELEASE}
-cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the last release
+cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the **last** release
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
-CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
+CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi tmp_brainload --version ${NEW_VERSION}
 ```
 
-This created a new skeleton file at  `REPO_ROOT/develop/anaconda_dist/recipe/brainload/meta.yaml`. Copy the hash from there.
+This created a new skeleton file at  `REPO_ROOT/develop/anaconda_dist/recipe/tmp_brainload/meta.yaml`. Open the file in a text editor and copy the file hash of the pypi release from there (see the sha256 line). This is the only reason why we need the file.
 
 ```console
-vim ${NEW_RELEASE}/meta.yaml         # Update the version AND the hash in here. Save and you have a new recipe.
+vim ${NEW_RELEASE}/meta.yaml         # Update the version at the top AND paste the hash in here. Save and you have a new recipe.
 ```
 
 
@@ -304,33 +304,41 @@ vim ${NEW_RELEASE}/meta.yaml         # Update the version AND the hash in here. 
 CONDA_BLD_PATH=/tmp/condaishacky conda-build ${NEW_RELEASE}                        # may take a while... will output the full path to the file in the end. You will need this soon.
 ```
 
+Let's export the filename (not the full path) of the resulting package to an environment variable as we will need it a few times below. The file name can be found in the output of the last command (conda-build). The full path should be something like `/tmp/condaishacky/some_name_and_version_here.tar.bz2`, so we will do something like this:
+
+export PKG_FILENAME="some_name_and_version_here.tar.bz2"
+
 Since brainload is a pure python package, we can easily convert it for other platforms:
 
-
-```
-$ conda convert --platform all  full/path/to/package.tar.bz2 -o pkg_converted/
+```console
+$ conda convert --platform all /tmp/condaishacky/$PKG_FILENAME -o pkg_converted/
 ```
 
 When the build and conversion are done, upload the first package:
 
-```console          
-anaconda upload full/path/to/package.tar.bz2         # will ask for your condacloud credentials
+```console
+anaconda upload /tmp/condaishacky/$PKG_FILENAME         # may ask for your condacloud credentials for brainload
 ```
 
-Now, you can upload all converted ones, just export the file name first.
+Now, you can upload all converted packages:
 
-```
-export PKG_FILENAME="some_name_and_version_here.tar.bz2"
+```console
 for ARCH in linux-32 linux-64 linux-ppc64le linux-armv6l linux-armv7l linux-aarch64 osx-64 win-32 win-64; do anaconda upload pkg_converted/${ARCH}/${PKG_FILENAME}; done
 conda deactivate        # leave the blbuild2 environment
 ```
-Note that you will have to repeat all steps listed above again for Python 3 in a new conda environment with Python 3 installed. So start with:
+
+Finally, add the conda recipe to the repo and delete the temporary directories:
 
 ```console
-conda create -y --name blbuild3 python=3.6  
+git add ${NEW_RELEASE}
+git commit -m "Added conda recipe for release ${NEW_RELEASE}."
+rm -rf pkg_converted/ tmp_brainload/ /tmp/condaishacky
 ```
 
-##### Anaconda: How the recipe was created
+The conda package release is done, remember to create a new release on GitHub (see below).
+
+
+##### Anaconda: How the base recipe was created
 
 You do not have to do this again, but still here is how I created the `meta.yaml` file that can be found in `develop/anaconda_dist/recipe`.
 
@@ -363,7 +371,9 @@ Save the file `meta.yaml`, and you should have a working recipe.
 
 ### Release on GitHub
 
-Create a new release from the tag on Github and upload the source and binary distributions created for PyPI. They are in `REPO_ROOT/dist/`.
+Create a new release (from the tag we pushed earlier) on Github and attach the source and binary distributions created for PyPI. They are in `REPO_ROOT/dist/`.
+
+This should be pretty self-explanatory, check the GitHub documentation if you need help.
 
 ## Python 3
 
