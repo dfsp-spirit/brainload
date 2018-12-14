@@ -316,3 +316,28 @@ def test_measures_to_numpy():
     assert numpy_measures.shape[0] == len(stats['measures'])
     assert measure_names[0] == ('BrainSeg', 'BrainSegVol')
     assert numpy_measures[0] == pytest.approx(1243340.0, 0.01)
+    assert np.dtype(numpy_measures[0]) == np.float_
+
+
+def test_measures_to_numpy_with_custom_dtype():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
+    stats = bl.stat(stats_file)
+    numpy_measures, measure_names = st.measures_to_numpy(stats['measures'], dtype=np.float32)
+    assert numpy_measures.shape == (22, )
+    assert numpy_measures.shape[0] == len(stats['measures'])
+    assert measure_names[0] == ('BrainSeg', 'BrainSegVol')
+    assert numpy_measures[0] == pytest.approx(1243340.0, 0.01)
+    assert np.dtype(numpy_measures[0]) == np.float32
+
+
+def test_measures_to_numpy_subset():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
+    stats = bl.stat(stats_file)
+    requested_measures = [('BrainSeg', 'BrainSegVol'), ('SurfaceHoles', 'SurfaceHoles')]
+    numpy_measures, measure_names = st.measures_to_numpy(stats['measures'], requested_measures=requested_measures)
+    assert numpy_measures.shape == (2, )
+    assert numpy_measures.shape[0] == len(requested_measures)
+    assert measure_names[0] == ('BrainSeg', 'BrainSegVol')
+    assert measure_names[1] == ('SurfaceHoles', 'SurfaceHoles')
+    assert numpy_measures[0] == pytest.approx(1243340.0, 0.01)
+    assert numpy_measures[1] == pytest.approx(29, 0.01)
