@@ -265,6 +265,47 @@ def typelist_for_aparc_atlas_stats():
     return [s, i, i, i, f, f, f, f, i, f]
 
 
+def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
+    """
+    Convert the measures list of lists to a 2D numpy array of the given type.
+
+    Convert the measures list of lists to a 2D numpy array of the given type. If only some of the measures are compatible with the type, you can give the names of all requested measures as a dictionary.
+
+    Parameters
+    ----------
+    measures: list of str lists
+        measures as returned by the stat() function: each element of the outer list represents a row in a stats file, and the inner string list contains the tokens of the line
+
+    requested_measures: list of string 2-tuples, optional
+        If given, only the measures listed in here are used. Each measure is identified by 2 strings, which must match the first and second token on the measure line. For a line like '# Measure Cortex, NumVert, Number of Vertices, 140843, unitless', the 2 strings of a tuple would be 'Cortex' and 'NumVert'. If omitted, all measures will be used.
+
+    dtype: numpy data type, optional
+        The data type that should be used for the returned numpy array. Defaults to ```np.float_``` if omitted.
+
+    Returns
+    -------
+    measures_data: numpy array
+        The measure values, with the requested data type. The shape is (n, ) for n (requested) measures. The order is as given in the parameter measures. (If requested_measures is set, only those are included.)
+
+    measure_names: list of string 2-tuples
+        The names of the measures (same order as the data). The order is guaranteed to be identical to the order of measures in the input argument. (If requested_measures is set, only those are included.)
+    """
+    measure_values = []
+    measure_names = []
+    for line_tokens in measures:
+        measure_unique_tuple = (line_tokens[0], line_tokens[1])
+        measure_value = line_tokens[3]
+        if requested_measures is not None:
+            if measure_unique_tuple in requested_measures:
+                measure_values.append(measure_value)
+                measure_names.append(measure_unique_tuple)
+        else:
+            measure_values.append(measure_value)
+            measure_names.append(measure_unique_tuple)
+    np_measures = np.array(measure_values, dtype=dtype)
+    return np_measures, measure_names
+
+
 def stats_table_to_numpy(stat, type_list):
     """
     Given types, convert the string matrix to a dictionary of numpy arrays.

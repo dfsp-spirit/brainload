@@ -306,3 +306,13 @@ def test_stats_table_to_numpy_raises_on_invalied_type_count():
         numpy_data = st.stats_table_to_numpy(stats, types)
     assert 'Length of type_list' in str(exc_info.value)
     assert 'must match number of' in str(exc_info.value)
+
+
+def test_measures_to_numpy():
+    stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
+    stats = bl.stat(stats_file)
+    numpy_measures, measure_names = st.measures_to_numpy(stats['measures'])
+    assert numpy_measures.shape == (22, )
+    assert numpy_measures.shape[0] == len(stats['measures'])
+    assert measure_names[0] == ('BrainSeg', 'BrainSegVol')
+    assert numpy_measures[0] == pytest.approx(1243340.0, 0.01)
