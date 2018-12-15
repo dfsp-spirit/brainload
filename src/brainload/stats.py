@@ -336,3 +336,17 @@ def stats_table_to_numpy(stat, type_list):
         numpy_typed_array_column = numpy_string_array_column.astype(type_list[column_index])
         result[column_name] = numpy_typed_array_column
     return result
+
+
+def group_stats(subjects_list, subjects_dir, stats_file, stats_table_type_list=None):
+    """
+    Retrieve stats for a list of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like aseg.stats). This function does not care about hemispheres.
+    """
+    for subject in subjects_list:
+        stats_file = os.path.join(subjects_dir, subject, 'stats', stats_file)
+        stats = st.stat(stats_file)
+        numpy_measures, measure_names = measures_to_numpy(stats['measures'])
+        if stats_table_type_list is not None:
+            table_data = stats_table_to_numpy(stats, stats_table_type_list)
+        else:
+            table_data = None
