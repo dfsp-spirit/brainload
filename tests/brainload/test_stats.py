@@ -429,3 +429,9 @@ def test_group_stats_measures_and_table_asegstats():
     assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
     assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
     assert all_subjects_table_data_dict is not None
+    assert len(all_subjects_table_data_dict) == 10
+    expected_table_column_names_aseg = ['Index', 'SegId', 'NVoxels', 'Volume_mm3', 'StructName', 'normMean', 'normStdDev', 'normMin', 'normMax', 'normRange']
+    for name in expected_table_column_names_aseg:
+        assert name in all_subjects_table_data_dict
+        column_data = all_subjects_table_data_dict[name]
+        assert column_data.shape == (2, )
