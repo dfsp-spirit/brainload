@@ -358,6 +358,27 @@ def _stats_measures_to_dict(numpy_measures, measure_name_tuples):
 
 
 def _append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples):
+    """
+    Append the new measures to measures_dict.
+
+    Append the new measures to measures_dict. The new measure values are given by numpy_measures, and their names by measure_name_tuples.
+
+    Parameters
+    ----------
+    measures_dict: dictionary string: numpy array
+        The existing data, the new data will be appended to this.
+
+    numpy_measures: np array
+        The new measure values.
+
+    measure_name_tuples: list of str 2-tuples
+        The measure names (the 2 tokens identifying a measure in the stats file)
+
+    Returns
+    -------
+    dictionary string: numpy array
+        The merged data
+    """
     num_measures = numpy_measures.shape[0]
     num_names = len(measure_name_tuples)
     if num_measures != num_names:

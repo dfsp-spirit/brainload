@@ -383,6 +383,7 @@ def test_stats_table_dict_alldata_empty():
     merged = st._stats_table_dict(None, new_subject_data)
     assert merged == new_subject_data
 
+
 def test_stats_table_dict_alldata_contains_data_already():
     existing_all_subjects_data = {'NVoxels': np.array([12345, 44444])}
     new_subject_data = {'NVoxels': np.array([65535])}
@@ -390,6 +391,27 @@ def test_stats_table_dict_alldata_contains_data_already():
     assert len(merged) == 1
     assert 'NVoxels' in merged
     assert np.array_equal(np.array([12345, 44444, 65535]), merged['NVoxels'])
+
+
+def test_append_stats_measures_to_dict():
+    measures_dict = { 'BrainSeg,BrainSegVol': np.array([34234.1, 55555.5]), 'BrainSegNotVent,BrainSegVolNotVent': np.array([343.3, 2355.6]) }
+    numpy_measures = np.array([44.4, 66.6])
+    measure_name_tuples = [('BrainSeg', 'BrainSegVol'), ('BrainSegNotVent', 'BrainSegVolNotVent')]
+    result_measures_dict = st._append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples)
+    assert len(result_measures_dict) == 2
+    assert 'BrainSeg,BrainSegVol' in result_measures_dict
+    assert 'BrainSegNotVent,BrainSegVolNotVent' in result_measures_dict
+    assert len(result_measures_dict['BrainSeg,BrainSegVol']) == 3
+    assert len(result_measures_dict['BrainSegNotVent,BrainSegVolNotVent']) == 3
+
+
+def test_append_stats_measures_to_dict_raises_on_unmachted_lengths():
+    measures_dict = { 'BrainSeg,BrainSegVol': np.array([34234.1, 55555.5]), 'BrainSegNotVent,BrainSegVolNotVent': np.array([343.3, 2355.6]) }
+    numpy_measures = np.array([44.4, 66.6, 77.7])  # 3 values....
+    measure_name_tuples = [('BrainSeg', 'BrainSegVol'), ('BrainSegNotVent', 'BrainSegVolNotVent')]    # ... but only 2 names for them.
+    with pytest.raises(ValueError) as exc_info:
+        result_measures_dict = st._append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples)
+    assert 'Length mismatch: expected same number of measures and names' in str(exc_info.value)
 
 
 def test_group_stats_measures_and_table_asegstats():
