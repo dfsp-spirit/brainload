@@ -11,6 +11,7 @@ Notes
 """
 
 import warnings
+import os
 import numpy as np
 
 def stat(file_name):
@@ -70,6 +71,8 @@ def stat(file_name):
 
     Note that all data is returned as string type, you will need to covert it to float (or whatever) yourself.
     """
+    if not os.path.isfile(file_name):
+        raise ValueError("Cannot read stats file '%s'." % file_name)
     with open(file_name) as fh:
         lines = [line.rstrip('\n') for line in fh]
     return _parse_stats_lines(lines)
@@ -284,7 +287,7 @@ def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
 
     Returns
     -------
-    measures_data: numpy array
+    measures_data: numpy 1D array
         The measure values, with the requested data type. The shape is (n, ) for n (requested) measures. The order is as given in the parameter measures. (If requested_measures is set, only those are included.)
 
     measure_names: list of string 2-tuples
@@ -322,8 +325,8 @@ def stats_table_to_numpy(stat, type_list):
 
     Returns
     -------
-    dictionary of string, numpy array
-        Each key is a column name, and each value is a numpy column array containing the typed data.
+    dictionary of string : numpy array
+        Each key is a column name, and each value is a numpy column array containing the typed data with shape (n, ) for n data rows in the table for the subject.
     """
     table = stat['table_data']
     header = stat['table_column_headers']
@@ -338,15 +341,93 @@ def stats_table_to_numpy(stat, type_list):
     return result
 
 
-def group_stats(subjects_list, subjects_dir, stats_file, stats_table_type_list=None):
+def _measure_names_from_tuples(measure_name_tuples):
+    return [name_tuple[0]+","+name_tuple[1] for name_tuple in measure_name_tuples]        # join the 2 fields with ",". E.g., turn "Cortex" and "NumVert" into a unique name "Cortex,NumVert". The comma is a good choice as it cannot appear in the strings: it is the field separator in the source file. This gives us a key name for the measure.
+
+def _stats_measures_to_dict(numpy_measures, measure_name_tuples):
+    num_measures = numpy_measures.shape[0]
+    num_names = len(measure_name_tuples)
+    if num_measures != num_names:
+        raise ValueError("Length mismatch: expected same number of measures and names, got %d and %d." % (num_measures, num_names))
+    measures_dict = {}
+    measure_names = _measure_names_from_tuples(measure_name_tuples)
+    for idx, measure_name in enumerate(measure_names):
+        print("_stats_measures_to_dict: measure_names %s value %f idx %d" % (measure_name, numpy_measures[idx], idx))
+        measures_dict[measure_name] = np.array([numpy_measures[idx]])
+    return measures_dict
+
+
+def _append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples):
+    num_measures = numpy_measures.shape[0]
+    num_names = len(measure_name_tuples)
+    if num_measures != num_names:
+        raise ValueError("Length mismatch: expected same number of measures and names, got %d and %d." % (num_measures, num_names))
+    new_measure_names = _measure_names_from_tuples(measure_name_tuples)
+    for idx, new_name in enumerate(new_measure_names):
+        if new_name in measures_dict:
+            existing_measure_data = measures_dict[new_name]
+            updated_measure_data = np.append(existing_measure_data, numpy_measures[idx])
+            measures_dict[new_name] = updated_measure_data
+        else:
+            measures_dict[new_name] = np.array([numpy_measures[idx]])
+    return measures_dict
+
+
+def _stats_measures_dict(measures_dict, numpy_measures, measure_name_tuples):
+    if measures_dict is None:
+        return _stats_measures_to_dict(numpy_measures, measure_name_tuples)
+    else:
+        return _append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples)
+
+
+def _stats_table_dict(all_subjects_table_data, table_data_dict):
+    """
+    Append the data for a single subject to the data for all subjects).
+
+    Append the data for a single subject (table_data_dict) to the data for all subjects (all_subjects_table_data). Also works if the latter is still None.
+
+    Parameters
+    ----------
+    all_subjects_table_data: dict string : numpy array (or None)
+        The data for all subjects. Each key is a column name, and each dict value is an array of data, containing one value per subject.
+
+    table_data_dict:
+        The data for a single subject. Dictionary of string (column name) to array of length 1 with value for 1 subject.
+
+    Returns
+    -------
+    The merged data for all subjects, including the new data from table_data_dict.
+    """
+    if all_subjects_table_data is None:
+        return table_data_dict
+    else:
+        for key in table_data_dict:
+            new_data = table_data_dict[key]   # a column array
+            if key in all_subjects_table_data:
+                existing_data = all_subjects_table_data[key]
+                updated_data = np.append(existing_data, new_data)
+                all_subjects_table_data[key] = updated_data
+            else:
+                all_subjects_table_data[key] = existing_data
+    return all_subjects_table_data
+
+
+def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_list=None):
     """
     Retrieve stats for a list of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like aseg.stats). This function does not care about hemispheres.
     """
+    all_subjects_measures_dict = None
+    all_subjects_table_data_dict = None
     for subject in subjects_list:
-        stats_file = os.path.join(subjects_dir, subject, 'stats', stats_file)
-        stats = st.stat(stats_file)
-        numpy_measures, measure_names = measures_to_numpy(stats['measures'])
+        stats_file = os.path.join(subjects_dir, subject, 'stats', stats_file_name)
+        stats = stat(stats_file)
+        print("Subject %s, reading file: %s" % (subject, stats_file))
+        # Handle measures
+        numpy_measures, measure_name_tuples = measures_to_numpy(stats['measures'])
+        all_subjects_measures_dict = _stats_measures_dict(all_subjects_measures_dict, numpy_measures, measure_name_tuples)
+
+        # Handle table data if possible (i.e., if stats_table_type_list was given)
         if stats_table_type_list is not None:
             table_data = stats_table_to_numpy(stats, stats_table_type_list)
-        else:
-            table_data = None
+            all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data)
+    return all_subjects_measures_dict, all_subjects_table_data_dict

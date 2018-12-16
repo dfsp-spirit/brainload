@@ -341,3 +341,65 @@ def test_measures_to_numpy_subset():
     assert measure_names[1] == ('SurfaceHoles', 'SurfaceHoles')
     assert numpy_measures[0] == pytest.approx(1243340.0, 0.01)
     assert numpy_measures[1] == pytest.approx(29, 0.01)
+
+
+def test_measure_names_from_tuples():
+    measure_name_tuples = [('Cortex', 'NumVerts'), ('Cortex', 'NumFaces')]
+    names = st._measure_names_from_tuples(measure_name_tuples)
+    assert names == ['Cortex,NumVerts', 'Cortex,NumFaces']
+
+
+def test_stats_measures_to_dict():
+    numpy_measures = np.array([0.74, 0.34])
+    numpy_measures = np.transpose(numpy_measures)
+    assert numpy_measures.shape == (2, )
+    measure_name_tuples = [('Cortex', 'NumVerts'), ('Cortex', 'NumFaces')]
+    measures_dict = st._stats_measures_to_dict(numpy_measures, measure_name_tuples)
+    assert len(measures_dict) == 2
+    assert 'Cortex,NumVerts' in measures_dict
+    assert 'Cortex,NumFaces' in measures_dict
+    num_verts = measures_dict['Cortex,NumVerts']
+    num_faces = measures_dict['Cortex,NumFaces']
+    assert num_verts.shape == (1, )
+    assert num_faces.shape == (1, )
+    assert num_verts[0] == pytest.approx(0.74, 0.01)
+    assert num_faces[0] == pytest.approx(0.34, 0.01)
+
+
+def test_group_stats_measures_only_asegstats():
+    subjects_list = ['subject1', 'subject2']
+    all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats(subjects_list, TEST_DATA_DIR, 'aseg.stats')
+    assert all_subjects_table_data_dict is None
+    assert len(all_subjects_measures_dict) == 22
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+
+
+def test_stats_table_dict_alldata_empty():
+    new_subject_data = {'NVoxels': np.array([65535])}
+    merged = st._stats_table_dict(None, new_subject_data)
+    assert merged == new_subject_data
+
+def test_stats_table_dict_alldata_contains_data_already():
+    existing_all_subjects_data = {'NVoxels': np.array([12345, 44444])}
+    new_subject_data = {'NVoxels': np.array([65535])}
+    merged = st._stats_table_dict(existing_all_subjects_data, new_subject_data)
+    assert len(merged) == 1
+    assert 'NVoxels' in merged
+    assert np.array_equal(np.array([12345, 44444, 65535]), merged['NVoxels'])
+
+
+def test_group_stats_measures_and_table_asegstats():
+    subjects_list = ['subject1', 'subject2']
+    stats_table_type_list = st.typelist_for_aseg_stats()
+    all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats(subjects_list, TEST_DATA_DIR, 'aseg.stats', stats_table_type_list=stats_table_type_list)
+    assert len(all_subjects_measures_dict) == 22
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+    assert all_subjects_table_data_dict is not None
