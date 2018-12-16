@@ -386,23 +386,27 @@ def test_stats_table_dict_alldata_empty():
 
 def test_stats_table_dict_alldata_contains_data_already():
     existing_all_subjects_data = {'NVoxels': np.array([12345, 44444])}
-    new_subject_data = {'NVoxels': np.array([65535])}
+    new_subject_data = {'NVoxels': np.array([65535]), 'NewStat': np.array([1111])}
     merged = st._stats_table_dict(existing_all_subjects_data, new_subject_data)
-    assert len(merged) == 1
+    assert len(merged) == 2
     assert 'NVoxels' in merged
+    assert 'NewStat' in merged
     assert np.array_equal(np.array([12345, 44444, 65535]), merged['NVoxels'])
+    assert np.array_equal(np.array([1111]), merged['NewStat'])
 
 
 def test_append_stats_measures_to_dict():
     measures_dict = { 'BrainSeg,BrainSegVol': np.array([34234.1, 55555.5]), 'BrainSegNotVent,BrainSegVolNotVent': np.array([343.3, 2355.6]) }
-    numpy_measures = np.array([44.4, 66.6])
-    measure_name_tuples = [('BrainSeg', 'BrainSegVol'), ('BrainSegNotVent', 'BrainSegVolNotVent')]
+    numpy_measures = np.array([44.4, 66.6, 77.7])
+    measure_name_tuples = [('BrainSeg', 'BrainSegVol'), ('BrainSegNotVent', 'BrainSegVolNotVent'), ('New', 'Measure')]
     result_measures_dict = st._append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples)
-    assert len(result_measures_dict) == 2
+    assert len(result_measures_dict) == 3
     assert 'BrainSeg,BrainSegVol' in result_measures_dict
     assert 'BrainSegNotVent,BrainSegVolNotVent' in result_measures_dict
+    assert 'New,Measure' in result_measures_dict
     assert len(result_measures_dict['BrainSeg,BrainSegVol']) == 3
     assert len(result_measures_dict['BrainSegNotVent,BrainSegVolNotVent']) == 3
+    assert len(result_measures_dict['New,Measure']) == 1
 
 
 def test_append_stats_measures_to_dict_raises_on_unmachted_lengths():

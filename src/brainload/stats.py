@@ -429,7 +429,7 @@ def _stats_table_dict(all_subjects_table_data, table_data_dict):
                 updated_data = np.append(existing_data, new_data)
                 all_subjects_table_data[key] = updated_data
             else:
-                all_subjects_table_data[key] = existing_data
+                all_subjects_table_data[key] = new_data
     return all_subjects_table_data
 
 
