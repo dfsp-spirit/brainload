@@ -71,8 +71,6 @@ def stat(file_name):
 
     Note that all data is returned as string type, you will need to covert it to float (or whatever) yourself.
     """
-    if not os.path.isfile(file_name):
-        raise ValueError("Cannot read stats file '%s'." % file_name)
     with open(file_name) as fh:
         lines = [line.rstrip('\n') for line in fh]
     return _parse_stats_lines(lines)
