@@ -441,7 +441,36 @@ def _make_dict_arrays_2D(data_dict):
 
 def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_list=None):
     """
-    Retrieve stats for a list of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like aseg.stats). This function does not care about hemispheres.
+    Retrieve stats for a group of subjects.
+
+    Retrieve stats for a group of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like aseg.stats). This function does not care about hemispheres.
+
+    Parameters
+    ----------
+    subjects_list: list of str
+        List of subject identifiers (subjects in the subjects_dir).
+
+    subjects_dir: str
+        Subjects directory, as defined by the environment variable SUBJECTS_DIR for FreeSurfer.
+
+    stats_file_name: str
+        File name of the subjects file including file extension, relative to a subject's ```stats``` directory. Example: 'aseg.stats'.
+
+    stats_table_type_list: list of numpy types, optional.
+        A list defining the data types for the columns in the table contained in stats files. See the functions typelist_for_aseg_stats and typelist_for_aparc_atlas_stats for examples. If omitted, the table data will be returned as None. The measures data is unaffected.
+
+    Returns
+    -------
+    all_subjects_measures_dict: dict of string to numpy 1D array.
+        The data from the measure rows in the files. Each key in the dictionary is the name of a measure, and the value is the data for all subjects in a numpy float array. The array shape is (n, ) for n subjects.
+
+    all_subjects_table_data_dict: dict of string to numpy 2D array
+        The data for all table columns in the files. Each key in the dictionary is the name of a column in the stats table, and the value is the data for all rows for all subjects in a numpy 2D float array. The array shape is (n, m) for n subjects and a table with m rows.
+
+    See also
+    --------
+    typelist_for_aseg_stats: pre-defined list of numpy data types for the files aseg.stats, can be used to pass stats_table_type_list
+    typelist_for_aparc_atlas_stats: pre-defined list of numpy data types for the files lh.aparc.stats and rh.aparc.stats, can be used to pass stats_table_type_list
     """
     all_subjects_measures_dict = None
     all_subjects_table_data_dict = None
@@ -458,3 +487,25 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
             table_data = stats_table_to_numpy(stats, stats_table_type_list)
             all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data)
     return all_subjects_measures_dict, all_subjects_table_data_dict
+
+
+def group_stats_aseg(subjects_list, subjects_dir):
+    return group_stats(subjects_list, subjects_dir, 'aseg.stats', stats_table_type_list=typelist_for_aseg_stats())
+
+
+def group_stats_aparc(subjects_list, subjects_dir, hemi):
+    if hemi not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh'} but is '%s'." % hemi)
+    return group_stats(subjects_list, subjects_dir, '%s.aparc.stats' % hemi, stats_table_type_list=typelist_for_aparc_atlas_stats())
+
+
+def group_stats_aparc_a2009s(subjects_list, subjects_dir, hemi):
+    if hemi not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh'} but is '%s'." % hemi)
+    return group_stats(subjects_list, subjects_dir, '%s.aparc.a2009s.stats' % hemi, stats_table_type_list=typelist_for_aparc_atlas_stats())
+
+
+def group_stats_aparc_DKTatlas(subjects_list, subjects_dir, hemi):
+    if hemi not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh'} but is '%s'." % hemi)
+    return group_stats(subjects_list, subjects_dir, '%s.aparc.DKTatlas.stats' % hemi, stats_table_type_list=typelist_for_aparc_atlas_stats())

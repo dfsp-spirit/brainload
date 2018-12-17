@@ -441,3 +441,48 @@ def test_group_stats_measures_and_table_asegstats():
         assert name in all_subjects_table_data_dict
         column_data = all_subjects_table_data_dict[name]
         assert column_data.shape == (2, 45)  # 2 subjects, each has a table in aseg.stats with 45 rows
+
+
+def test_group_stats_aseg():
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'aseg.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
+    assert len(all_subjects_measures_dict) == 22
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+    assert all_subjects_table_data_dict is not None
+    assert len(all_subjects_table_data_dict) == 10
+    expected_table_column_names_aseg = ['Index', 'SegId', 'NVoxels', 'Volume_mm3', 'StructName', 'normMean', 'normStdDev', 'normMin', 'normMax', 'normRange']
+    for name in expected_table_column_names_aseg:
+        assert name in all_subjects_table_data_dict
+        column_data = all_subjects_table_data_dict[name]
+        assert column_data.shape == (2, 45)  # 2 subjects, each has a table in aseg.stats with 45 rows
+
+
+def test_group_stats_aparc_raises_on_invalid_hemi():
+    subjects_list = ['subject1', 'subject2']
+    with pytest.raises(ValueError) as exc_info:
+        all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats_aparc(subjects_list, TEST_DATA_DIR, 'invalid_hemi')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemi' in str(exc_info.value)
+
+
+def test_group_stats_aparc_a2009s_raises_on_invalid_hemi():
+    subjects_list = ['subject1', 'subject2']
+    with pytest.raises(ValueError) as exc_info:
+        all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats_aparc_a2009s(subjects_list, TEST_DATA_DIR, 'invalid_hemi')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemi' in str(exc_info.value)
+
+
+def test_group_stats_aparc_DKTatlas_raises_on_invalid_hemi():
+    subjects_list = ['subject1', 'subject2']
+    with pytest.raises(ValueError) as exc_info:
+        all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats_aparc_DKTatlas(subjects_list, TEST_DATA_DIR, 'invalid_hemi')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemi' in str(exc_info.value)
