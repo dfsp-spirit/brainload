@@ -408,27 +408,35 @@ def _stats_table_dict(all_subjects_table_data, table_data_dict):
     Parameters
     ----------
     all_subjects_table_data: dict string : numpy array (or None)
-        The data for all subjects. Each key is a column name, and each dict value is an array of data, containing one value per subject.
+        The data for all subjects. Each key is a column name, and each dict value is a 2D array of data, containing n values per subject. So the shape is (m, n) for m subjects with n values each. The number of values, n, s the number of values (rows) in the stats file table for the column identified by the dictionary key.
 
     table_data_dict:
-        The data for a single subject. Dictionary of string (column name) to array of length 1 with value for 1 subject.
+        The data for a single subject. Dictionary of string (column name) to array with n values for 1 subject, so the shape is (1, n).
 
     Returns
     -------
-    The merged data for all subjects, including the new data from table_data_dict.
+    The merged data for all subjects, including the new data from table_data_dict. All the arrays are 2D arrays.
     """
     if all_subjects_table_data is None:
-        return table_data_dict
+        return _make_dict_arrays_2D(table_data_dict)
     else:
         for key in table_data_dict:
             new_data = table_data_dict[key]   # a column array
             if key in all_subjects_table_data:
                 existing_data = all_subjects_table_data[key]
-                updated_data = np.append(existing_data, new_data)
+                updated_data = np.vstack((existing_data, new_data))
                 all_subjects_table_data[key] = updated_data
             else:
                 all_subjects_table_data[key] = new_data
     return all_subjects_table_data
+
+
+def _make_dict_arrays_2D(data_dict):
+    for key in data_dict:
+        existing_data = data_dict[key]
+        new_data = np.array([existing_data])
+        data_dict[key] = new_data
+    return data_dict
 
 
 def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_list=None):

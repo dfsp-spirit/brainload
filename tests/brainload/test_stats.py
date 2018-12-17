@@ -373,14 +373,14 @@ def test_stats_table_dict_alldata_empty():
 
 
 def test_stats_table_dict_alldata_contains_data_already():
-    existing_all_subjects_data = {'NVoxels': np.array([12345, 44444])}
-    new_subject_data = {'NVoxels': np.array([65535]), 'NewStat': np.array([1111])}
+    existing_all_subjects_data = {'NVoxels': np.array([[1111, 2222], [3333, 4444]])} # data for 2 subjects, originating from 2 rows in the tables each (i.e., the table has only 2 rows.)
+    new_subject_data = {'NVoxels': np.array([65535, 33333]), 'NewStat': np.array([5555, 6666])}
     merged = st._stats_table_dict(existing_all_subjects_data, new_subject_data)
     assert len(merged) == 2
     assert 'NVoxels' in merged
     assert 'NewStat' in merged
-    assert np.array_equal(np.array([12345, 44444, 65535]), merged['NVoxels'])
-    assert np.array_equal(np.array([1111]), merged['NewStat'])
+    assert np.array_equal(np.array([[1111, 2222], [3333, 4444], [65535, 33333]]), merged['NVoxels'])
+    assert np.array_equal(np.array([5555, 6666]), merged['NewStat'])
 
 
 def test_append_stats_measures_to_dict():
@@ -440,4 +440,4 @@ def test_group_stats_measures_and_table_asegstats():
     for name in expected_table_column_names_aseg:
         assert name in all_subjects_table_data_dict
         column_data = all_subjects_table_data_dict[name]
-        #assert column_data.shape == (2, )
+        assert column_data.shape == (2, 45)  # 2 subjects, each has a table in aseg.stats with 45 rows
