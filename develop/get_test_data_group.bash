@@ -35,6 +35,9 @@ if [ -d "${BRAINLOAD_TEST_DATA_DIR}/subject1" ]; then
     echo "${APPTAG} Creating new test subjects in directory '${BRAINLOAD_TEST_DATA_DIR}' ..."
     for SUBJECT_NUMBER in {2..5}; do
         NEW_SUBJECT_ID="subject${SUBJECT_NUMBER}"
+        if [ -d "$NEW_SUBJECT_ID" ]; then
+            rm -rf "$NEW_SUBJECT_ID"
+        fi
         cp -r subject1 "${NEW_SUBJECT_ID}" && echo "${NEW_SUBJECT_ID}" >> "${SUBJECTS_FILE}" && echo "${APPTAG}  * ${NEW_SUBJECT_ID}"
     done
 
@@ -43,6 +46,9 @@ if [ -d "${BRAINLOAD_TEST_DATA_DIR}/subject1" ]; then
     mkdir ${EXTRA_SUBJECTS_DIR}
     for SUBJECT_NUMBER in {2..3}; do
         NEW_SUBJECT_ID="subject${SUBJECT_NUMBER}x"
+        if [ -d "${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}" ]; then
+            rm -rf "${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}"
+        fi
         cp -r subject1 "${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}" && echo "${APPTAG}  * ${EXTRA_SUBJECTS_DIR}/${NEW_SUBJECT_ID}"
     done
 
