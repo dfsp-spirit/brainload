@@ -509,3 +509,72 @@ def group_stats_aparc_DKTatlas(subjects_list, subjects_dir, hemi):
     if hemi not in ('lh', 'rh'):
         raise ValueError("ERROR: hemi must be one of {'lh', 'rh'} but is '%s'." % hemi)
     return group_stats(subjects_list, subjects_dir, '%s.aparc.DKTatlas.stats' % hemi, stats_table_type_list=typelist_for_aparc_atlas_stats())
+
+
+def register_dat_matrix(file_path):
+    """
+    Parse the registration matrix from the given file.
+
+    Parse the registration matrix from the given file in register.dat file format. See https://surfer.nmr.mgh.harvard.edu/fswiki/RegisterDat for the file format.
+
+    Parameters
+    ----------
+    file_path: str
+        Path to the file in register.dat format.
+
+    Returns
+    -------
+    2D numpy array of floats
+        The parsed matrix, with dimension (4, 4).
+    """
+    with open(file_path) as fh:
+        lines = [line.rstrip('\n') for line in fh]
+    return _parse_register_dat_lines(lines)
+
+
+def _parse_register_dat_lines(lines):
+    """
+    Parse all lines of the register.dat file.
+
+    Parse all lines of the register.dat file and return the parsed registration matrix. See https://surfer.nmr.mgh.harvard.edu/fswiki/RegisterDat for the file format.
+
+    Parameters
+    ----------
+    lines: list of str
+        The lines of a file in register.dat format. The file contains 8 or 9 lines.
+
+    Returns
+    -------
+    2D numpy array of floats
+        The parsed matrix, with dimension (4, 4).
+    """
+    if len(lines) == 8:     # no subject line included
+        return _parse_registration_matrix(lines[3:7])
+    elif len(lines) == 9:     # first line holds subject id. (This line is optional.)
+        return _parse_registration_matrix(lines[4:8])
+    else:
+        raise ValueError("Registration matrix file has wrong line count. Expected 8 or 9 lines, got %d." % len(lines))
+
+
+def _parse_registration_matrix(matrix_lines):
+    """
+    Parse a registration matrix.
+
+    Parse a registration matrix from the 4 lines representing it in a register.dat file. See https://surfer.nmr.mgh.harvard.edu/fswiki/RegisterDat for the file format. This function expects only the 4 matrix lines.
+
+    Parameters
+    ----------
+    matrix_lines: list of str
+        The 4 matrix lines of a file in register.dat format. Each line muyt contain 4 floats, separated by spaces.
+
+    Returns
+    -------
+    2D numpy array of floats
+        The parsed matrix, with dimension (4, 4).
+    """
+    if len(matrix_lines) != 4:
+        raise ValueError("Registration matrix has wrong line count. Expected exactly 4 lines, got %d." % len(matrix_lines))
+    reg_matrix = np.zeros((4, 4))
+    for idx, line in enumerate(matrix_lines):
+        reg_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
+    return reg_matrix

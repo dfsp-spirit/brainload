@@ -486,3 +486,46 @@ def test_group_stats_aparc_DKTatlas_raises_on_invalid_hemi():
         all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats_aparc_DKTatlas(subjects_list, TEST_DATA_DIR, 'invalid_hemi')
     assert 'hemi must be one of' in str(exc_info.value)
     assert 'invalid_hemi' in str(exc_info.value)
+
+def test_parse_register_dat_lines_correct_linecount_with_subject():
+    register_dat_contents = """fsaverage
+1.000000
+1.000000
+0.150000
+9.975314e-01 -7.324822e-03 1.760415e-02 9.570923e-01
+-1.296475e-02 -9.262221e-03 9.970638e-01 -1.781596e+01
+-1.459537e-02 -1.000945e+00 2.444772e-03 -1.854964e+01
+0 0 0 1
+tkregister"""
+    registration_matrix = st._parse_register_dat_lines(register_dat_contents.splitlines())
+    assert registration_matrix.shape == (4, 4)
+
+def test_parse_register_dat_lines_correct_linecount_without_subject():
+    register_dat_contents = """1.000000
+1.000000
+0.150000
+9.975314e-01 -7.324822e-03 1.760415e-02 9.570923e-01
+-1.296475e-02 -9.262221e-03 9.970638e-01 -1.781596e+01
+-1.459537e-02 -1.000945e+00 2.444772e-03 -1.854964e+01
+0 0 0 1
+tkregister"""
+    registration_matrix = st._parse_register_dat_lines(register_dat_contents.splitlines())
+    assert registration_matrix.shape == (4, 4)
+
+
+def test_parse_register_dat_lines_raises_on_incorrect_linecount():
+    register_dat_contents = """1.000000
+1.000000
+0.150000"""
+    with pytest.raises(ValueError) as exc_info:
+        registration_matrix = st._parse_register_dat_lines(register_dat_contents.splitlines())
+    assert 'Registration matrix file has wrong line count' in str(exc_info.value)
+
+
+def test_parse_registration_matrix_raises_on_incorrect_linecount():
+    matrix_contents = """1.000000
+1.000000
+0.150000"""
+    with pytest.raises(ValueError) as exc_info:
+        registration_matrix = st._parse_registration_matrix(matrix_contents.splitlines())
+    assert 'Registration matrix has wrong line count' in str(exc_info.value)
