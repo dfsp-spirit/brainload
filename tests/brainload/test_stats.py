@@ -4,6 +4,7 @@ import warnings
 import brainload as bl
 import brainload.stats as st
 import numpy as np
+from numpy.testing import assert_allclose
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
@@ -511,6 +512,8 @@ def test_parse_register_dat_lines_correct_linecount_without_subject():
 tkregister"""
     registration_matrix = st._parse_register_dat_lines(register_dat_contents.splitlines())
     assert registration_matrix.shape == (4, 4)
+    expected = np.array([[0.9975314, -0.007324822, 0.01760415, 0.9570923], [-0.01296475, -0.009262221, 0.9970638, -17.81596], [-0.01459537, -1.000945, 0.002444772, -18.54964], [0., 0., 0., 1.]])
+    assert_allclose(registration_matrix, expected)
 
 
 def test_parse_register_dat_lines_raises_on_incorrect_linecount():
