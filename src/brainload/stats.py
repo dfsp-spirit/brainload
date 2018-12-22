@@ -350,7 +350,6 @@ def _stats_measures_to_dict(numpy_measures, measure_name_tuples):
     measures_dict = {}
     measure_names = _measure_names_from_tuples(measure_name_tuples)
     for idx, measure_name in enumerate(measure_names):
-        print("_stats_measures_to_dict: measure_names %s value %f idx %d" % (measure_name, numpy_measures[idx], idx))
         measures_dict[measure_name] = np.array([numpy_measures[idx]])
     return measures_dict
 
@@ -477,7 +476,6 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
     for subject in subjects_list:
         stats_file = os.path.join(subjects_dir, subject, 'stats', stats_file_name)
         stats = stat(stats_file)
-        print("Subject %s, reading file: %s" % (subject, stats_file))
         # Handle measures
         numpy_measures, measure_name_tuples = measures_to_numpy(stats['measures'])
         all_subjects_measures_dict = _stats_measures_dict(all_subjects_measures_dict, numpy_measures, measure_name_tuples)
@@ -578,3 +576,45 @@ def _parse_registration_matrix(matrix_lines):
     for idx, line in enumerate(matrix_lines):
         reg_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
     return reg_matrix
+
+
+def extract_vector_for_all_subjects_from_table_data(column_name, row_index, all_subjects_table_data_dict, dtype=np.float_):
+    """
+    Extract the values in one table field for all subjects.
+
+    Extract the values in one table field, given by the column_name and row_index, for all subjects.
+
+    Returns
+    -------
+    numpy 1D array
+        The data for all subjects, shape is (n, ) for n subjects.
+    """
+    column_2D_arr = all_subjects_table_data_dict[column_name]
+    relevant_vector = np.squeeze(column_2D_arr[:,row_index])
+    return relevant_vector.astype(dtype)
+
+
+def extract_table_data_indices_where(column_name, target_value_string, all_subjects_table_data_dict):
+    """
+    Find the row index (or indices) in the table where the column column_name takes on the value target_value_string.
+
+    Find the row index (or indices) in the table where the column column_name takes on the value target_value_string. Typically you would chose a column and target value combinatin that is unique, leading to a single index (array of length 1).
+
+    Returns
+    -------
+    numpy 1D array
+        The list of indices.
+    """
+    column_2D_arr = all_subjects_table_data_dict[column_name]
+    if column_2D_arr.shape[0] < 1:
+        return np.array([])
+    else:
+        first_entry = column_2D_arr[0]
+        return np.where(first_entry == target_value_string)
+
+
+def extract_matrix_for_all_subjects_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, dtype=np.float_):
+    if not column_name_for_dict_keys in all_subjects_table_data_dict:
+        raise ValueError("Given column_name_for_dict_keys '%s' is not a key in the dictionary all_subjects_table_data_dict." % column_name_for_dict_keys)
+    for column_name in all_subjects_table_data_dict:
+        pass

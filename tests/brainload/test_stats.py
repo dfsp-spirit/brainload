@@ -532,3 +532,25 @@ def test_parse_registration_matrix_raises_on_incorrect_linecount():
     with pytest.raises(ValueError) as exc_info:
         registration_matrix = st._parse_registration_matrix(matrix_contents.splitlines())
     assert 'Registration matrix has wrong line count' in str(exc_info.value)
+
+
+def test_extract_table_data_indices_where():
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'aseg.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
+    row_indices = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
+    assert len(row_indices) == 1
+    assert row_indices[0] == 12        # see aseg.stats table: amygdala is row 12
+
+
+def test_extract_vector_for_all_subjects_from_table_data():
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'aseg.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
+    row_index_amygdala = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
+    amygdala_column_all_subjects = st.extract_vector_for_all_subjects_from_table_data('Volume_mm3', row_index_amygdala, all_subjects_table_data_dict)
+    assert amygdala_column_all_subjects.shape == (2, )
