@@ -1,6 +1,12 @@
 Brainload Changes
 =================
 
+Version 0.3.3
+--------------
+- Added support for loading affine transformation matrices, e.g., files or mri_info output that follows the FreeSurfer register.dat format.
+- New group-level functions for loading stats data
+
+
 Version 0.3.2
 --------------
 - Added support for exporting meshes to formats used by standard 3D modeling software like Blender in formats OBJ (Wavefront object) and Stanford PLY.
