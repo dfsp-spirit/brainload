@@ -613,8 +613,10 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
         return np.where(first_entry == target_value_string)
 
 
-def extract_matrix_for_all_subjects_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, dtype=np.float_):
+def extract_matrix_for_all_subjects_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
     if not column_name_for_dict_keys in all_subjects_table_data_dict:
         raise ValueError("Given column_name_for_dict_keys '%s' is not a key in the dictionary all_subjects_table_data_dict." % column_name_for_dict_keys)
+    values_matrix = all_subjects_table_data_dict[column_name_of_values]
+    
     for column_name in all_subjects_table_data_dict:
         pass
