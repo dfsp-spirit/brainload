@@ -578,7 +578,7 @@ def _parse_registration_matrix(matrix_lines):
     return reg_matrix
 
 
-def extract_vector_for_all_subjects_from_table_data(column_name, row_index, all_subjects_table_data_dict, dtype=np.float_):
+def extract_field_from_table_data(column_name, row_index, all_subjects_table_data_dict, dtype=np.float_):
     """
     Extract the values in one table field for all subjects.
 
@@ -612,7 +612,7 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
     """
     Find the row index (or indices) in the table where the column column_name takes on the value target_value_string.
 
-    Find the row index (or indices) in the table where the column column_name takes on the value target_value_string. Typically you would chose a column and target value combinatin that is unique, leading to a single index (array of length 1).
+    Find the row index (or indices) in the table where the column column_name takes on the value target_value_string. Typically you would chose a column and target value combinatin that is unique, leading to a single index (array of length 1). Note that this used the first entry (row) in the 2D matrix to read values: it is assumed that all entries are identical (since the data should come from equivalent stats files for all subjects).
 
     Parameters
     ----------
@@ -638,11 +638,11 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
         return np.where(first_entry == target_value_string)
 
 
-def extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
+def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
     """
     For all rows and a single column, extract the data for all subjects.
 
-    For all rows and a single column, extract the data for all subjects. This results in a dictionary of vectors.
+    For all rows and a single column, extract the data for all subjects. This results in a dictionary of vectors, representing the column.
 
     Parameters
     ----------
@@ -670,6 +670,5 @@ def extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_
     row_names = names_matrix[0]
     res = {}
     for row_index, row_name in enumerate(row_names):
-        all_subject_values = extract_vector_for_all_subjects_from_table_data(column_name_of_values, row_index, all_subjects_table_data_dict, dtype=dtype)
-        res[row_name] = all_subject_values
+        res[row_name] = extract_field_from_table_data(column_name_of_values, row_index, all_subjects_table_data_dict, dtype=dtype)
     return res
