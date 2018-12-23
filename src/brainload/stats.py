@@ -584,6 +584,20 @@ def extract_vector_for_all_subjects_from_table_data(column_name, row_index, all_
 
     Extract the values in one table field, given by the column_name and row_index, for all subjects.
 
+    Parameters
+    ----------
+    colum_name: str
+        The name of the column that should be handled, i.e., the key in all_subjects_table_data_dict.  In combination with row_index, this defines the field that should be handled.
+
+    row_index: int
+        The index of the row that should be handled. In combination with column_name, this defines the field that should be handled. Note: you can use ```extract_table_data_indices_where``` to find the row index you want based on any value of any column.
+
+    all_subjects_table_data_dict: dict of str to numpy 2D array
+        Data as returned by the ```group_stats``` function.
+
+    dtype: numpy data type, optional
+        The data type of the returned numpy array. Defaults to ```numpy.float_``` if omitted.
+
     Returns
     -------
     numpy 1D array
@@ -599,6 +613,17 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
     Find the row index (or indices) in the table where the column column_name takes on the value target_value_string.
 
     Find the row index (or indices) in the table where the column column_name takes on the value target_value_string. Typically you would chose a column and target value combinatin that is unique, leading to a single index (array of length 1).
+
+    Parameters
+    ----------
+    colum_name: str
+        The name of the column that should be handled, i.e., the key in all_subjects_table_data_dict.  In combination with row_index, this defines the field that should be handled.
+
+    target_value_string: str
+        The value identifying the row you want. Note that this should be unique. If it is not, the returned list has length > 1. Also note that the comparison happens before casting to dtype, so the value given here must be of type str.
+
+    all_subjects_table_data_dict: dict of str to numpy 2D array
+        Data as returned by the ```group_stats``` function.
 
     Returns
     -------
@@ -618,6 +643,17 @@ def extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_
     For all rows and a single column, extract the data for all subjects.
 
     For all rows and a single column, extract the data for all subjects. This results in a dictionary of vectors.
+
+    Parameters
+    ----------
+    all_subjects_table_data_dict: dict of str to numpy 2D array
+        Data as returned by the ```group_stats``` function.
+
+    column_name_for_dict_keys: str
+        The column name (key in all_subjects_table_data) of the column of which the values in each row will be used to identify the output data. Think of this as labels.
+
+    column_name_of_values: str
+        The column name (key in all_subjects_table_data) of the column holding the values you want to retrieve.
 
     Returns
     -------
