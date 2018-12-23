@@ -586,3 +586,9 @@ def test_extract_matrix_for_all_subjects_and_rows_from_table_data_invalid_value_
         res = st.extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, 'StructName', 'noSuchValueName')
     assert 'Given column_name_of_values' in str(exc_info.value)
     assert 'noSuchValueName' in str(exc_info.value)
+
+def test_extract_matrix_for_all_subjects_and_rows_from_table_data_empty_names_matrix():
+    all_subjects_table_data_dict = {'StructName': np.array([]), 'NVoxels': np.array([['333', '444'], ['333', '444']])}
+    with pytest.raises(ValueError) as exc_info:
+        res = st.extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, 'StructName', 'NVoxels')
+    assert 'Expected non-empty 2D matrix of strings' in str(exc_info.value)
