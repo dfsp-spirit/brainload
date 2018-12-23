@@ -613,15 +613,27 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
         return np.where(first_entry == target_value_string)
 
 
-def extract_matrix_for_all_subjects_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
+def extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
+    """
+    For all rows and a single column, extract the data for all subjects.
+
+    For all rows and a single column, extract the data for all subjects. This results in a dictionary of vectors.
+
+    Returns
+    -------
+    dictionary string to numpy 1D array
+        The data for column column_name_of_values for all subjects. Each row is represented by one entry. The key is the value of the column column_name_for_dict_keys for the row (must be unique) and the value is the value of the column column_name_of_values.
+    """
     if not column_name_for_dict_keys in all_subjects_table_data_dict:
         raise ValueError("Given column_name_for_dict_keys '%s' is not a key in the dictionary all_subjects_table_data_dict." % column_name_for_dict_keys)
-    values_matrix = all_subjects_table_data_dict[column_name_of_values]
+    if not column_name_of_values in all_subjects_table_data_dict:
+        raise ValueError("Given column_name_of_values '%s' is not a key in the dictionary all_subjects_table_data_dict." % column_name_of_values)
     names_matrix = all_subjects_table_data_dict[column_name_for_dict_keys]
     if names_matrix.shape[0] < 1:
         raise ValueError("all_subjects_table_data_dict value for given name column key '%s' is empty. Expected non-empty 2D matrix of strings." % column_name_for_dict_keys)
     row_names = names_matrix[0]
     res = {}
-    for idx, row_name in enumerate(row_names):
-        all_subject_values = values_matrix[idx,:]
+    for row_index, row_name in enumerate(row_names):
+        all_subject_values = extract_vector_for_all_subjects_from_table_data(column_name_of_values, row_index, all_subjects_table_data_dict, dtype=dtype)
         res[row_name] = all_subject_values
+    return res

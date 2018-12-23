@@ -554,3 +554,35 @@ def test_extract_vector_for_all_subjects_from_table_data():
     row_index_amygdala = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
     amygdala_column_all_subjects = st.extract_vector_for_all_subjects_from_table_data('Volume_mm3', row_index_amygdala, all_subjects_table_data_dict)
     assert amygdala_column_all_subjects.shape == (2, )
+
+
+def test_extract_matrix_for_all_subjects_and_rows_from_table_data():
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'aseg.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
+    res = st.extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, 'StructName', 'NVoxels')
+    assert len(res) == 45
+    assert 'Left-Lateral-Ventricle' in res
+    for struct_name in res:
+        num_voxels_of_structure = res[struct_name]
+        assert num_voxels_of_structure.shape == (2, )
+    assert res['Left-Lateral-Ventricle'][0] == pytest.approx(12159, 0.01)
+    assert res['Left-Lateral-Ventricle'][1] == pytest.approx(12159, 0.01)    # subject2 is copied from subject1
+
+
+def test_extract_matrix_for_all_subjects_and_rows_from_table_data_invalid_label_name():
+    all_subjects_table_data_dict = {'StructName': np.array([['3rd-ventricle', '4th-ventricle'], ['3rd-ventricle', '4th-ventricle']]), 'NVoxels': np.array([['333', '444'], ['333', '444']])}
+    with pytest.raises(ValueError) as exc_info:
+        res = st.extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, 'noSuchLabelName', 'NVoxels')
+    assert 'Given column_name_for_dict_keys' in str(exc_info.value)
+    assert 'noSuchLabelName' in str(exc_info.value)
+
+
+def test_extract_matrix_for_all_subjects_and_rows_from_table_data_invalid_value_name():
+    all_subjects_table_data_dict = {'StructName': np.array([['3rd-ventricle', '4th-ventricle'], ['3rd-ventricle', '4th-ventricle']]), 'NVoxels': np.array([['333', '444'], ['333', '444']])}
+    with pytest.raises(ValueError) as exc_info:
+        res = st.extract_matrix_for_all_subjects_and_rows_from_table_data(all_subjects_table_data_dict, 'StructName', 'noSuchValueName')
+    assert 'Given column_name_of_values' in str(exc_info.value)
+    assert 'noSuchValueName' in str(exc_info.value)
