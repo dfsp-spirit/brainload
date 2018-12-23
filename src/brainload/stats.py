@@ -617,6 +617,11 @@ def extract_matrix_for_all_subjects_from_table_data(all_subjects_table_data_dict
     if not column_name_for_dict_keys in all_subjects_table_data_dict:
         raise ValueError("Given column_name_for_dict_keys '%s' is not a key in the dictionary all_subjects_table_data_dict." % column_name_for_dict_keys)
     values_matrix = all_subjects_table_data_dict[column_name_of_values]
-    
-    for column_name in all_subjects_table_data_dict:
-        pass
+    names_matrix = all_subjects_table_data_dict[column_name_for_dict_keys]
+    if names_matrix.shape[0] < 1:
+        raise ValueError("all_subjects_table_data_dict value for given name column key '%s' is empty. Expected non-empty 2D matrix of strings." % column_name_for_dict_keys)
+    row_names = names_matrix[0]
+    res = {}
+    for idx, row_name in enumerate(row_names):
+        all_subject_values = values_matrix[idx,:]
+        res[row_name] = all_subject_values
