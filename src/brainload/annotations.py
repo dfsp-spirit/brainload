@@ -1,7 +1,7 @@
 """
 Raed FreeSurfer vertex label and annotation files.
 
-Functions for reading FreeSurfer vertex annotation files. These are the file in the label sub directory of a subject, with file extensions '.label' and '.annot'. Examples are 'lh.aparc.annot' and 'lh.cortex.label'. A label is a set of vertices. An annotation consists of several sets of vertices, each of which is assigned a label and a color. 
+Functions for reading FreeSurfer vertex annotation files. These are the file in the label sub directory of a subject, with file extensions '.label' and '.annot'. Examples are 'lh.aparc.annot' and 'lh.cortex.label'. A label is a set of vertices. An annotation consists of several sets of vertices, each of which is assigned a label and a color.
 """
 
 import os
@@ -105,7 +105,7 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
     else:
         lh_vertex_labels, lh_label_colors, lh_label_names, meta_data = read_annotation_md(lh_annotation_file, 'lh', meta_data=meta_data, orig_ids=orig_ids)
         rh_vertex_labels, rh_label_colors, rh_label_names, meta_data = read_annotation_md(rh_annotation_file, 'rh', meta_data=meta_data, orig_ids=orig_ids)
-        if not _are_label_names_identical(lh_label_names, rh_label_names):
+        if not lh_label_names == rh_label_names:
             raise ValueError("The %d labels for the lh and the %d labels for the rh are not identical for annotation '%s'." % (len(lh_label_names), len(rh_label_names), annotation))
         else:
             label_names = lh_label_names    # both are identical, so just pick any
@@ -167,6 +167,7 @@ def _get_indices_for_unique_vertex_labels(all_vertex_labels, label_colors):
     Retrieve relevant indices in the label_colors and label_names datastructures for all vertices.
 
     Retrieve the relevant index in the label_colors and label_names datastructures for the labels carried by the vertices in vertex_label_colors.
+
     Returns
     -------
     Dict of int, int
@@ -177,19 +178,6 @@ def _get_indices_for_unique_vertex_labels(all_vertex_labels, label_colors):
     for idx, uvl in enumerate(unique_vlabels):
         vlabel_to_idx_map[uvl] = _get_annot_label_index(uvl, label_colors)
     return vlabel_to_idx_map
-
-
-
-def _are_label_names_identical(lh_label_names, rh_label_names):
-    """
-    Checks whether the two string lists have the same elements in same order.
-    """
-    if len(lh_label_names) != len(rh_label_names):
-        return False
-    for idx, label in enumerate(lh_label_names):
-        if lh_label_names[idx] != rh_label_names[idx]:
-            return False
-    return True
 
 
 def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encoding="utf-8", orig_ids=False):

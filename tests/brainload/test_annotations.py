@@ -172,21 +172,6 @@ def test_annot_aparc():
     assert label_colors.shape == (NUM_LABELS_APARC_DKTATLAS, 5)
 
 
-def test_are_label_names_identical_with_identical():
-    res = an._are_label_names_identical(["unknown", "same"], ["unknown", "same"])
-    assert res == True
-
-
-def test_are_label_names_identical_with_not_identical():
-    res = an._are_label_names_identical(["unknown", "same"], ["same", "same"])
-    assert res == False
-
-
-def test_are_label_names_identical_with_diff_sizes():
-    res = an._are_label_names_identical(["same"], ["same", "same"])
-    assert res == False
-
-
 def test_read_label_md_raises_on_invalid_hemisphere_label():
     label_file = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'rh.cortex.label')
     with pytest.raises(ValueError) as exc_info:

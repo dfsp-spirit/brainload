@@ -513,7 +513,7 @@ def register_dat_matrix(file_path):
     """
     Parse the registration matrix from the given file.
 
-    Parse the registration matrix from the given file in register.dat file format. See https://surfer.nmr.mgh.harvard.edu/fswiki/RegisterDat for the file format.
+    Parse the registration matrix from the given file in register.dat file format. See https://surfer.nmr.mgh.harvard.edu/fswiki/RegisterDat for the file format. The matrix encodes an affine transformation that can be applied to a coordinate vector.
 
     Parameters
     ----------
@@ -524,6 +524,13 @@ def register_dat_matrix(file_path):
     -------
     2D numpy array of floats
         The parsed matrix, with dimension (4, 4).
+
+    Examples
+    --------
+    Parse a register.dat file that comes with FreeSurfer v6.0:
+
+    >>> reg_data_file = os.path.join(my_freesurfer_dir, 'subjects', 'cvs_avg35_inMNI152', 'mri.2mm', 'register.dat')
+    >>> matrix = st.register_dat_matrix(reg_data_file)
     """
     with open(file_path) as fh:
         lines = [line.rstrip('\n') for line in fh]
@@ -629,6 +636,15 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
     -------
     numpy 1D array
         The list of indices.
+
+    Examples
+    --------
+    Find the index of the row where the value of the 'StructName' column is 'Left-Amygdala':
+
+    >>> _, all_subjects_table_data_dict = st.group_stats_aseg(['subject1', 'subject2'], my_subjects_dir)
+    >>> row_indices = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
+    >>> assert len(row_indices) == 1
+    >>> assert row_indices[0] == 12        # see aseg.stats table: amygdala is row 12
     """
     column_2D_arr = all_subjects_table_data_dict[column_name]
     if column_2D_arr.shape[0] < 1:
@@ -658,7 +674,30 @@ def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for
     Returns
     -------
     dictionary string to numpy 1D array
-        The data for column column_name_of_values for all subjects. Each row is represented by one entry. The key is the value of the column column_name_for_dict_keys for the row (must be unique) and the value is the value of the column column_name_of_values.
+        The data for column column_name_of_values for all subjects. Each row is represented by one entry. The key is the value of the column column_name_for_dict_keys for the row (must be unique) and the value is the value of the column column_name_of_values. Note that you could turn this into a Pandas DataFrame very easily if you use Pandas.
+
+    Examples
+    --------
+    Load the aseg stats for a group of subjects in the pre-defined directory my_subjects_dir:
+
+    >>> _, all_subjects_table_data_dict = st.group_stats_aseg(['subject1', 'subject2'], my_subjects_dir)
+
+    Now get the data for the number of voxels for all rows (=brain structures). Label the result with the structure name column:
+
+    >>> column_data = st.extract_column_from_table_data(all_subjects_table_data_dict, 'StructName', 'NVoxels')
+
+    The aseg.stats table contains 45 rows for the 45 brain structures:
+
+    >>> assert len(column_data) == 45
+
+    Retrieve the data for all subjects, a 2D numpy array:
+
+    >>> assert 'Left-Lateral-Ventricle' in column_data
+    >>> all_subjects_data = column_data['Left-Lateral-Ventricle']
+
+    Let us find out the number of voxels for the left lateral ventricle of the first subject:
+
+    print(all_subjects_data[0])
     """
     if not column_name_for_dict_keys in all_subjects_table_data_dict:
         raise ValueError("Given column_name_for_dict_keys '%s' is not a key in the dictionary all_subjects_table_data_dict." % column_name_for_dict_keys)
