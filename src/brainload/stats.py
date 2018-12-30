@@ -13,6 +13,10 @@ Notes
 import warnings
 import os
 import numpy as np
+import brainload.nitools as nit
+
+
+
 
 def stat(file_name):
     """
@@ -71,8 +75,7 @@ def stat(file_name):
 
     Note that all data is returned as string type, you will need to covert it to float (or whatever) yourself.
     """
-    with open(file_name) as fh:
-        lines = [line.rstrip('\n') for line in fh]
+    lines = nit._read_text_file_lines(file_name)
     return _parse_stats_lines(lines)
 
 

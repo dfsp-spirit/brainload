@@ -283,6 +283,36 @@ def read_label_md(label_file, hemisphere_label, meta_data=None):
     return verts_in_label, meta_data
 
 
+def read_vertex_list_file(file_name, sep=' '):
+    """
+    Read a vertex list from a text file.
+
+    Read a vertex list from a text file. The file must contain vertex indices (integers) separated by spaces. It is OK if it has several lines. Lines starting with '#' are considered to be comments and ignored. Note that a vertex is given by its index in a brain mesh, starting at 0. This is used as a way to import a list of vertices, similar to a FreeSurfer label file. This is a brainload custom format, but a very simple one that follows common file format conventions.
+
+    Parameters
+    ----------
+    file_name: str
+        Path to a file to read
+
+    sep: str, optional
+        Separator between integer values on a line. Defaults to a space, ' '.
+
+    Returns
+    -------
+    numpy 1D int array
+        The data read from all non-comment lines.
+    """
+    verts = np.array([], dtype=np.int)
+    lines = nit._read_text_file_lines(file_name)
+    for line in lines:
+        if line.startswith('#'):
+            continue
+        else:
+            line_data = np.fromstring(line, dtype=int, sep=sep)
+            verts = np.append(verts, line_data)
+    return verts
+
+
 def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
     """
     Load annotation for the mesh vertices of a single subject.

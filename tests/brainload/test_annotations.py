@@ -346,3 +346,9 @@ def test_mask_data_using_label_with_invert():
     assert np.isnan(masked_data[5])
     # make sure the original data was not changed
     assert_allclose(data, np.array([.1, 3.0, 2.1, 7.8, 6.34, 3.0], dtype=float))
+
+
+def test_read_vertex_list_file():
+    file_name = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'some_verts.vlabel')
+    vert_indices = an.read_vertex_list_file(file_name, sep=' ')
+    assert vert_indices.shape == (10, )

@@ -11,6 +11,18 @@ import collections
 import numpy as np
 
 
+def _read_text_file_lines(file_name):
+    """
+    Open a text file and read it, return a list of lines.
+
+    Open a text file and read it, return a list of lines.
+    """
+    with open(file_name, 'r') as fh:
+        lines = [line.rstrip('\n') for line in fh]
+    return lines
+
+
+
 def read_subjects_file(subjects_file, has_header_line=False, index_of_subject_id_field=0, **kwargs):
     """
     Read a subjects file in CSV format that has the subject id as the first entry on each line. Arbitrary data may follow in the consecutive fields on each line, and will be ignored. Having nothing but the subject id on the line is also fine, of course.
