@@ -244,7 +244,7 @@ This has been done successfully under Linux and MacOS. It more or less follows t
 
 ##### Prepare environment
 
-Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into ${CONDA_DIR}`, which could be something like `~/software/anaconda2`.
+Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into ${CONDA_DIR}, which could be something like `~/software/anaconda2`.
 
 The first step is to activate conda if it is not yet active. Type `conda --version` to check whether the `conda` command is available. If the command is not found:
 
@@ -306,7 +306,9 @@ CONDA_BLD_PATH=/tmp/condaishacky conda-build ${NEW_RELEASE}                     
 
 Let's export the filename (not the full path) of the resulting package to an environment variable as we will need it a few times below. The file name can be found in the output of the last command (conda-build). The full path should be something like `/tmp/condaishacky/some_name_and_version_here.tar.bz2`, so we will do something like this:
 
+```console
 export PKG_FILENAME="some_name_and_version_here.tar.bz2"
+```
 
 Since brainload is a pure python package, we can easily convert it for other platforms:
 
@@ -362,7 +364,9 @@ The last command created a skeleton version of the conda `meta.yaml` build file 
     - pytest
     - pytest-cov
     - pytest-runner
+
 You have to add them in the following three sections:
+
     - requirements | hosts
     - requirements | run
     - test | requires
