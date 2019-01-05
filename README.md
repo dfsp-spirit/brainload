@@ -14,7 +14,7 @@ Python module to reduce your brain load while accessing FreeSurfer brain surface
 
 ## Development stage
 
-This is now (December 10, 2018) in alpha stage and ready for usage. The API is not 100% stable yet, be prepared for minor changes in the future.
+This has been in alpha stage and ready for usage since December 10, 2018. The API is not 100% stable yet, be prepared for minor changes in the future.
 
 
 ## Features
