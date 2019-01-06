@@ -226,3 +226,25 @@ def test_parse_registration_matrix():
 0 0 0 1"""
     matrix = st.parse_registration_matrix(matrix_str.splitlines())
     assert matrix.shape == (4, 4)
+
+
+def test_apply_affine_from_MNI305_to_MIN152():
+    MNI305_x = 10
+    MNI305_y = -20
+    MNI305_z = 35
+    affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
+    v = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, affine_matrix)
+    assert v[0] == pytest.approx(10.695, 0.01)            # see http://freesurfer.net/fswiki/CoordinateSystems
+    assert v[1] == pytest.approx(-18.409, 0.01)
+    assert v[2] == pytest.approx(36.137, 0.01)
+
+def test_apply_affine_from_MNI305_to_MIN152_and_back():
+    MNI305_x = 10
+    MNI305_y = -20
+    MNI305_z = 35
+    v = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, st.get_affine_matrix_MNI305_to_MNI152())
+    w = st.apply_affine(v[0], v[1], v[2], st.get_affine_matrix_MNI152_to_MNI305())
+    assert w[0] == pytest.approx(MNI305_x, 0.01)
+    assert w[1] == pytest.approx(MNI305_y, 0.01)
+    assert w[2] == pytest.approx(MNI305_z, 0.01)
+    

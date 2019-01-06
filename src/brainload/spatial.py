@@ -483,7 +483,7 @@ def get_affine_matrix_MNI152_to_MNI305():
         2D numpy array
             The affine transformation matrix, a float matrix with shape (4, 4).
     """
-    return npl.iv(get_affine_matrix_MNI305_to_MNI152())
+    return npl.inv(get_affine_matrix_MNI305_to_MNI152())
 
 
 def parse_registration_matrix(matrix_lines):
@@ -508,3 +508,24 @@ def parse_registration_matrix(matrix_lines):
     for idx, line in enumerate(matrix_lines):
         reg_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
     return reg_matrix
+
+
+def apply_affine(i, j, k, affine_matrix):
+    """
+    Applies an affine matrix to the given coordinates. The affine matrix consists of a 3x3 rotation matrix and a 3x1 transposition matrix (plus the last row).
+
+    Parameters
+    ----------
+    i, j, k: numeric
+        The source coordinates.
+
+    affine_matrix: numpy 2D float array with shape (4, 4)
+        The affine matrix
+
+    Returns
+    -------
+    The coordinate vector after applying the matrix.
+    """
+    rotation = affine_matrix[:3, :3]
+    translation = affine_matrix[:3, 3]
+    return rotation.dot([i, j, k]) + translation
