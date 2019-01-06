@@ -16,6 +16,7 @@ Now you have the coordinates of the mesh vertices in the required format and can
 """
 
 import numpy as np
+import numpy.linalg as npl  # for matrix inversion
 
 def rotate_3D_coordinates_around_axes(x, y, z, radians_x, radians_y, radians_z):
     """
@@ -459,3 +460,51 @@ def deg2rad(degrees):
         adjusted = degrees % 360
         degrees = adjusted
     return degrees * np.pi / 180
+
+
+def get_affine_matrix_MNI305_to_MNI152():
+    """
+    Get the transformation matrix from fsaverage space (=MNI305 space) to MNI152 space.
+
+    Get the transformation matrix from fsaverage space (=MNI305 space) to MNI152 space. This matrix was retrieved from http://freesurfer.net/fswiki/CoordinateSystems, see use case 8 at the very bottom of the page.
+    Quoting the linked page: 'The above matrix is V152*inv(T152)*R*T305*inv(V305), where V152 and V305 are the vox2ras matrices from the 152 and 305 spaces, T152 and T305 are the tkregister-vox2ras matrices from the 152 and 305 spaces, and R is from $FREESURFER_HOME/average/mni152.register.dat'
+    """
+    return np.array([[0.9975, -0.0073, 0.0176, -0.0429], [0.0146, 1.0009, -0.0024, 1.5496], [-0.0130, -0.0093, 0.9971, 1.1840], [0, 0, 0, 1]])
+
+
+def get_affine_matrix_MNI152_to_MNI305():
+    """
+    Get the transformation matrix from MNI152 sapce to fsaverage space (=MNI305 space).
+
+    This is the inverse of the MNI305 to MNI152 matrix.
+
+    Returns
+    -------
+        2D numpy array
+            The affine transformation matrix, a float matrix with shape (4, 4).
+    """
+    return npl.iv(get_affine_matrix_MNI305_to_MNI152())
+
+
+def parse_registration_matrix(matrix_lines):
+    """
+    Parse a registration matrix.
+
+    Parse a registration matrix from the 4 lines representing it in a register.dat file. See https://surfer.nmr.mgh.harvard.edu/fswiki/RegisterDat for the file format. This function expects only the 4 matrix lines.
+
+    Parameters
+    ----------
+    matrix_lines: list of str
+        The 4 matrix lines of a file in register.dat format. Each line muyt contain 4 floats, separated by spaces.
+
+    Returns
+    -------
+    2D numpy array of floats
+        The parsed matrix, with dimension (4, 4).
+    """
+    if len(matrix_lines) != 4:
+        raise ValueError("Registration matrix has wrong line count. Expected exactly 4 lines, got %d." % len(matrix_lines))
+    reg_matrix = np.zeros((4, 4))
+    for idx, line in enumerate(matrix_lines):
+        reg_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
+    return reg_matrix

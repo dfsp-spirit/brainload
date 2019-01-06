@@ -217,3 +217,12 @@ def test_scale_3D_coordinates():
     assert_allclose(xs, expected_xs)
     assert_allclose(ys, expected_ys)
     assert_allclose(zs, expected_zs)
+
+
+def test_parse_registration_matrix():
+    matrix_str="""1.000000000000000e+00 0.000000000000000e+00 0.000000000000000e+00 0.000000000000000e+00
+0.000000000000000e+00 0.000000000000000e+00 1.000000000000000e+00 0.000000000000000e+00
+0.000000000000000e+00 -1.000000000000000e+00 0.000000000000000e+00 0.000000000000000e+00
+0 0 0 1"""
+    matrix = st.parse_registration_matrix(matrix_str.splitlines())
+    assert matrix.shape == (4, 4)
