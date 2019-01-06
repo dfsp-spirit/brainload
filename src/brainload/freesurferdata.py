@@ -15,7 +15,15 @@ import brainload.nitools as nit
 import brainload.annotations as an
 
 
-def read_mgh_file(mgh_file_name, collect_meta_data=True):
+def read_mgh_header_matrices(mgh_file_name):
+    _, mgh_meta_data = read_mgh_file(mgh_file_name, collect_data=False)
+    ras2vox = mgh_meta_data['ras2vox']
+    vox2ras = mgh_meta_data['vox2ras']
+    vox2ras_tkr = mgh_meta_data['vox2ras_tkr']
+    return ras2vox, vox2ras, vox2ras_tkr
+
+
+def read_mgh_file(mgh_file_name, collect_meta_data=True, collect_data=True):
     """
     Read data from a FreeSurfer output file in mgh format.
 
@@ -28,6 +36,9 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
 
     collect_meta_data: bool, optional
         Whether or not to collect meta data from the MGH file header. Defaults to True.
+
+    collect_data: bool, optional
+        Whether or not to collect the file data (voxel values) from the MGH file. Defaults to True.
 
     Returns
     -------
@@ -72,7 +83,9 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True):
             mgh_meta_data['vox2ras_tkr'] =  header.get_vox2ras_tkr()
             mgh_meta_data['zooms'] =  header.get_zooms()                        # the voxel dimensions (along all 3 axes in space)
 
-        mgh_data = header.data_from_fileobj(mgh_file_handle)
+        mgh_data = None
+        if collect_data:
+            mgh_data = header.data_from_fileobj(mgh_file_handle)
         mgh_file_handle.close()
     return mgh_data, mgh_meta_data
 

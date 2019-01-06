@@ -1181,3 +1181,18 @@ def test_fsaverage_mesh():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_dir)
     verts, faces, meta_data = bl.fsaverage_mesh(subjects_dir=TEST_DATA_DIR, use_freesurfer_home_if_missing=True)
     assert verts.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
+
+
+def test_read_mgh_file_without_data():
+    mgh_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fsaverage.mgh')
+    mgh_data, mgh_meta_data = fsd.read_mgh_file(mgh_file, collect_data=False)
+    assert mgh_data is None
+    assert mgh_meta_data is not None
+
+
+def test_read_mgh_header_matrices():
+    mgh_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'orig.mgh')
+    ras2vox, vox2ras, vox2ras_tkr = fsd.read_mgh_header_matrices(mgh_file)
+    assert ras2vox.shape == (4, 4)
+    assert vox2ras.shape == (4, 4)
+    assert vox2ras_tkr.shape == (4, 4)
