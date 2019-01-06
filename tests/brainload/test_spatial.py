@@ -247,4 +247,8 @@ def test_apply_affine_from_MNI305_to_MIN152_and_back():
     assert w[0] == pytest.approx(MNI305_x, 0.01)
     assert w[1] == pytest.approx(MNI305_y, 0.01)
     assert w[2] == pytest.approx(MNI305_z, 0.01)
+
+
+def test_project_fsaverage_voxel_to_surface_coord():
+    m = st.get_matrix_voxel_MNI305_orig_to_vertex_surface()
     
