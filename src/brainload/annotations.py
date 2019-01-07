@@ -313,6 +313,19 @@ def read_vertex_list_file(file_name, sep=' '):
     return verts
 
 
+def vertices_to_label(selected_vert_indices, all_vert_coords, header="#!ascii label"):
+    """
+    Write a string in FreeSurfer label format from the vertices.
+
+    Write a string in FreeSurfer label format from the vertices. This can be used to create a label from a list of vertices, e.g., for displaying the vertices in Freeview or other tools supporting FreeSurfers label file format.
+    """
+    res = [header]
+    res.append("%d" % len(selected_vert_indices))
+    for idx in selected_vert_indices:
+        res.append("%d %f %f %f 0.0000000000" % (idx, all_vert_coords[idx][0], all_vert_coords[idx][1], all_vert_coords[idx][2]))
+    return '\n'.join(res)
+
+
 def label(subject_id, subjects_dir, label, hemi="both", meta_data=None):
     """
     Load annotation for the mesh vertices of a single subject.

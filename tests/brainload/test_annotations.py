@@ -4,6 +4,7 @@ import numpy as np
 from numpy.testing import assert_raises, assert_array_equal, assert_allclose
 import brainload.nitools as nit
 import brainload.annotations as an
+import brainload as bl
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
@@ -352,3 +353,16 @@ def test_read_vertex_list_file():
     file_name = os.path.join(TEST_DATA_DIR, 'subject1', 'label', 'some_verts.vlabel')
     vert_indices = an.read_vertex_list_file(file_name, sep=' ')
     assert vert_indices.shape == (10, )
+
+
+def test_vertices_to_label():
+    vert_coords, faces, meta_data = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
+    selected_vert_indices = [0, 1, 2, 4]
+    label_str = an.vertices_to_label(selected_vert_indices, vert_coords)
+    expected = """#!ascii label
+4
+0 -1.852232 -107.982750 22.769730 0.0000000000
+1 -2.139076 -108.102333 22.826056 0.0000000000
+2 -3.120585 -108.130928 22.830750 0.0000000000
+4 -4.798367 -108.059784 22.777563 0.0000000000"""
+    assert label_str == expected
