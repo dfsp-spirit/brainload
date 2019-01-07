@@ -234,9 +234,23 @@ def test_apply_affine_from_MNI305_to_MIN152():
     MNI305_z = 35
     affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
     v = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, affine_matrix)
+    assert v.shape == (3, )
     assert v[0] == pytest.approx(10.695, 0.01)            # see http://freesurfer.net/fswiki/CoordinateSystems
     assert v[1] == pytest.approx(-18.409, 0.01)
     assert v[2] == pytest.approx(36.137, 0.01)
+
+
+def test_apply_affine_from_MNI305_to_MIN152_array():
+    MNI305_x = np.array([10, -5])
+    MNI305_y = np.array([-20, -20])
+    MNI305_z = np.array([35, 72])
+    affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
+    v = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, affine_matrix)
+    assert v.shape == (3, 2)
+    assert_allclose(v[0,:], np.array([10.6941, -3.6172]))         # see http://freesurfer.net/fswiki/CoordinateSystems
+    assert_allclose(v[1,:], np.array([-18.4064, -18.7142]))
+    assert_allclose(v[2,:], np.array([36.1385, 73.2262]))
+
 
 def test_apply_affine_from_MNI305_to_MIN152_and_back():
     MNI305_x = 10
@@ -252,6 +266,7 @@ def test_apply_affine_from_MNI305_to_MIN152_and_back():
 def test_project_fsaverage_voxel_to_surface_coord():
     m = st.get_matrix_voxel_MNI305_orig_to_vertex_surface()
     assert m.shape == (4, 4)
+    #Cortex structure 'paracentral lobule, anterior part, left' with id 4072: found coordinates (-5, -20, 72)
     MNI305_x = 10       # TODO: Should use a voxel that is part of the cortex. It is not clear whether this is the case for this random example.
     MNI305_y = -20
     MNI305_z = 35
