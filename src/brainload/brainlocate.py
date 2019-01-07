@@ -11,16 +11,6 @@ class BrainLocate:
         self.vert_coords = vert_coords
         self.faces = faces
 
-    def init_from_subject_surface(subject_id, subjects_dir, surf, hemi):
-        self.vert_coords, self.faces, _ = bl.subject_mesh(subject_id, subjects_dir, surf=surf, hemi=hemi)
-
-    def get_closest_vertices(self, query_coords, k=5):
-        """
-        Find the k closest vertices to each of the given coordinates.
-        """
-        return self._get_closest_vertices_bruteforce(self, query_coords, k)
-
-
     def get_closest_vertex(self, query_coords):
         """
         Find the vertex closest to each of the given coordinates. Requires scipy.
@@ -58,16 +48,3 @@ class BrainLocate:
         vert_indices = np.argmin(dist_matrix, axis=0)
         vert_distances = np.min(dist_matrix, axis=0)
         return np.column_stack((vert_indices, vert_distances))
-
-
-    def _get_closest_vertices_bruteforce(self, query_coords, k):
-        """
-        Find the k closest vertices to each of the given coordinates using brute force.
-        """
-        pass
-
-
-    def _get_closest_vertices_kdtree(self, query_coords, k):
-        """
-        Find the closest k vertices using a kdtree.
-        """
