@@ -9,6 +9,7 @@ from numpy.testing import assert_array_equal, assert_allclose
 import brainload as bl
 import brainload.brainlocate as loc
 
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 
@@ -17,7 +18,10 @@ TEST_DATA_DIR = os.getenv('BRAINLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
 
 
 def test_closest_vertex():
-    from scipy.spatial.distance import cdist
+    try:
+        from scipy.spatial.distance import cdist
+    except ImportError:
+        pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
     vert_coords, faces, _ = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
     locator = loc.BrainLocate(vert_coords, faces)
     query_coords = np.array([[134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631]])
@@ -31,6 +35,10 @@ def test_closest_vertex():
 
 
 def test_get_closest_vertex_and_distance():
+    try:
+        from scipy.spatial.distance import cdist
+    except ImportError:
+        pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
     vert_coords, faces, _ = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
     locator = loc.BrainLocate(vert_coords, faces)
     query_coords = np.array([[134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631]])
