@@ -235,7 +235,7 @@ def test_apply_affine_from_MNI305_to_MIN152():
     affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
     v = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, affine_matrix)
     assert v.shape == (3, )
-    assert v[0] == pytest.approx(10.695, 0.01)            # see http://freesurfer.net/fswiki/CoordinateSystems
+    assert v[0] == pytest.approx(10.695, 0.01)            # see http://freesurfer.net/fswiki/CoordinateSystems for this example. The source and target values used here are from the example given on that page.
     assert v[1] == pytest.approx(-18.409, 0.01)
     assert v[2] == pytest.approx(36.137, 0.01)
 
@@ -247,9 +247,27 @@ def test_apply_affine_from_MNI305_to_MIN152_array():
     affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
     v = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, affine_matrix)
     assert v.shape == (3, 2)
-    assert_allclose(v[0,:], np.array([10.6941, -3.6172]))         # see http://freesurfer.net/fswiki/CoordinateSystems
+    assert_allclose(v[0,:], np.array([10.6941, -3.6172]))
     assert_allclose(v[1,:], np.array([-18.4064, -18.7142]))
     assert_allclose(v[2,:], np.array([36.1385, 73.2262]))
+
+
+def test_apply_affine_3D_from_MNI305_to_MIN152_array():
+    coords_305 = np.array([[10, -20, 35], [10, -20, 35]])
+    affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
+    coords_152 = st.apply_affine_3D(coords_305, affine_matrix)
+    assert coords_152.shape == (2, 3)
+    expected = np.array([[10.6941, -18.4064, 36.1385], [10.6941, -18.4064, 36.1385]])
+    assert_allclose(coords_152, expected)
+
+
+def test_apply_affine_3D_from_MNI305_to_MIN152_array():
+    coords_305 = np.array([[10, -20, 35], [-5, -20, 72]])
+    affine_matrix = st.get_affine_matrix_MNI305_to_MNI152()
+    coords_152 = st.apply_affine_3D(coords_305, affine_matrix)
+    assert coords_152.shape == (2, 3)
+    expected = np.array([[10.6941, -18.4064, 36.1385], [-3.6172, -18.7142, 73.2262]])
+    assert_allclose(coords_152, expected)
 
 
 def test_apply_affine_from_MNI305_to_MIN152_and_back():

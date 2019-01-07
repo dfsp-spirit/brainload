@@ -562,6 +562,30 @@ def _apply_affine_scalar(i, j, k, affine_matrix):
     return rotation.dot([i, j, k]) + translation
 
 
+def apply_affine_3D(coords_3d, affine_matrix):
+    """
+    Apply an affine transformation to all coordinates.
+
+    Parameters
+    ----------
+    coords_3d: numpy 2D array
+        The source coordinates, given as a 2D numpy array with shape (n, 3). Each of the n rows represents a point in space, given by its x, y and z coordinates.
+
+    affine_matrix: numpy 2D float array with shape (4, 4)
+        The affine matrix
+
+    Returns
+    -------
+    The coordinates after applying the matrix, 2D numpy array with shape (n, 3). Same shape as the input coords.
+    """
+    rotation = affine_matrix[:3, :3]
+    translation = affine_matrix[:3, 3]
+    res = np.zeros((coords_3d.shape[0], 3))
+    for idx, row in enumerate(coords_3d):
+        res[idx,:] = rotation.dot(row) + translation
+    return res
+
+
 def get_matrix_voxel_MNI305_orig_to_vertex_surface():
     """
     Retrieved from http://freesurfer.net/fswiki/CoordinateSystems, use case 4.
