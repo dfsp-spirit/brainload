@@ -1196,3 +1196,9 @@ def test_read_mgh_header_matrices():
     assert ras2vox.shape == (4, 4)
     assert vox2ras.shape == (4, 4)
     assert vox2ras_tkr.shape == (4, 4)
+
+
+def test_subject_mesh():
+    vert_coords, faces, meta_data = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
+    assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
+    assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
