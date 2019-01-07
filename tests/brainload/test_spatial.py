@@ -282,11 +282,9 @@ def test_apply_affine_from_MNI305_to_MIN152_and_back():
 
 
 def test_project_fsaverage_voxel_to_surface_coord():
-    m = st.get_matrix_voxel_MNI305_orig_to_vertex_surface()
-    assert m.shape == (4, 4)
-    #Cortex structure 'paracentral lobule, anterior part, left' with id 4072: found coordinates (-5, -20, 72)
-    MNI305_x = 10       # TODO: Should use a voxel that is part of the cortex. It is not clear whether this is the case for this random example.
-    MNI305_y = -20
-    MNI305_z = 35
-    surface_coord_mni305 = st.apply_affine(MNI305_x, MNI305_y, MNI305_z, m)
-    assert surface_coord_mni305.shape == (3, )
+    #Cortex structure 'paracentral lobule, anterior part, left' with id 4072: found MIN152 coordinates (-5, -20, 72)
+    coords_mni152 = np.array([[-5, -20, 72]])
+    coords_mni305 = st.apply_affine_3D(coords_mni152, st.get_affine_matrix_MNI152_to_MNI305())
+    coords_mni305_surface = st.apply_affine_3D(coords_mni305, st.get_matrix_voxel_MNI305_orig_to_vertex_surface())
+    assert coords_mni305_surface.shape == (1, 3)
+    assert_allclose(coords_mni305_surface, np.array([[134.37332 , -57.259495, 149.267631]]))

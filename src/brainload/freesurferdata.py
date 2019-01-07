@@ -493,11 +493,63 @@ def load_subject_morphometry_data_files(lh_morphometry_data_file, rh_morphometry
     return morphometry_data, meta_data
 
 
+def subject_mesh(subject_id, subjects_dir, surf='white', hemi='both'):
+    """
+    Load a surface mesh of a subject.
+
+    Convenience function to load a FreeSurfer surface mesh of a subject.
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier of the subject.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}, optional
+        The hemisphere that should be loaded. Defaults to 'both'.
+
+    subjects_dir: string
+        A string representing the full path to a directory. This should be the directory containing all subjects of your study.
+
+    Returns
+    -------
+    vert_coords: numpy array
+        A 2-dimensional array containing the vertices of the mesh(es) of the subject. Each vertex entry contains 3 coordinates. Each coordinate describes a 3D position in a FreeSurfer surface file (e.g., 'lh.white'), as returned by the `nibabel` function `nibabel.freesurfer.io.read_geometry`.
+
+    faces: numpy array
+        A 2-dimensional array containing the 3-faces of the mesh(es) of the subject. Each face entry contains 3 indices. Each index references the respective vertex in the `vert_coords` array.
+
+    meta_data: dictionary
+        A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_vertices` : number of vertices in the loaded mesh
+            - `?h.num_faces` : number of faces in the loaded mesh
+            - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
+
+    Raises
+    ------
+    ValueError
+        If one of the parameters with a fixed set of values receives a value that is not allowed.
+
+    Examples
+    --------
+    Load the pial surface mesh for both hemispheres of the Freeurfer example subject bert:
+
+    >>> import brainload as bl, import os
+    >>> subjects_dir = os.path.join('Applications', 'freesurfer', 'subjects')
+    >>> verts, faced, meta_data = bl.subject_mesh('bert', subjects_dir, surf='pial')
+    """
+    vert_coords, faces, meta_data = fsaverage_mesh(subject_id=subject_id, surf=surf, hemi=hemi, subjects_dir=subjects_dir, use_freesurfer_home_if_missing=False)
+    return vert_coords, faces, meta_data
+
+
+
 def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_dir=None, use_freesurfer_home_if_missing=True):
     """
     Load a surface mesh of the fsaverage subject.
 
-    Convenience function to load a FreeSurfer surface mesh of the fsaverage subject. You could also use this function to load the mesh of any other subject, but in that case, you may want to set `use_freesurfer_home_if_missing` to False (see below). This function calls `subject` in the background and shares the relevant arguments and return values with that function.
+    Convenience function to load a FreeSurfer surface mesh of the fsaverage subject. Use the subject_mesh function to load the mesh of any other subject.
 
     Parameters
     ----------
