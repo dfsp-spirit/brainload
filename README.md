@@ -7,9 +7,6 @@ Python module to reduce your brain load while accessing FreeSurfer brain surface
 
 `brainload` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the respective files and then uses [nibabel](http://nipy.org/nibabel/) to open them. It provides an easy-to-use functional interface to neuroimaging data on multiple levels, from accessing individual files to loading group data for a directory filled with hundreds of subjects.
 
-[![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
-[![Build status](https://ci.appveyor.com/api/projects/status/smuegt2hbqw7cy94/branch/master?svg=true)](https://ci.appveyor.com/project/dfsp-spirit/brainload/branch/master)
-
 
 
 ## Development stage
@@ -118,9 +115,9 @@ Brainload works on both Python 2 and Python 3. You can see all supported version
 
 ## What about visualization?
 
-While `brainload` itself does not care about visualization, I am working on the [brainview](https://github.com/dfsp-spirit/brainview) package that is designed to visualize morphometry data in 3D on brain surfaces. The goal is to provide an easy-to-use interface to quickly visualize data loaded with `brainload` or any other tool.
+In general, you should write output files in standard formats (nifti is a good choice, and nibabel is your friend here) and use standard brain visualization tools like `fsleyes` or `freeview`.
 
-The module will only provide basic visualization functions intended for live inspection of your data. If you are interesting in a full solution that can provide output in publication quality, I suggest you have a look at [PySurfer](https://pysurfer.github.io/) instead.
+To visualize directly in Python, e.g., in a jupyter notebook, there are different options. While `brainload` itself does not care about visualization, I am working on the [brainview](https://github.com/dfsp-spirit/brainview) package that is designed to visualize morphometry data in 3D on brain surfaces. The goal is to provide an easy-to-use interface to quickly visualize data loaded with `brainload` or any other tool. The module will only provide basic visualization functions intended for live inspection of your data. If you are interesting in a full solution that can provide output in publication quality, I suggest you have a look at [PySurfer](https://pysurfer.github.io/) instead.
 
 ## Obtaining suitable pre-processed sMRI input data for brainload
 
