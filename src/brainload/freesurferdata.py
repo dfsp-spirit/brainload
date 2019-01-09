@@ -1132,6 +1132,14 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
     return group_morphometry_data, subjects_list, group_meta_data, run_meta_data
 
 
+def parse_talairach_file(file_name):
+    with open(file_name, 'r') as fh:
+        lines = [line.rstrip('\n') for line in fh]
+    if len(lines) == 8:
+        return _parse_talairach_matrix_lines(lines[5:8])
+    else:
+        raise ValueError("Expected talairach file with 8 lines, got %d." % (len(lines)))
+
 
 def _parse_talairach_matrix_lines(matrix_lines):
     """

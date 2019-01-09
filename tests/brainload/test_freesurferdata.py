@@ -1217,3 +1217,8 @@ def test_parse_talairach_matrix_lines():
 0.022961 -0.452588 1.111222 10.044540;"""
     matrix = fsd._parse_talairach_matrix_lines(lines_str.splitlines())
     assert matrix.shape == (3, 4)
+
+def test_parse_talairach_file():
+    talairach_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'transforms', 'talairach.xfm')
+    matrix = fsd.parse_talairach_file(talairach_file)
+    assert matrix.shape == (3, 4)
