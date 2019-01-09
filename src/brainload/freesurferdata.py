@@ -1133,6 +1133,21 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
 
 
 def parse_talairach_file(file_name):
+    """
+    Parse a talairach matrix from a talairach.xfm file.
+
+    Parse a talairach matrix from the mri/transforms/talairach.xfm file of a subject.
+
+    Parameters
+    ----------
+    file_name: str
+        Path to the file, usually SUBJECT/mri/transforms/talairach.xfm
+
+    Returns
+    -------
+    numpy 2D array
+        The matrix, a float array with shape (3, 4).
+    """
     with open(file_name, 'r') as fh:
         lines = [line.rstrip('\n') for line in fh]
     if len(lines) == 8:
