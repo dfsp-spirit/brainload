@@ -5,7 +5,7 @@ Version 0.3.3
 --------------
 - Added support for loading affine transformation matrices, e.g., files or mri_info output that follows the FreeSurfer register.dat format.
 - New group-level functions for loading stats data
-
+- Support for parsing talairach.xfm files
 
 Version 0.3.2
 --------------
