@@ -1214,7 +1214,14 @@ def test_subject_mesh():
 def test_parse_talairach_matrix_lines():
     lines_str = """1.111536 0.040948 0.012535 -0.803558
 -0.029730 0.981154 0.342306 -19.558083
-0.022961 -0.452588 1.111222 10.044540;"""
+0.022961 -0.452588 1.111222 10.044540;"""      # Note the ; at the end
+    matrix = fsd._parse_talairach_matrix_lines(lines_str.splitlines())
+    assert matrix.shape == (3, 4)
+
+def test_parse_talairach_matrix_lines_clean():
+    lines_str = """1.111536 0.040948 0.012535 -0.803558
+-0.029730 0.981154 0.342306 -19.558083
+0.022961 -0.452588 1.111222 10.044540"""      # No ; this time
     matrix = fsd._parse_talairach_matrix_lines(lines_str.splitlines())
     assert matrix.shape == (3, 4)
 
