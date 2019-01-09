@@ -1210,3 +1210,10 @@ def test_subject_mesh():
     vert_coords, faces, meta_data = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
     assert vert_coords.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, 3)
     assert faces.shape == (SUBJECT1_SURF_LH_WHITE_NUM_FACES + SUBJECT1_SURF_RH_WHITE_NUM_FACES, 3)
+
+def test_parse_talairach_matrix_lines():
+    lines_str = """1.111536 0.040948 0.012535 -0.803558
+-0.029730 0.981154 0.342306 -19.558083
+0.022961 -0.452588 1.111222 10.044540;"""
+    matrix = fsd._parse_talairach_matrix_lines(lines_str.splitlines())
+    assert matrix.shape == (3, 4)

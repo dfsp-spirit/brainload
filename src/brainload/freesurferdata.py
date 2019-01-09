@@ -33,7 +33,7 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True, collect_data=True):
     Parameters
     ----------
     mgh_file_name: string
-        A string representing a full path to a file in FreeSurfer MGH file format.
+        A string representing a full path to a file in FreeSurfer MGH file format. If the file name end with '.mgz' or '.mgh.gz', the file is assumed to be in gzipped MGH format.
 
     collect_meta_data: bool, optional
         Whether or not to collect meta data from the MGH file header. Defaults to True.
@@ -65,7 +65,7 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True, collect_data=True):
         - https://surfer.nmr.mgh.harvard.edu/fswiki/FileFormats
     """
     mgh_meta_data = {}
-    if mgh_file_name.endswith(".mgz"):
+    if mgh_file_name.endswith(".mgz") or mgh_file_name.endswith(".mgh.gz"):
         mgh_file_handle = gzip.open(mgh_file_name, 'rb')
     else:
         mgh_file_handle = open(mgh_file_name, 'rb')
@@ -1130,3 +1130,33 @@ def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, aver
         group_morphometry_data.append(subject_morphometry_data)
     group_morphometry_data = np.array(group_morphometry_data)
     return group_morphometry_data, subjects_list, group_meta_data, run_meta_data
+
+
+
+def _parse_talairach_matrix_lines(matrix_lines):
+    """
+    Parse a 3x4 talairach matrix.
+
+    Parse a talairach matrix from the 3 lines representing it in the mri/transforms/talairach.xfm file of a subject.
+
+    Parameters
+    ----------
+    matrix_lines: list of str
+        The 3 matrix lines of a file in talairach.xfm format. Each line must contain 4 floats, separated by spaces. The last line may end with an ';', which will be removed by this function.
+
+    Returns
+    -------
+    2D numpy array of floats
+        The parsed matrix, with dimension (3, 4).
+    """
+    if len(matrix_lines) != 3:
+        raise ValueError("Talairach matrix has wrong line count. Expected exactly 3 lines, got %d." % len(matrix_lines))
+
+    last_line = matrix_lines[2]
+    if last_line.endswith(';'):
+        matrix_lines[2] = last_line[:-1]
+
+    tal_matrix = np.zeros((3, 4))
+    for idx, line in enumerate(matrix_lines):
+        tal_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
+    return tal_matrix
