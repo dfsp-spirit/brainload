@@ -1190,8 +1190,16 @@ def test_read_mgh_file_without_data():
     assert mgh_meta_data is not None
 
 
-def test_read_mgh_header_matrices():
+def test_read_mgh_header_matrices_mgh():
     mgh_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'orig.mgh')
+    ras2vox, vox2ras, vox2ras_tkr = fsd.read_mgh_header_matrices(mgh_file)
+    assert ras2vox.shape == (4, 4)
+    assert vox2ras.shape == (4, 4)
+    assert vox2ras_tkr.shape == (4, 4)
+
+
+def test_read_mgh_header_matrices_mgz():
+    mgh_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'orig.mgz')
     ras2vox, vox2ras, vox2ras_tkr = fsd.read_mgh_header_matrices(mgh_file)
     assert ras2vox.shape == (4, 4)
     assert vox2ras.shape == (4, 4)

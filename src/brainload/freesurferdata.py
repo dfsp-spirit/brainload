@@ -9,6 +9,7 @@ import sys
 import errno
 import numpy as np
 import collections
+import gzip
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 import brainload.nitools as nit
@@ -64,29 +65,33 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True, collect_data=True):
         - https://surfer.nmr.mgh.harvard.edu/fswiki/FileFormats
     """
     mgh_meta_data = {}
-    with open(mgh_file_name, 'rb') as mgh_file_handle:
-        header = fsmgh.MGHHeader.from_fileobj(mgh_file_handle)
+    if mgh_file_name.endswith(".mgz"):
+        mgh_file_handle = gzip.open(mgh_file_name, 'rb')
+    else:
+        mgh_file_handle = open(mgh_file_name, 'rb')
 
-        if collect_meta_data:
-            mgh_meta_data['data_shape'] = header.get_data_shape()
-            mgh_meta_data['affine'] = header.get_affine()
-            mgh_meta_data['best_affine'] = header.get_best_affine()             # identical to get_affine for MGH format
-            mgh_meta_data['data_bytespervox'] = header.get_data_bytespervox()
-            mgh_meta_data['data_dtype'] = header.get_data_dtype()
-            mgh_meta_data['data_offset'] =  header.get_data_offset()            # MGH format has a header, then data, then a footer
-            mgh_meta_data['data_shape'] =  header.get_data_shape()
-            mgh_meta_data['data_size'] = header.get_data_size()
-            mgh_meta_data['footer_offset'] =  header.get_footer_offset()
-            mgh_meta_data['ras2vox'] =  header.get_ras2vox()
-            mgh_meta_data['slope_inter'] =  header.get_slope_inter()
-            mgh_meta_data['vox2ras'] =  header.get_vox2ras()
-            mgh_meta_data['vox2ras_tkr'] =  header.get_vox2ras_tkr()
-            mgh_meta_data['zooms'] =  header.get_zooms()                        # the voxel dimensions (along all 3 axes in space)
+    header = fsmgh.MGHHeader.from_fileobj(mgh_file_handle)
 
-        mgh_data = None
-        if collect_data:
-            mgh_data = header.data_from_fileobj(mgh_file_handle)
-        mgh_file_handle.close()
+    if collect_meta_data:
+        mgh_meta_data['data_shape'] = header.get_data_shape()
+        mgh_meta_data['affine'] = header.get_affine()
+        mgh_meta_data['best_affine'] = header.get_best_affine()             # identical to get_affine for MGH format
+        mgh_meta_data['data_bytespervox'] = header.get_data_bytespervox()
+        mgh_meta_data['data_dtype'] = header.get_data_dtype()
+        mgh_meta_data['data_offset'] =  header.get_data_offset()            # MGH format has a header, then data, then a footer
+        mgh_meta_data['data_shape'] =  header.get_data_shape()
+        mgh_meta_data['data_size'] = header.get_data_size()
+        mgh_meta_data['footer_offset'] =  header.get_footer_offset()
+        mgh_meta_data['ras2vox'] =  header.get_ras2vox()
+        mgh_meta_data['slope_inter'] =  header.get_slope_inter()
+        mgh_meta_data['vox2ras'] =  header.get_vox2ras()
+        mgh_meta_data['vox2ras_tkr'] =  header.get_vox2ras_tkr()
+        mgh_meta_data['zooms'] =  header.get_zooms()                        # the voxel dimensions (along all 3 axes in space)
+
+    mgh_data = None
+    if collect_data:
+        mgh_data = header.data_from_fileobj(mgh_file_handle)
+    mgh_file_handle.close()
     return mgh_data, mgh_meta_data
 
 
