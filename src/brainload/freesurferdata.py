@@ -42,7 +42,7 @@ def read_mgh_header_matrices(mgh_file_name):
         2D numpy array with shape (4, 4). Transformation matrix from voxel index to RAS coordinate.
 
     vox2ras_tkr: numpy array
-        2D numpy array with shape (4, 4). Transformation matrix from voxel index to (tkregister) surface RAS coordinate.
+        2D numpy array with shape (4, 4). Transformation matrix from voxel index to (tkregister) surface RAS coordinate. This is a RAS coordinate of a vertex on the surface.
 
     Examples
     --------
