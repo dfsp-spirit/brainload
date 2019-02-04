@@ -17,6 +17,39 @@ import brainload.annotations as an
 
 
 def read_mgh_header_matrices(mgh_file_name):
+    """
+    Read the 3 affine transformation matrices from a MGH file header.
+
+    Read the 3 affine transformation matrices ras2vox, vox2ras, and vox2ras_tkr from a MGH file header. The input file is assumed to be gzipped (and extracted appropriately) if the file name ends with '.mgz' or '.mgh.gz'. See the FreeSurfer wiki on coordinate systems for details on what these matrices are. In short, RAS coordinates are used to specify positions of vertices in FreeSurfer surface files.
+
+    In short, VOX is the voxel index and the RAS coordinate is used for the surface coordinate of a vertex.
+
+    VOX: After FreeSurfer pre-processing, this is a triplet of integers in range 0 - 255 for 3D images. Note though that the original T1 images (before pre-processing) from a study can - and usually will - have different numbers of voxels (both different between the axes of a single image as well as between subjects). The VOX is sometimes called CRS for voxel column, row, slice.
+
+    RAS: Right-Anterior-Superior (anatomical coordinates). According to http://www.grahamwideman.com/gw/brain/fs/coords/fscoords.htm, the RAS coordinate origin (0, 0, 0) is the center of the voxel (128, 128, 128). Note that this voxel could or could NOT be the center of the MRI volume.
+
+    Parameters
+    ----------
+    mgh_file_name: string
+        Path to a file in MGH format. The input file is assumed to be gzipped (and extracted appropriately) if the file name ends with '.mgz' or '.mgh.gz'.
+
+    Returns
+    -------
+    ras2vox: numpy array
+        2D numpy array with shape (4, 4). Transformation matrix from RAS coordinate to voxel index.
+
+    vox2ras: numpy array
+        2D numpy array with shape (4, 4). Transformation matrix from voxel index to RAS coordinate.
+
+    vox2ras_tkr: numpy array
+        2D numpy array with shape (4, 4). Transformation matrix from voxel index to (tkregister) surface RAS coordinate.
+
+    Examples
+    --------
+    >>> import os; import brainload.freesurferdata as fsd
+    >>> mgh_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'orig.mgh')
+    >>> ras2vox, vox2ras, vox2ras_tkr = fsd.read_mgh_header_matrices(mgh_file)
+    """
     _, mgh_meta_data = read_mgh_file(mgh_file_name, collect_data=False)
     ras2vox = mgh_meta_data['ras2vox']
     vox2ras = mgh_meta_data['vox2ras']
@@ -1136,7 +1169,7 @@ def parse_talairach_file(file_name):
     """
     Parse a talairach matrix from a talairach.xfm file.
 
-    Parse a talairach matrix from the mri/transforms/talairach.xfm file of a subject.
+    Parse a talairach matrix from the mri/transforms/talairach.xfm file of a subject. Talairach space is a RAS space with the coordinate center at the Anterior Commisure. RAS (Right-Anterior-Superior) means X points to the right (from subjects point of view), Y points up out of the nose (subject is lying in scanner), and Z points out of the top of the head (so the axis is parallel to the floor). From the Freeurfer Wiki on coordinate systems: 'Note on Talairach: FreeSurfer does not report true "Talairach" coordinates. The coordinates listed unter "Talairach" are actually based on Matthew Brett's 10/8/98 non-linear transform from MNI305 space (see http://www.mrc-cbu.cam.ac.uk/Imaging/mnispace.html). FreeSurfer also reports "Talairach MNI" coordinates. These are MNI305 space.'
 
     Parameters
     ----------
