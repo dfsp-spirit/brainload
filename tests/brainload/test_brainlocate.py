@@ -87,7 +87,7 @@ def test_get_closest_vertex_and_distance_to_far_away_point():
         pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
     vert_coords, faces, _ = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
     locator = loc.BrainLocate(vert_coords, faces)
-    query_coords = np.array([[134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631]])
+    query_coords = np.array([[134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631]])  # just query 3 times for the same coord to see whether results and consistent
     res = locator.get_closest_vertex_and_distance(query_coords)
     assert res.shape == (3, 2)
     assert res[0,0] == 209519              # the vertex index in the mesh
@@ -96,3 +96,19 @@ def test_get_closest_vertex_and_distance_to_far_away_point():
     assert res[0,1] == 107.47776120258028  # the distance
     assert res[1,1] == 107.47776120258028
     assert res[2,1] == 107.47776120258028
+
+
+def test_get_closest_vertex_to_vertex_0_coordinate():
+    try:
+        from scipy.spatial.distance import cdist
+    except ImportError:
+        pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
+    vert_coords, faces, _ = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
+    locator = loc.BrainLocate(vert_coords, faces)
+    known_vertex_0_coord = (-1.85223234, -107.98274994, 22.76972961)    # coordinate for vertex 0 in the test data.
+    assert_allclose(vert_coords[0], np.array(known_vertex_0_coord))
+    query_coords = np.array([known_vertex_0_coord])
+    res = locator.get_closest_vertex_and_distance(query_coords)
+    assert res.shape == (1, 2)
+    assert res[0, 0] == 0    # vertex index of closest vertex. The query coordinate is the known coordinate of vertex 0, so this must be 0.
+    assert abs(res[0, 1]) <= 0.001   # distance to closest vertex. The query coordinate is the known coordinate of vertex 0, so this must be very close to 0.0
