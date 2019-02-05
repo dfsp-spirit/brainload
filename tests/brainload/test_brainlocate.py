@@ -69,11 +69,12 @@ def test_closest_vertex_to_far_away_point():
         pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
     vert_coords, faces, _ = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='both')
     locator = loc.BrainLocate(vert_coords, faces)
-    query_coords = np.array([[134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631]])
+    query_coords = np.array([[134.37332 , -57.259495, 149.267631], [134.37332 , -57.259495, 149.267631], [58.0 , -45.0, 75.0]])
     res = locator.get_closest_vertex(query_coords)
-    assert res.shape == (2, )
+    assert res.shape == (3, )
     assert res[0] == 209519     # the vertex index in the mesh
     assert res[1] == 209519
+    assert res[2] == 210683
     assert_allclose(vert_coords[209519], np.array((58.258751, -45.213722,  74.348068)))
     dist = cdist(np.array([[58.258751, -45.213722,  74.348068]]), np.array([[134.37332 , -57.259495, 149.267631]]))
     assert dist[0][0] == pytest.approx(107.47776133, 0.001)
