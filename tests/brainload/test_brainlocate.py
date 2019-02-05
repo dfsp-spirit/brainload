@@ -48,5 +48,5 @@ def test_get_closest_vertex_and_distance():
     assert res[1,0] == 209519
     assert res[2,0] == 209519
     assert res[0,1] == 107.47776120258028  # the distance
-    assert res[0,1] == 107.47776120258028
-    assert res[0,1] == 107.47776120258028
+    assert res[1,1] == 107.47776120258028
+    assert res[2,1] == 107.47776120258028
