@@ -26,7 +26,8 @@ class BrainLocate:
             Array with shape (n, ). Each value represents the index of the vertex closest to the respective query coordinate.
         """
         from scipy.spatial.distance import cdist
-        return np.argmin(cdist(self.vert_coords, query_coords), axis=0)
+        dist_matrix = cdist(self.vert_coords, query_coords, metric='euclidean')
+        return np.argmin(dist_matrix, axis=0)
 
 
     def get_closest_vertex_and_distance(self, query_coords):
@@ -44,7 +45,7 @@ class BrainLocate:
             Array with shape (n, 2). Each row represents the index of the vertex closest to the respective query coordinate (at index 0) and the respective distance (at index 1).
         """
         from scipy.spatial.distance import cdist
-        dist_matrix = cdist(self.vert_coords, query_coords)
+        dist_matrix = cdist(self.vert_coords, query_coords, metric='euclidean')
         vert_indices = np.argmin(dist_matrix, axis=0)
         vert_distances = np.min(dist_matrix, axis=0)
         return np.column_stack((vert_indices, vert_distances))
