@@ -525,6 +525,10 @@ def apply_affine(i, j, k, affine_matrix):
     Returns
     -------
     The coordinate vector after applying the matrix. A 1D array (vector) of shape (3, ) if the inputs were scalar, a 2D array with shape (n, 3) otherwise, were n is the length of the input array-likes.
+
+    See Also
+    --------
+    apply_affine_3D can handle a 2D matrix of coordinates, e.g., with shape (n, 3) for n 3D coordinates.
     """
     if np.isscalar(i):
         return _apply_affine_scalar(i, j, k, affine_matrix)
@@ -533,6 +537,9 @@ def apply_affine(i, j, k, affine_matrix):
 
 
 def _apply_affine_arraylike(i, j, k, affine_matrix):
+    """
+    Applies an affine matrix to the given coordinates. The 3 values i, j and k must be array-likes (usually numpy 1D arrays) with identical shape. The affine matrix consists of a 3x3 rotation matrix and a 3x1 transposition matrix (plus the last row).
+    """
     rotation = affine_matrix[:3, :3]
     translation = affine_matrix[:3, 3]
     res = np.zeros((i.size, 3))
@@ -543,7 +550,7 @@ def _apply_affine_arraylike(i, j, k, affine_matrix):
 
 def _apply_affine_scalar(i, j, k, affine_matrix):
     """
-    Applies an affine matrix to the given coordinates. The affine matrix consists of a 3x3 rotation matrix and a 3x1 transposition matrix (plus the last row).
+    Applies an affine matrix to the given coordinates. The 3 values i, j and k must be scalars. The affine matrix consists of a 3x3 rotation matrix and a 3x1 transposition matrix (plus the last row).
 
     Parameters
     ----------
