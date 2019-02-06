@@ -296,3 +296,12 @@ def test_get_freesurfer_matrix_ras2vox():
    [0.00000, 1.00000, 0.00000, 128.00000],
    [0.00000, 0.00000, 0.00000, 1.00000]])
     assert_allclose(expected, st.get_freesurfer_matrix_ras2vox())
+
+
+def test_get_freesurfer_matrix_vox2ras_for_vertex_0():
+    # Tests that the vertex at index (128, 128, 128) has a RAS coordinate close to the origin (0., 0., 0.).
+    m = st.get_freesurfer_matrix_vox2ras()
+    voxel_origin = np.array([[128, 128, 128]])
+    ras_coords_near_origin = st.apply_affine_3D(voxel_origin, m)
+    assert ras_coords_near_origin.shape == (1, 3)
+    assert_allclose(ras_coords_near_origin, np.array([[0., 0., 0.]]))
