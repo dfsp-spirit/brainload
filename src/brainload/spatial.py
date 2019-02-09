@@ -595,7 +595,7 @@ def apply_affine_3D(coords_3d, affine_matrix):
 
 def get_freesurfer_matrix_vox2ras():
     """
-    The FreeSurfer vox2ras matrix.
+    The FreeSurfer vox2ras matrix, this is identical to the vox2ras-tkr matrix.
 
     Retrieved from http://freesurfer.net/fswiki/CoordinateSystems, use case 4.
     Note that fsaverage is in MNI305 space.
