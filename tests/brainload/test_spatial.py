@@ -299,7 +299,7 @@ def test_get_freesurfer_matrix_ras2vox():
     assert_allclose(expected, m)
     # now apply it: the coordinate (0.0, 0.0, 0.0) should give us voxel index (128, 128, 128)
     query_coord = np.array([[0., 0., 0.]])
-    vox_idx = np.rint(st.apply_affine_3D(query_coord, m))
+    vox_idx = np.rint(st.apply_affine_3D(query_coord, m)).astype(int)
     expected = np.array([[128, 128, 128]])
     assert_array_equal(vox_idx, expected)
 
