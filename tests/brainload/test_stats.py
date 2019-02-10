@@ -552,6 +552,8 @@ def test_extract_field_from_table_data():
     subjects_list = ['subject1', 'subject2']
     _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
     row_index_amygdala = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
+    assert not isinstance(row_index_amygdala, tuple)    # must be np.array
+    assert row_index_amygdala.shape == (1, )
     amygdala_column_all_subjects = st.extract_field_from_table_data('Volume_mm3', row_index_amygdala, all_subjects_table_data_dict)
     assert amygdala_column_all_subjects.shape == (2, )
 

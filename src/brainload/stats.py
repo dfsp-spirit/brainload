@@ -654,7 +654,8 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
         return np.array([])
     else:
         first_entry = column_2D_arr[0]
-        return np.where(first_entry == target_value_string)
+        res_tuple = np.where(first_entry == target_value_string)    # where returns a tuple of arrays (one per axis)
+        return res_tuple[0]
 
 
 def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
