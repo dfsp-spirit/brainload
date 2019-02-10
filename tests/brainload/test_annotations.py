@@ -373,6 +373,7 @@ def test_annotquery():
     label_colors = np.array([[255, 0, 0, 0], [0, 255, 0, 0], [0, 0, 255, 0]])
     label_names = np.array(["red", "green", "blue"])
     aq = an.AnnotQuery(vertex_lookup_indices, label_colors, label_names)
+    # now perform a query
     query_vert_indices = np.array([0, 1, 0, 2])
     names = aq.get_vertex_label_names(query_vert_indices)
     colors = aq.get_vertex_label_colors(query_vert_indices)
@@ -382,4 +383,7 @@ def test_annotquery():
     assert names[2] == "None"
     assert names[3] == "red"
     assert colors.shape == (4, 4)
-    
+    assert np.array_equal(colors[0], np.array([0,0,0,0], dtype=int))
+    assert np.array_equal(colors[1], np.array([0,255,0,0], dtype=int))
+    assert np.array_equal(colors[2], np.array([0,0,0,0], dtype=int))
+    assert np.array_equal(colors[3], np.array([255,0,0,0], dtype=int))
