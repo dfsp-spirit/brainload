@@ -11,6 +11,9 @@ import brainload.nitools as nit
 
 
 class AnnotQuery:
+    """
+    Convenience class that allows one to query the vertex names and colors for a list of vertex indices. The required parameters for the constructor are what is returned by the annot function.
+    """
     def __init__(self, vertex_lookup_indices, label_colors, label_names, name_dtype='S50', name_null_value="None"):
         self.vertex_lookup_indices = vertex_lookup_indices
         self.label_colors = label_colors
@@ -29,12 +32,39 @@ class AnnotQuery:
                 self.vertex_colors[idx] = self.label_colors[self.vertex_lookup_indices[idx]][0:4]
 
     def get_vertex_label_names(self, query_vertex_indices):
+        """
+        Query the label name for a list of vertex indices.
+
+        Parameters
+        ----------
+        query_vertex_indices: numpy 1D int array
+            The vertex indices (in the mesh) for which you want to query the name.
+
+        Returns
+        -------
+        numpy 1D string array
+            Name array with shape (n, ) for n query vertices.
+        """
         names = np.empty((len(query_vertex_indices), ), dtype=self.name_dtype)
         for idx, vert_idx in enumerate(query_vertex_indices):
             names[idx] = self.vertex_names[vert_idx]
         return names
 
+
     def get_vertex_label_colors(self, query_vertex_indices):
+        """
+        Query the label color for a list of vertex indices.
+
+        Parameters
+        ----------
+        query_vertex_indices: numpy 1D int array
+            The vertex indices (in the mesh) for which you want to query the color.
+
+        Returns
+        -------
+        numpy 2D int array
+            Color array with shape (n, 4) for n query vertices. Each color is represented by 4 int values that encode an RGBT color, where T is transparency and equal to T = alpha - 255.
+        """
         colors = np.zeros((len(query_vertex_indices), 4), dtype=int)
         for idx, vert_idx in enumerate(query_vertex_indices):
             colors[idx] = self.vertex_colors[vert_idx,:]
