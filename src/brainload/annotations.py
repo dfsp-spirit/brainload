@@ -10,6 +10,37 @@ import nibabel.freesurfer.io as fsio
 import brainload.nitools as nit
 
 
+class AnnotQuery:
+    def __init__(self, vertex_lookup_indices, label_colors, label_names, name_dtype='S50', name_null_value="None"):
+        self.vertex_lookup_indices = vertex_lookup_indices
+        self.label_colors = label_colors
+        self.label_names = label_names
+        self.name_null_value = name_null_value
+        self.name_dtype = name_dtype
+        self.compute_labels()
+
+    def compute_labels(self):
+        num_verts = len(self.vertex_lookup_indices)
+        self.vertex_names = np.array([self.name_null_value] * num_verts, dtype=self.name_dtype)
+        self.vertex_colors = np.zeros((num_verts, 4), dtype=int)
+        for idx in range(num_verts):
+            if self.vertex_lookup_indices[idx] >= 0:
+                self.vertex_names[idx] = self.label_names[self.vertex_lookup_indices[idx]]
+                self.vertex_colors[idx] = self.label_colors[self.vertex_lookup_indices[idx]][0:4]
+
+    def get_vertex_label_names(self, query_vertex_indices):
+        names = np.empty((len(query_vertex_indices), ), dtype=self.name_dtype)
+        for idx, vert_idx in enumerate(query_vertex_indices):
+            names[idx] = self.vertex_names[vert_idx]
+        return names
+
+    def get_vertex_label_colors(self, query_vertex_indices):
+        colors = np.zeros((len(query_vertex_indices), 4), dtype=int)
+        for idx, vert_idx in enumerate(query_vertex_indices):
+            colors[idx] = self.vertex_colors[vert_idx,:]
+        return colors
+
+
 def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, orig_ids=False):
     """
     Load annotation for the mesh vertices of a single subject.

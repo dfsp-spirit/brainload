@@ -366,3 +366,20 @@ def test_vertices_to_label():
 2 -3.120585 -108.130928 22.830750 0.0000000000
 4 -4.798367 -108.059784 22.777563 0.0000000000"""
     assert label_str == expected
+
+
+def test_annotquery():
+    vertex_lookup_indices = np.array([-1, 1, 0, -1, 2])
+    label_colors = np.array([[255, 0, 0, 0], [0, 255, 0, 0], [0, 0, 255, 0]])
+    label_names = np.array(["red", "green", "blue"])
+    aq = an.AnnotQuery(vertex_lookup_indices, label_colors, label_names)
+    query_vert_indices = np.array([0, 1, 0, 2])
+    names = aq.get_vertex_label_names(query_vert_indices)
+    colors = aq.get_vertex_label_colors(query_vert_indices)
+    assert names.shape == (4, )
+    assert names[0] == "None"
+    assert names[1] == "green"
+    assert names[2] == "None"
+    assert names[3] == "red"
+    assert colors.shape == (4, 4)
+    
