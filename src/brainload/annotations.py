@@ -12,9 +12,9 @@ import brainload.nitools as nit
 
 class AnnotQuery:
     """
-    Convenience class that allows one to query the vertex names and colors for a list of vertex indices. The required parameters for the constructor are what is returned by the annot function.
+    Convenience class that allows one to query the vertex names and colors for a list of vertex indices. The required parameters for the constructor are what is returned by the annot
     """
-    def __init__(self, vertex_lookup_indices, label_colors, label_names, name_dtype='S50', name_null_value="None"):
+    def __init__(self, vertex_lookup_indices, label_colors, label_names, name_dtype='U50', name_null_value="None"):
         self.vertex_lookup_indices = vertex_lookup_indices
         self.label_colors = label_colors
         self.label_names = label_names
