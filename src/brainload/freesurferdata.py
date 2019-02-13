@@ -14,6 +14,44 @@ import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
 import brainload.nitools as nit
 import brainload.annotations as an
+import nibabel as nib
+import numpy.linalg as npl  # for matrix inversion
+
+
+def get_vox2ras_and_ras2vox_from_nifti_file(nifti_file, use_sform=True):
+    """
+    Load the vox2ras and ras2vox matrices from a nifti file header.
+
+    Load the vox2ras and ras2vox matrices from a nifti file header. The file can be in nifti (.nii) or gzipped nifti (.nii.gz) format. To understand qform and sform, read the nibabel docs or better https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained.
+
+    Parameters
+    ----------
+    nifti_file: str
+        Path to a nifti or gzipped nifti file.
+
+    use_sform: bool, optional
+        Whether to report the sform matrix or qform matrix from the nifti header. Defaults to True (=sform). If set to False, the qform will be used.
+
+    Returns
+    -------
+    vox2ras: 2D numpy array
+        The sform or qform matrix
+
+    ras2vox: 2D numpy array
+        The inverse of the vox2ras matrix.
+
+    Examples
+    --------
+    >>> import brainload.freesurferdata as fsd
+    >>> vox2ras, ras2vox = fsd.get_vox2ras_and_ras2vox_from_nifti_file("mni152_volume.nii.gz")
+    """
+    img = nib.load(nifti_file)
+    if use_sform:
+        vox2ras = img.header.get_sform()
+    else:
+        vox2ras = img.header.get_qform()
+    ras2vox = npl.inv(vox2ras)
+    return vox2ras, ras2vox
 
 
 def read_mgh_header_matrices(mgh_file_name):
@@ -98,7 +136,7 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True, collect_data=True):
         - https://surfer.nmr.mgh.harvard.edu/fswiki/FileFormats
     """
     mgh_meta_data = {}
-    if mgh_file_name.endswith(".mgz") or mgh_file_name.endswith(".mgh.gz"):
+    if mgh_file_name.endswith(".mgz") or mgh_file_name.endswith(".gz"):
         mgh_file_handle = gzip.open(mgh_file_name, 'rb')
     else:
         mgh_file_handle = open(mgh_file_name, 'rb')
