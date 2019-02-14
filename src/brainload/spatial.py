@@ -657,6 +657,12 @@ def get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n):
 
     zend: int
             The z end index, exclusive.
+
+    Examples
+    --------
+    >>> volume = np.zeros((3, 3, 3))
+    >>> point = [2, 2, 2]
+    >>> xstart, xend, ystart, yend, zstart, zend = st.get_n_neighborhood_start_stop_indices_3D(volume.shape, point, 1)    # 1-neighborhood
     """
     vx = volume_shape[0]
     vy = volume_shape[1]
@@ -693,6 +699,12 @@ def get_n_neighborhood_indices_3D(volume_shape, point, n):
     -------
     indices: tuple of 3 numpy 1D arrays
             The 3 arrays have identical size and contain the x, y, and z indices of the neighborhood.
+
+    Examples
+    --------
+    >>> volume = np.zeros((3, 3, 3))
+    >>> point = [1, 1, 1]
+    >>> indices = st.get_n_neighborhood_indices_3D(volume.shape, point, 1)
     """
     xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n)
     M = np.zeros(volume_shape, dtype=int)   # all disabled
