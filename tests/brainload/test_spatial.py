@@ -391,6 +391,29 @@ def test_get_n_neighborhood_start_stop_indices_3D_point_n5():
     assert zend == 3
 
 
+def test_get_n_neighborhood_start_stop_indices_3D_points():
+    volume = np.zeros((3, 3, 3))
+    points = np.array([[1, 1, 1], [2,2,2]])
+    xstart, xend, ystart, yend, zstart, zend = st.get_n_neighborhood_start_stop_indices_3D_points(volume.shape, points, 0)
+    assert xstart.shape == (2, )
+    assert ystart.shape == (2, )
+    assert zstart.shape == (2, )
+
+    assert xstart[0] == 1
+    assert xend[0] == 2
+    assert ystart[0] == 1
+    assert yend[0] == 2
+    assert zstart[0] == 1
+    assert zend[0] == 2
+
+    assert xstart[1] == 2
+    assert xend[1] == 3
+    assert ystart[1] == 2
+    assert yend[1] == 3
+    assert zstart[1] == 2
+    assert zend[1] == 3
+
+
 def test_get_n_neighborhood_indices_3D_n0_neighborhood():
     volume = np.zeros((3, 3, 3))
     point = [1, 1, 1]
@@ -447,3 +470,16 @@ def test_get_n_neighborhood_indices_3D_n2_neighborhood():
     assert len(indices[0]) == 343
     assert len(indices[1]) == 343
     assert len(indices[2]) == 343
+
+
+def test_get_n_neighborhood_indices_3D_n1_neighborhood_points():
+    volume = np.zeros((3, 3, 3))
+    points = np.array([[0, 0, 0], [2,2,2]])
+    indices = st.get_n_neighborhood_indices_3D_points(volume.shape, points, 0)
+    assert len(indices) == 3
+    assert len(indices[0]) == 2
+    assert len(indices[1]) == 2
+    assert len(indices[2]) == 2
+    assert_array_equal(indices[0], np.array([0,2], dtype=int))
+    assert_array_equal(indices[1], np.array([0,2], dtype=int))
+    assert_array_equal(indices[2], np.array([0,2], dtype=int))

@@ -678,6 +678,66 @@ def get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n):
     return xstart, xend, ystart, yend, zstart, zend
 
 
+def get_n_neighborhood_start_stop_indices_3D_points(volume_shape, points, n):
+    """
+    Compute the start and stop indices along the 3 dimensions for the n-neighborhood of the points within the 3D volume.
+
+    Note that this returns an index range where the end is *non-inclusive*! So for a point at x,y,z with 0-neighborhood (only the point itself), you will get x,x+1,y,y+1,z,z+1 as return values.
+
+    Parameters
+    ----------
+    volume_shape: 3-tuple of int
+        The shape of the volume (e.g., whole 3D image)
+
+    points: 2D array of shape (n, 3) for n points
+        The x, y, and z coordinates of the query points. Must lie within the volume. These are the points around which the neighborhoods will be computed.
+
+    n: int >= 0
+        The neighborhood size (in every direction, the neighborhood is always square). For 0, only the index of the point itself will be returned. For 1, the 26 neighbors in distance 1 plus the index of the point itself (so 27 indices) will be returned. If the point is close to the border of the volume, only the valid subset will be returned of course. For n=2 you get (up to) 125 indices.
+
+    Returns
+    -------
+    xstart: 1D numpy int array
+            The x start indices, inclusive.
+
+    xend: 1D numpy int array
+            The x end indices, exclusive.
+
+    ystart: 1D numpy int array
+            The y start indices, inclusive.
+
+    yend: 1D numpy int array
+            The y end indices, exclusive.
+
+    zstart: 1D numpy int array
+            The z start indices, inclusive.
+
+    zend: 1D numpy int array
+            The z end indices, exclusive.
+
+    Examples
+    --------
+    >>> volume = np.zeros((3, 3, 3))
+    >>> points = np.array([[1, 1, 1], [2,2,2]])
+    >>> xstart, xend, ystart, yend, zstart, zend = st.get_n_neighborhood_start_stop_indices_3D_points(volume.shape, points, 1)    # 1-neighborhood
+    """
+    vx = volume_shape[0]
+    vy = volume_shape[1]
+    vz = volume_shape[2]
+
+    num_points = points.shape[0]
+    # now set valid ones to 1
+    zeros = np.zeros((num_points), dtype=int)
+
+    xstart = np.maximum(zeros, points[:,0]-n)
+    xend = np.minimum(points[:,0]+1+n, np.ones((num_points), dtype=int) * vx)
+    ystart = np.maximum(zeros, points[:,1]-n)
+    yend = np.minimum(points[:,1]+1+n, np.ones((num_points), dtype=int) * vy)
+    zstart= np.maximum(zeros, points[:,2]-n)
+    zend = np.minimum(points[:,2]+1+n, np.ones((num_points), dtype=int) * vz)
+    return xstart, xend, ystart, yend, zstart, zend
+
+
 def get_n_neighborhood_indices_3D(volume_shape, point, n):
     """
     Compute the indices of the n-neighborhood of the point within the volume.
@@ -709,5 +769,41 @@ def get_n_neighborhood_indices_3D(volume_shape, point, n):
     xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n)
     M = np.zeros(volume_shape, dtype=int)   # all disabled
     M[xstart : xend, ystart : yend, zstart : zend] = 1
+    indices = np.nonzero(M)
+    return indices
+
+
+def get_n_neighborhood_indices_3D_points(volume_shape, points, n):
+    """
+    Compute the indices of the n-neighborhood of the point within the volume.
+
+    Compute the indices of the square n-neighborhood of the point within the volume, including the point itself. This function returns only valid indices in the volume.
+
+    Parameters
+    ----------
+    volume_shape: 3-tuple of int
+        The shape of the volume (e.g., whole 3D image)
+
+    points: 2D array of shape (n, 3) for n points
+        The x, y, and z coordinates of the query points. Must lie within the volume. These are the points around which the neighborhoods will be computed.
+
+    n: int >= 0
+        The neighborhood size (in every direction, the neighborhood is always square). For 0, only the index of the point itself will be returned. For 1, the 26 neighbors in distance 1 plus the index of the point itself (so 27 indices) will be returned. If the point is close to the border of the volume, only the valid subset will be returned of course. For n=2 you get (up to) 125 indices.
+
+    Returns
+    -------
+    indices: tuple of 3 numpy 1D arrays
+            The 3 arrays have identical size and contain the x, y, and z indices of the neighborhood.
+
+    Examples
+    --------
+    >>> volume = np.zeros((3, 3, 3))
+    >>> points = np.array([[1, 1, 1], [2, 2, 2]])
+    >>> indices = st.get_n_neighborhood_indices_3D_points(volume.shape, points, 1)
+    """
+    xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D_points(volume_shape, points, n)
+    M = np.zeros(volume_shape, dtype=int)   # all disabled
+    for idx, value in enumerate(xstart):
+        M[xstart[idx] : xend[idx], ystart[idx] : yend[idx], zstart[idx] : zend[idx]] = 1
     indices = np.nonzero(M)
     return indices
