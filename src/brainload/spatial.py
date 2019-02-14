@@ -619,3 +619,31 @@ def get_freesurfer_matrix_ras2vox():
     Get matrix to convert RAS coordinate to voxel index for Freesurfer volumes. See the documentation for get_freesurfer_matrix_vox2ras for background information.
     """
     return npl.inv(get_freesurfer_matrix_vox2ras())
+
+
+def get_n_neighborhood_start_stop_indices_3D(volume, point, n):
+    "Note that this returns an index range where the end is *non-inclusive*! So for a point at x,y,z with 0-neighborhood (only the point itself), you will get x,x+1,y,y+1,z,z+1 as return values."
+    vshape = volume.shape
+    vx = vshape[0]
+    vy = vshape[1]
+    vz = vshape[2]
+
+    # now set valid ones to 1
+    xstart = max(0, point[0]-n)
+    xend = min(point[0]+1+n, vx)
+    ystart = max(0, point[1]-n)
+    yend = min(point[1]+1+n, vy)
+    zstart= max(0, point[2]-n)
+    zend = min(point[2]+1+n, vz)
+    return xstart, xend, ystart, yend, zstart, zend
+
+
+def get_n_neighborhood_indices_3D(volume, point, n):
+    vshape = volume.shape
+    xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D(volume, point, n)
+    M = np.zeros((vshape), dtype=int)   # all disabled
+    M[xstart : xend,
+                  ystart : yend,
+                  zstart : zend] = 1
+    indices = np.nonzero(M)
+    return indices
