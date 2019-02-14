@@ -621,12 +621,46 @@ def get_freesurfer_matrix_ras2vox():
     return npl.inv(get_freesurfer_matrix_vox2ras())
 
 
-def get_n_neighborhood_start_stop_indices_3D(volume, point, n):
-    "Note that this returns an index range where the end is *non-inclusive*! So for a point at x,y,z with 0-neighborhood (only the point itself), you will get x,x+1,y,y+1,z,z+1 as return values."
-    vshape = volume.shape
-    vx = vshape[0]
-    vy = vshape[1]
-    vz = vshape[2]
+def get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n):
+    """
+    Compute the start and stop indices along the 3 dimensions for the n-neighborhood of the point within the 3D volume.
+
+    Note that this returns an index range where the end is *non-inclusive*! So for a point at x,y,z with 0-neighborhood (only the point itself), you will get x,x+1,y,y+1,z,z+1 as return values.
+
+    Parameters
+    ----------
+    volume_shape: 3-tuple of int
+        The shape of the volume (e.g., whole 3D image)
+
+    point: 1D array of length 3
+        The x, y, and z coordinates of the query point. Must lie within the volume. This is the point around which the neighborhood will be computed.
+
+    n: int >= 0
+        The neighborhood size (in every direction, the neighborhood is always square). For 0, only the index of the point itself will be returned. For 1, the 26 neighbors in distance 1 plus the index of the point itself (so 27 indices) will be returned. If the point is close to the border of the volume, only the valid subset will be returned of course. For n=2 you get (up to) 125 indices.
+
+    Returns
+    -------
+    xstart: int
+            The x start index, inclusive.
+
+    xend: int
+            The x end index, exclusive.
+
+    ystart: int
+            The y start index, inclusive.
+
+    yend: int
+            The y end index, exclusive.
+
+    zstart: int
+            The z start index, inclusive.
+
+    zend: int
+            The z end index, exclusive.
+    """
+    vx = volume_shape[0]
+    vy = volume_shape[1]
+    vz = volume_shape[2]
 
     # now set valid ones to 1
     xstart = max(0, point[0]-n)
@@ -638,12 +672,30 @@ def get_n_neighborhood_start_stop_indices_3D(volume, point, n):
     return xstart, xend, ystart, yend, zstart, zend
 
 
-def get_n_neighborhood_indices_3D(volume, point, n):
-    vshape = volume.shape
-    xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D(volume, point, n)
-    M = np.zeros((vshape), dtype=int)   # all disabled
-    M[xstart : xend,
-                  ystart : yend,
-                  zstart : zend] = 1
+def get_n_neighborhood_indices_3D(volume_shape, point, n):
+    """
+    Compute the indices of the n-neighborhood of the point within the volume.
+
+    Compute the indices of the square n-neighborhood of the point within the volume, including the point itself. This function returns only valid indices in the volume.
+
+    Parameters
+    ----------
+    volume_shape: 3-tuple of int
+        The shape of the volume (e.g., whole 3D image)
+
+    point: 1D array of length 3
+        The x, y, and z coordinates of the query point. Must lie within the volume. This is the point around which the neighborhood will be computed.
+
+    n: int >= 0
+        The neighborhood size (in every direction, the neighborhood is always square). For 0, only the index of the point itself will be returned. For 1, the 26 neighbors in distance 1 plus the index of the point itself (so 27 indices) will be returned. If the point is close to the border of the volume, only the valid subset will be returned of course. For n=2 you get (up to) 125 indices.
+
+    Returns
+    -------
+    indices: tuple of 3 numpy 1D arrays
+            The 3 arrays have identical size and contain the x, y, and z indices of the neighborhood.
+    """
+    xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n)
+    M = np.zeros(volume_shape, dtype=int)   # all disabled
+    M[xstart : xend, ystart : yend, zstart : zend] = 1
     indices = np.nonzero(M)
     return indices
