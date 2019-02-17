@@ -18,6 +18,23 @@ import nibabel as nib
 import numpy.linalg as npl  # for matrix inversion
 
 
+
+def read_lookup_file(lookup_file):
+    """
+    Read a FreeSurfer lookup table file in text format.
+
+    Read a FreeSurfer lookup table file in text format, this is used for the FreeSurferColorLUT.txt file.
+    """
+    with open(lookup_file, 'r') as fh:
+        lines = [line.rstrip('\n') for line in fh]
+    relevant_lines = []
+    for line in lines:
+        if line.startswith("#") or line.startswith(" "):
+            continue
+        else:
+            relevant_lines.append(line)
+
+
 def get_vox2ras_and_ras2vox_from_nifti_file(nifti_file, use_sform=True):
     """
     Load the vox2ras and ras2vox matrices from a nifti file header.

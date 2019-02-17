@@ -1,5 +1,5 @@
 """
-Find vertices closest to a given coordindate in a brain surface mesh. Some of these functions require scipy, which is an optional dependency and needs to be installed manually.
+Find vertices closest to a given coordinate in a brain surface mesh. Some of these functions require scipy, which is an optional dependency and needs to be installed manually.
 """
 import numpy as np
 import brainload as bl
