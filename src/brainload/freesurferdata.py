@@ -32,6 +32,7 @@ def read_lookup_file(lookup_file):
         if line.startswith("#") or line.startswith(" "):
             continue
         else:
+            parts = line.split()
             relevant_lines.append(line)
 
 
