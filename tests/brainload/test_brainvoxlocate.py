@@ -53,7 +53,7 @@ def test_get_voxel_segmentation_labels():
     assert seg_data[3] == "Right-Cerebral-Cortex"
 
 
-def test_closest_not_unknown():
+def test_closest_not_unknown_neighborhood_default_10():
     try:
         from scipy.spatial.distance import cdist
     except ImportError:
@@ -65,9 +65,26 @@ def test_closest_not_unknown():
     voxels, codes, distances, closest_voxels_ras_coords = locator.get_closest_not_unknown(query_vox_crs)
     assert voxels.shape == (4, 3)
     assert codes.shape == (4, )
-    assert codes[0] == -1     # 0 is 'Unknown', see FreeSurferColorLUT.txt
+    assert codes[0] == -1     # 0 is 'Unknown', see FreeSurferColorLUT.txt. If you increase neighborhood_size further, you will see that the closest label is 42, but it is quite far away.
     assert codes[1] == 42
     assert codes[2] == 41
     assert codes[3] == 42
     assert distances.shape == (4, )
     assert closest_voxels_ras_coords.shape == (4, 3)
+
+
+def test_closest_not_unknown_neighborhood_15_near_brain_stem():
+    try:
+        from scipy.spatial.distance import cdist
+    except ImportError:
+        pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
+    volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'aseg.mgz')
+    lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
+    locator = vloc.BrainVoxLocate(volume_file, lookup_file)
+    query_vox_crs = np.array([[127, 136, 103]], dtype=int)
+    voxels, codes, distances, closest_voxels_ras_coords = locator.get_closest_not_unknown(query_vox_crs, neighborhood_size=15)
+    assert voxels.shape == (1, 3)
+    assert codes.shape == (1, )
+    assert codes[0] == 16     # 16 is 'Brain-Stem', see FreeSurferColorLUT.txt. See the voxel location in freeview to see that this is correct.
+    assert distances.shape == (1, )
+    assert closest_voxels_ras_coords.shape == (1, 3)
