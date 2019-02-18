@@ -766,6 +766,9 @@ def get_n_neighborhood_indices_3D(volume_shape, point, n):
     >>> point = [1, 1, 1]
     >>> indices = st.get_n_neighborhood_indices_3D(volume.shape, point, 1)
     """
+    point = np.array(point)
+    if point.shape != (3, ):
+        raise ValueError("Point must be a 1D array and have 3 entries (shape=(3, )), but it has shape %s." % str(point.shape))
     xstart, xend, ystart, yend, zstart, zend = get_n_neighborhood_start_stop_indices_3D(volume_shape, point, n)
     M = np.zeros(volume_shape, dtype=int)   # all disabled
     M[xstart : xend, ystart : yend, zstart : zend] = 1
