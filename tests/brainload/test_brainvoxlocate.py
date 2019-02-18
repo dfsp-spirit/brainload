@@ -39,14 +39,16 @@ def test_get_voxel_segmentation_labels():
     volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'aseg.mgz')
     lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
     locator = vloc.BrainVoxLocate(volume_file, lookup_file)
-    query_vox_rcs = np.array([[24, 28, 20], [64, 64, 45]], dtype=int)
+    query_vox_rcs = np.array([[24, 28, 20], [64, 64, 45], [90, 90, 90]], dtype=int)
     seg_code, seg_data = locator.get_voxel_segmentation_labels(query_vox_rcs)
-    assert seg_code.shape == (2, )
+    assert seg_code.shape == (3, )
     assert seg_code[0] == 0     # 0 is 'Unknown', see FreeSurferColorLUT.txt
     assert seg_code[1] == 0
-    assert seg_data.shape == (2, )
+    assert seg_code[2] == 41
+    assert seg_data.shape == (3, )
     assert seg_data[0] == "Unknown"
     assert seg_data[1] == "Unknown"
+    assert seg_data[2] == "Right-Cerebral-White-Matter"
 
 
 def test_closest_vertex_to_very_close_point_known_dist():
