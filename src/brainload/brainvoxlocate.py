@@ -97,7 +97,7 @@ class BrainVoxLocate:
         return voxel_seg_code, voxel_seg_name
 
 
-    def get_closest_not_unknown(self, query_voxels_crs, neighborhood_size=10):
+    def get_closest_not_unknown(self, query_voxels_crs, unknown_label=0, neighborhood_size=10):
         """
         Determine the closest voxels which have a non-empty label.
 
@@ -108,8 +108,11 @@ class BrainVoxLocate:
         query_voxels_crs: numpy 2D array of int
             The query voxels, each given by its CRS indices. So the shape is (n, 3) for n query voxels.
 
-        neighborhood_size: int
-            Distance threshold in voxels along each direction of each axis. Only the neighborhood of each query voxel will be searched. Example: If you pass 0, only the voxel itself is searched. If you pass 1, up to 3x3 = 27 voxels around it will be searched. If you pass 3, up to 7x7x7 = 343 voxels will be searched. The 'up to' refers to the case where the query voxel is at the border of the volume. In that case, some of the voxels do not exist (and thus are not checked).
+        neighborhood_size: int, optional
+            Distance threshold in voxels along each direction of each axis. Only the neighborhood of each query voxel will be searched. Example: If you pass 0, only the voxel itself is searched. If you pass 1, up to 3x3 = 27 voxels around it will be searched. If you pass 3, up to 7x7x7 = 343 voxels will be searched. The 'up to' refers to the case where the query voxel is at the border of the volume. In that case, some of the voxels do not exist (and thus are not checked). Defaults to 10.
+
+        unknown_label: int, optional
+            The segmentation value that represents the 'Unknown' class. Defaults to 0, which is suitable for the FreeSurferColorLUT.txt file.
 
         Returns
         -------
@@ -129,7 +132,7 @@ class BrainVoxLocate:
         closest_voxels_ras_coords = np.zeros(query_voxels_crs.shape) - 1.0
         distances = np.zeros((query_voxels_crs.shape[0], ), dtype=float)
         for idx, query_vox_code in enumerate(codes):
-            if query_vox_code == 0:
+            if query_vox_code == unknown_label:
                 # The voxel itself has an 'Unknown' label, so find the closest one which has a different label
                 voxels[idx] = np.array([-1, -1, -1], dtype=int)
                 codes[idx] = -1
@@ -153,9 +156,7 @@ class BrainVoxLocate:
                 k_closest = 0       # We first select the k-closest voxel with k=0. Then, we increase k until we find a voxel that has a non-empty label in the following loop.
                 for k_closest in range(num_neighborhood_voxels):
                     closest_vox_index = neighborhood_indices_sorted_by_dist[k_closest]
-                    #print("Closest to query RAS coord (%f, %f, %f) is voxel with coord (%f, %f, %f)." % (query_voxel_ras_coords[0][0], query_voxel_ras_coords[0][1], query_voxel_ras_coords[0][2], neighborhood_sorted_by_dist[k_closest][0], neighborhood_sorted_by_dist[k_closest][1], neighborhood_sorted_by_dist[k_closest][2]))
-                    #print("That is the voxel with index %d %d %d in distance %f. It has segmentation label code %d." % (neighborhood_voxel_indices[closest_vox_index][0], neighborhood_voxel_indices[closest_vox_index][1], neighborhood_voxel_indices[closest_vox_index][2], dist_matrix[0][closest_vox_index], neighborhood_codes[closest_vox_index]))
-                    if neighborhood_codes[closest_vox_index] != 0:
+                    if neighborhood_codes[closest_vox_index] != unknown_label:
                         voxels[idx] = np.array([neighborhood_voxel_indices[closest_vox_index][0], neighborhood_voxel_indices[closest_vox_index][1], neighborhood_voxel_indices[closest_vox_index][2]], dtype=int)
                         codes[idx] = neighborhood_codes[closest_vox_index]
                         distances[idx] = dist_matrix[0][closest_vox_index]
