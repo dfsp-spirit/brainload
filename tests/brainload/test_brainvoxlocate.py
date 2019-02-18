@@ -58,11 +58,12 @@ def test_closest_not_unknown():
     lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
     locator = vloc.BrainVoxLocate(volume_file, lookup_file)
     query_vox_crs = np.array([[24, 28, 20], [64, 64, 45], [90, 90, 90], [95, 127, 45]], dtype=int)
-    voxels, codes, distances = locator.get_closest_not_unknown(query_vox_crs)
+    voxels, codes, distances, closest_voxels_ras_coords = locator.get_closest_not_unknown(query_vox_crs)
     assert voxels.shape == (4, 3)
     assert codes.shape == (4, )
     assert codes[0] == -1     # 0 is 'Unknown', see FreeSurferColorLUT.txt
-    assert codes[1] == -1
+    assert codes[1] == 42
     assert codes[2] == 41
     assert codes[3] == 42
     assert distances.shape == (4, )
+    assert closest_voxels_ras_coords.shape == (4, 3)

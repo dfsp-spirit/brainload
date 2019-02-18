@@ -108,28 +108,32 @@ class BrainVoxLocate:
         query_voxels_crs: numpy 2D array of int
             The query voxels, each given by its CRS indices. So the shape is (n, 3) for n query voxels.
 
+        neighborhood_size: int
+            Distance threshold in voxels along each direction of each axis. Only the neighborhood of each query voxel will be searched. Example: If you pass 0, only the voxel itself is searched. If you pass 1, up to 3x3 = 27 voxels around it will be searched. If you pass 3, up to 7x7x7 = 343 voxels will be searched. The 'up to' refers to the case where the query voxel is at the border of the volume. In that case, some of the voxels do not exist (and thus are not checked).
+
         Returns
         -------
         voxels: numpy 2D int array
-            The result voxels, one for each query voxel. Each voxel is given by its CRS indices. So the shape is (n, 3) for n query voxels.
+            The result voxels, one for each query voxel. Each voxel is given by its CRS indices. So the shape is (n, 3) for n query voxels. If no suitable voxel with non-empty label code was found for a query voxel, the coordinates are [-1, -1, -1].
 
         codes: numpy 1D int array
-            The label codes for the result voxels.
+            The label codes for the result voxels. If no suitable voxel with non-empty label code was found for a query voxel, the code is -1.
 
         distances: numpy 1D float array
-            The distances from the respective query voxel to the result voxel. These are determined from the RAS coordinates of the voxel pair, using the ras2vox and vox2ras matrices in the volume file header. (The distance is 0.0 if the query voxel itself has a nonzero label.)
+            The distances from the respective query voxel to the result voxel. These are determined from the RAS coordinates of the voxel pair, using the ras2vox and vox2ras matrices in the volume file header. (The distance is 0.0 if the query voxel itself has a nonzero label.) If no suitable voxel with non-empty label code was found for a query voxel, the distance is -1.0f.
         """
         from scipy.spatial.distance import cdist
         query_voxels_ras_coords = self.get_ras_coords_at_voxel_crs(query_voxels_crs)
         codes, _ = self.get_voxel_segmentation_labels(query_voxels_crs)
         voxels = np.zeros(query_voxels_crs.shape, dtype=int) - 1
+        closest_voxels_ras_coords = np.zeros(query_voxels_crs.shape) - 1.0
         distances = np.zeros((query_voxels_crs.shape[0], ), dtype=float)
         for idx, query_vox_code in enumerate(codes):
             if query_vox_code == 0:
                 # The voxel itself has an 'Unknown' label, so find the closest one which has a different label
-                #voxels[idx] = np.array([-1, -1, -1], dtype=int)
-                #codes[idx] = -1
-                #distances[idx] = 1.0
+                voxels[idx] = np.array([-1, -1, -1], dtype=int)
+                codes[idx] = -1
+                distances[idx] = -1.0
 
                 neighborhood_voxel_indices_tuple = blsp.get_n_neighborhood_indices_3D(self.volume.shape, query_voxels_crs[idx,:], neighborhood_size)
                 neighborhood_voxel_indices = np.zeros((len(neighborhood_voxel_indices_tuple[0]), 3), dtype=int)
@@ -137,23 +141,28 @@ class BrainVoxLocate:
                 neighborhood_voxel_indices[:,1] = neighborhood_voxel_indices_tuple[1]
                 neighborhood_voxel_indices[:,2] = neighborhood_voxel_indices_tuple[2]
                 neighborhood_ras_coords = self.get_ras_coords_at_voxel_crs(neighborhood_voxel_indices)
+                neighborhood_codes, _ = self.get_voxel_segmentation_labels(neighborhood_voxel_indices)
                 query_voxel_ras_coords = query_voxels_ras_coords[idx:idx+1,:]
 
                 dist_matrix = cdist(query_voxel_ras_coords, neighborhood_ras_coords)
                 neighborhood_indices_sorted_by_dist = np.argsort(dist_matrix[0])
                 print(neighborhood_indices_sorted_by_dist)
-                closest_vox_index = neighborhood_indices_sorted_by_dist[0]
                 neighborhood_sorted_by_dist = neighborhood_ras_coords[neighborhood_indices_sorted_by_dist]
-                print("Closest to query coord %f, %f, %f   is %f, %f, %f." % (query_voxel_ras_coords[0][0], query_voxel_ras_coords[0][1], query_voxel_ras_coords[0][2], neighborhood_sorted_by_dist[0][0], neighborhood_sorted_by_dist[0][1], neighborhood_sorted_by_dist[0][2]))
-                print("That is the voxel with index %d %d %d in distance %f" % (neighborhood_voxel_indices[closest_vox_index][0], neighborhood_voxel_indices[closest_vox_index][1], neighborhood_voxel_indices[closest_vox_index][2], dist_matrix[0][closest_vox_index]))
-                print(neighborhood_sorted_by_dist)
-                #dist_matrix = cdist(neighborhood_ras_coords, query_voxel_ras_coords, metric='euclidean')
-                #print("dist matrix shape is %s" % str(dist_matrix.shape))
-                ##vert_indices = np.argmin(dist_matrix, axis=0)
-                ##vert_distances = np.min(dist_matrix, axis=0)
-                #print("vert_indices:")
-                #print(vert_indices)
+
+                num_neighborhood_voxels = len(dist_matrix[0])
+                k_closest = 0       # We first select the k-closest voxel with k=0. Then, we increase k until we find a voxel that has a non-empty label in the following loop.
+                for k_closest in range(num_neighborhood_voxels):
+                    closest_vox_index = neighborhood_indices_sorted_by_dist[k_closest]
+                    #print("Closest to query RAS coord (%f, %f, %f) is voxel with coord (%f, %f, %f)." % (query_voxel_ras_coords[0][0], query_voxel_ras_coords[0][1], query_voxel_ras_coords[0][2], neighborhood_sorted_by_dist[k_closest][0], neighborhood_sorted_by_dist[k_closest][1], neighborhood_sorted_by_dist[k_closest][2]))
+                    #print("That is the voxel with index %d %d %d in distance %f. It has segmentation label code %d." % (neighborhood_voxel_indices[closest_vox_index][0], neighborhood_voxel_indices[closest_vox_index][1], neighborhood_voxel_indices[closest_vox_index][2], dist_matrix[0][closest_vox_index], neighborhood_codes[closest_vox_index]))
+                    if neighborhood_codes[closest_vox_index] != 0:
+                        voxels[idx] = np.array([neighborhood_voxel_indices[closest_vox_index][0], neighborhood_voxel_indices[closest_vox_index][1], neighborhood_voxel_indices[closest_vox_index][2]], dtype=int)
+                        codes[idx] = neighborhood_codes[closest_vox_index]
+                        distances[idx] = dist_matrix[0][closest_vox_index]
+                        closest_voxels_ras_coords[idx] = np.array([neighborhood_sorted_by_dist[k_closest][0], neighborhood_sorted_by_dist[k_closest][1], neighborhood_sorted_by_dist[k_closest][2]])
+                        break
             else:
                 voxels[idx,:] = query_voxels_crs[idx,:]
+                closest_voxels_ras_coords[idx] = query_voxels_ras_coords[idx]   # the coord is the coord of the voxel itself
                 # The code fits already, and the distance is 0.0, which is also correct.
-        return voxels, codes, distances
+        return voxels, codes, distances, closest_voxels_ras_coords
