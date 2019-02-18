@@ -72,7 +72,7 @@ class BrainVoxLocate:
         """
         Find the exact labels for the given voxels.
 
-        Find the exact labels for the given voxels. If a voxel has no label, returns -1 for it.
+        Find the exact labels for the given voxels. All voxels will have a label, but label 0 means 'Unknown'.
 
         Parameters
         ----------
@@ -82,16 +82,53 @@ class BrainVoxLocate:
         Returns
         -------
         voxel_seg_code: numpy 1D int array
-            The voxel segmentation codes from the lookup file.
+            The voxel segmentation codes from the lookup file. All voxels will have a label, but label 0 means 'Unknown'.
 
         voxel_seg_name: numpy 1D str array
-            The voxel segmentation names from the lookup file.
+            The voxel segmentation names from the lookup file. All voxels will have a label, but label 0 means 'Unknown'.
         """
         voxel_seg_code = [self.volume[crs[0], crs[1], crs[2]] for crs in query_voxels_crs]
         voxel_seg_code = np.array(voxel_seg_code).astype(int)
         voxel_seg_code_str = np.array(voxel_seg_code).astype(self.lookup_table.dtype)
-        voxel_seg_data = np.empty((voxel_seg_code.shape[0],), dtype=self.lookup_table.dtype)
+        voxel_seg_name = np.empty((voxel_seg_code.shape[0],), dtype=self.lookup_table.dtype)
         for idx, code in enumerate(voxel_seg_code_str):
             lut_row = self.lookup_table[self.lookup_table[:,0] == code]
-            voxel_seg_data[idx] = lut_row[0][1]
-        return voxel_seg_code, voxel_seg_data
+            voxel_seg_name[idx] = lut_row[0][1]
+        return voxel_seg_code, voxel_seg_name
+
+
+    def get_closest_not_unknown(self, query_voxels_crs):
+        """
+        Determine the closest voxels which have a non-empty label.
+
+        Determine the closest voxels which have a non-empty label, their labels, and the respective distance.
+
+        Parameters
+        ----------
+        query_voxels_crs: numpy 2D array of int
+            The query voxels, each given by its CRS indices. So the shape is (n, 3) for n query voxels.
+
+        Returns
+        -------
+        voxels: numpy 2D int array
+            The result voxels, one for each query voxel. Each voxel is given by its CRS indices. So the shape is (n, 3) for n query voxels.
+
+        codes: numpy 1D int array
+            The label codes for the result voxels.
+
+        distances: numpy 1D float array
+            The distances from the respective query voxel to the result voxel. These are determined from the RAS coordinates of the voxel pair, using the ras2vox and vox2ras matrices in the volume file header. (The distance is 0.0 if the query voxel itself has a nonzero label.)
+        """
+        codes, _ = self.get_voxel_segmentation_labels(query_voxels_crs)
+        voxels = np.zeros(query_voxels_crs.shape, dtype=int) - 1
+        distances = np.zeros((query_voxels_crs.shape[0], ), dtype=float)
+        for idx, query_vox_code in enumerate(codes):
+            if query_vox_code == 0:
+                # The voxel itself has an 'Unknown' label, so find the closest one which has a different label
+                voxels[idx] = np.array([-1, -1, -1], dtype=int)
+                codes[idx] = -1
+                distances[idx] = 1.0
+            else:
+                voxels[idx,:] = query_voxels_crs[idx,:]
+                # The code fits already, and the distance is 0.0, which is also correct.
+        return voxels, codes, distances
