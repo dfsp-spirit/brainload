@@ -1232,3 +1232,19 @@ def test_parse_talairach_file():
     talairach_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'transforms', 'talairach.xfm')
     matrix = fsd.parse_talairach_file(talairach_file)
     assert matrix.shape == (3, 4)
+
+def test_read_lookup_file():
+    lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
+    results = fsd.read_lookup_file(lookup_file)
+    assert results.shape == (1292, 6)
+    assert results.dtype == '<U50'
+    # 19  Left-Insula                             80  196 98  0
+    left_insula_row = results[results[:,0] == "19"]
+    assert left_insula_row.shape == (1, 6)
+    left_insula_fields = left_insula_row[0]
+    assert left_insula_fields[0] == "19"
+    assert left_insula_fields[1] == "Left-Insula"
+    assert left_insula_fields[2] == "80"
+    assert left_insula_fields[3] == "196"
+    assert left_insula_fields[4] == "98"
+    assert left_insula_fields[5] == "0"

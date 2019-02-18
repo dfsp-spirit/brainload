@@ -19,21 +19,33 @@ import numpy.linalg as npl  # for matrix inversion
 
 
 
-def read_lookup_file(lookup_file):
+def read_lookup_file(lookup_file, dtype='<U50'):
     """
     Read a FreeSurfer lookup table file in text format.
 
     Read a FreeSurfer lookup table file in text format, this is used for the FreeSurferColorLUT.txt file.
+
+    Parameters
+    ----------
+    lookup_file: str
+        Path to the FreeSurferColorLUT.txt file. It comes with FreeSurfer and can be found directly in $FREESURFER_HOME for v6.
+
+    Returns
+    -------
+    numpy 2D str array
+        Array with shape (n, 6) for a file with n relevant lines. A relevant line is a line describing a segmentation in 6 fields (seg_code, structure_name, color_red, color_green, color_blue, color_alpha). There are 2 types of ignored lines in the file: empty lines and those starting with the comment character '#'. All other lines are considered relevant and split into the 6 parts.
     """
     with open(lookup_file, 'r') as fh:
         lines = [line.rstrip('\n') for line in fh]
-    relevant_lines = []
+    all_line_parts = []
     for line in lines:
-        if line.startswith("#") or line.startswith(" "):
-            continue
+        if line.startswith("#") or not line:
+            pass
         else:
-            parts = line.split()
-            relevant_lines.append(line)
+            line_parts = line.split()
+            all_line_parts.append(line_parts)
+    return np.array(all_line_parts, dtype=dtype)
+
 
 
 def get_vox2ras_and_ras2vox_from_nifti_file(nifti_file, use_sform=True):
