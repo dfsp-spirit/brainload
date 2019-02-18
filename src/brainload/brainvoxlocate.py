@@ -92,7 +92,6 @@ class BrainVoxLocate:
         voxel_seg_code_str = np.array(voxel_seg_code).astype(self.lookup_table.dtype)
         voxel_seg_data = np.empty((voxel_seg_code.shape[0],), dtype=self.lookup_table.dtype)
         for idx, code in enumerate(voxel_seg_code_str):
-            print("Checking for code %s" % code)
             lut_row = self.lookup_table[self.lookup_table[:,0] == code]
             voxel_seg_data[idx] = lut_row[0][1]
         return voxel_seg_code, voxel_seg_data
