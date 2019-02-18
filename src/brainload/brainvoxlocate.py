@@ -7,7 +7,7 @@ import brainload.freesurferdata as blfsd
 
 class BrainVoxLocate:
 
-    def __init__:(self, volume_file, lookup_file):
+    def __init__(self, volume_file, lookup_file):
         """
         Load data from files.
 
