@@ -1,5 +1,6 @@
 ## requirements.txt -- Requirements to be installed for automated tests on travis. Users should ignore this file.
 setuptools>=36.0.0
+six>=0.11
 numpy
 nibabel
 
