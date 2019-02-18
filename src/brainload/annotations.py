@@ -31,6 +31,7 @@ class AnnotQuery:
                 self.vertex_names[idx] = self.label_names[self.vertex_lookup_indices[idx]]
                 self.vertex_colors[idx] = self.label_colors[self.vertex_lookup_indices[idx]][0:4]
 
+
     def get_vertex_label_names(self, query_vertex_indices):
         """
         Query the label name for a list of vertex indices.
