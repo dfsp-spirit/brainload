@@ -54,6 +54,10 @@ def test_get_voxel_segmentation_labels():
 
 
 def test_closest_not_unknown():
+    try:
+        from scipy.spatial.distance import cdist
+    except ImportError:
+        pytest.skip("Optional dependency scipy not installed, skipping tests which require scipy.")
     volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'aseg.mgz')
     lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
     locator = vloc.BrainVoxLocate(volume_file, lookup_file)
