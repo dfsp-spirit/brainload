@@ -526,7 +526,7 @@ def apply_affine(i, j, k, affine_matrix):
     -------
     The coordinate vector after applying the matrix. A 1D array (vector) of shape (3, ) if the inputs were scalar, a 2D array with shape (n, 3) otherwise, were n is the length of the input array-likes.
 
-    See Also
+    See also
     --------
     apply_affine_3D can handle a 2D matrix of coordinates, e.g., with shape (n, 3) for n 3D coordinates.
     """

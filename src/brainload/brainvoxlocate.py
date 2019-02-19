@@ -7,6 +7,35 @@ import brainload.freesurferdata as blfsd
 import brainload.spatial as blsp
 
 class BrainVoxLocate:
+    """
+    Voxel segmentation label locator. This class allows you to determine the label (both label code/number and label name) from a lookup table file (usually FreeSurferColorLUT.txt) that is assigned to a voxel in a segmentation output volume (like aseg.mgz or aparc+asgeg.mgz).
+
+    Examples
+    --------
+    Initialize a locator based on a volume (a segmentation output, i.e., the value assigned to each voxel in the volume represents the tissue class it has been assigned to by the segmentation) and a lookup table file:
+
+    >>> volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'aseg.mgz')
+    >>> lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
+    >>> locator = vloc.BrainVoxLocate(volume_file, lookup_file)
+
+    Now define some voxels we are interested in. Voxels are given by their column, row, slice (RCS) indices in the volume. These always start at 0 and range from 0 to d-1, where d is the length of the volume along the respective axis. So if your volume file has shape (128, 128, 128), the 3 indices along the 3 axes all range from 0 to 127.
+
+    >>> query_vox_crs = np.array([[24, 28, 20], [64, 64, 45], [90, 90, 90], [95, 127, 45]], dtype=int)
+
+    Now get the classes of exactly these voxels:
+
+    >>> seg_code, seg_name = locator.get_voxel_segmentation_labels(query_vox_crs)
+
+    Now print the code and the string for the first query voxel, (24, 28, 20):
+
+    >>> print("Voxel has label code %d, which encodes label string '%s'." % (seg_code[0], seg_name[0]))
+
+    Note that some voxels may not be assigned any label. These will show the label code 0, which means label name 'Unknown'. Sometimes, you may want to know the label of the closest voxel which has a valid label for these. For example, because you want to know the brain structure that is closest to this voxel, even if the point does not lie within that structure. You can do this and allow a certain neighborhood to be searched with the ```get_closest_not_unknown``` function:
+
+    >>> voxels, codes, distances, closest_voxels_ras_coords = locator.get_closest_not_unknown(query_vox_crs)
+
+    See the documentation for that function for details on the return values.
+    """
 
     def __init__(self, volume_file, lookup_file):
         """
@@ -72,7 +101,7 @@ class BrainVoxLocate:
         """
         Find the exact labels for the given voxels.
 
-        Find the exact labels for the given voxels. All voxels will have a label, but label 0 means 'Unknown'.
+        Find the exact labels for the given voxels. All voxels will have a label, but label 0 means 'Unknown'. (Sometimes, you may want to know the label of the closest voxel which has a valid label for these. For example, because you want to know the brain structure that is closest to this voxel, even if the point does not lie within that structure. See the function ```get_closest_not_unknown``` for that use case.)
 
         Parameters
         ----------
@@ -86,6 +115,27 @@ class BrainVoxLocate:
 
         voxel_seg_name: numpy 1D str array
             The voxel segmentation names from the lookup file. All voxels will have a label, but label 0 means 'Unknown'.
+
+        Examples
+        --------
+        Initialize a locator based on a volume (a segmentation output, i.e., the value assigned to each voxel in the volume represents the tissue class it has been assigned to by the segmentation) and a lookup table file:
+
+        >>> volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'aseg.mgz')
+        >>> lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
+        >>> locator = vloc.BrainVoxLocate(volume_file, lookup_file)
+
+        Now define some voxels we are interested in. Voxels are given by their column, row, slice (RCS) indices in the volume. These always start at 0 and range from 0 to d-1, where d is the length of the volume along the respective axis. So if your volume file has shape (128, 128, 128), the 3 indices along the 3 axes all range from 0 to 127.
+
+        >>> query_vox_crs = np.array([[24, 28, 20], [64, 64, 45], [90, 90, 90], [95, 127, 45]], dtype=int)
+
+        Now get the classes of exactly these voxels:
+
+        >>> seg_code, seg_name = locator.get_voxel_segmentation_labels(query_vox_crs)
+
+
+        See also
+        --------
+        ```get_closest_not_unknown``` can find the brain structure closest to a voxel, even if the voxel does not lie within that structure.
         """
         voxel_seg_code = [self.volume[crs[0], crs[1], crs[2]] for crs in query_voxels_crs]
         voxel_seg_code = np.array(voxel_seg_code).astype(int)
@@ -101,7 +151,7 @@ class BrainVoxLocate:
         """
         Determine the closest voxels which have a non-empty label.
 
-        Determine the closest voxels which have a non-empty label, their labels, and the respective distance. Requires scipy.
+        Determine the closest voxels which have a non-empty label, their labels, and the respective distance. Requires scipy. This allow you to determine the brain structure closest to a voxel (within a distance threshold), even if the voxel idoes not lie directly within the brain structure. This function uses Euclidian distance to determine which voxel is closest (but it only checks voxels with the given neighborhood, of course). If one of the query voxels lies directly within a brains structure (i.e., the voxel itself has a valid label), that label will be returned and the distance will be 0.0, of course.
 
         Parameters
         ----------
@@ -109,7 +159,7 @@ class BrainVoxLocate:
             The query voxels, each given by its CRS indices. So the shape is (n, 3) for n query voxels.
 
         neighborhood_size: int, optional
-            Distance threshold in voxels along each direction of each axis. Only the neighborhood of each query voxel will be searched. Example: If you pass 0, only the voxel itself is searched. If you pass 1, up to 3x3 = 27 voxels around it will be searched. If you pass 3, up to 7x7x7 = 343 voxels will be searched. The 'up to' refers to the case where the query voxel is at the border of the volume. In that case, some of the voxels do not exist (and thus are not checked). Defaults to 10.
+            Distance threshold in voxels along each direction of each axis, must be a positive integer or zero. Only the neighborhood of each query voxel will be searched. Example: If you pass 0, only the voxel itself is searched. If you pass 1, up to 3x3 = 27 voxels around it will be searched. If you pass 3, up to 7x7x7 = 343 voxels will be searched. The 'up to' refers to the case where the query voxel is at the border of the volume. In that case, some of the voxels do not exist (and thus are not checked). Defaults to 10. Note that if you set this to a very large value, a pairwise distance matrix of considerable size has to be computed, which may take some time. E.g., if you set it to 100, the distances between 201x201x201=8,120,601 voxels will be computed. This means that 8120601 ^ 2 / 2 - 8120601 = 32,972,072,179,999 distances need to be computed. No matter what you put, only valid voxel indices within the volume will be used for computation.
 
         unknown_label: int, optional
             The segmentation value that represents the 'Unknown' class. Defaults to 0, which is suitable for the FreeSurferColorLUT.txt file.
@@ -124,6 +174,25 @@ class BrainVoxLocate:
 
         distances: numpy 1D float array
             The distances from the respective query voxel to the result voxel. These are determined from the RAS coordinates of the voxel pair, using the ras2vox and vox2ras matrices in the volume file header. (The distance is 0.0 if the query voxel itself has a nonzero label.) If no suitable voxel with non-empty label code was found for a query voxel, the distance is -1.0f.
+
+        closest_voxels_ras_coords: numpy 2D float array
+            The RAS coordinates of the chosen voxel. If the query voxel has a none-empty label, this is its own coordinate. Otherwise, it is the coordinate of the closest voxel with valid label. If no such voxel was found, the coordinates are [-1.0, -1.0, -1.0]. Note that this could theoretically be a valid RAS coordinate, so you should not use this field to determine whether a valid voxel was found. Use the ```voxels``` return value for that.
+
+        Examples
+        --------
+        Initialize a locator based on a volume (a segmentation output, i.e., the value assigned to each voxel in the volume represents the tissue class it has been assigned to by the segmentation) and a lookup table file:
+
+        >>> volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'aseg.mgz')
+        >>> lookup_file = os.path.join(TEST_DATA_DIR, 'fs', 'FreeSurferColorLUT.txt')
+        >>> locator = vloc.BrainVoxLocate(volume_file, lookup_file)
+
+        Now define some voxels we are interested in. Voxels are given by their column, row, slice (RCS) indices in the volume. These always start at 0 and range from 0 to d-1, where d is the length of the volume along the respective axis. So if your volume file has shape (128, 128, 128), the 3 indices along the 3 axes all range from 0 to 127.
+
+        >>> query_vox_crs = np.array([[24, 28, 20], [64, 64, 45], [90, 90, 90], [95, 127, 45]], dtype=int)
+
+        Now get the classes of these voxels. If the voxel itself has no label (i.e., it has the 'Unknown' label), search with a square neighborhood of 5 voxels along each direction of each axis for the closest valid label.
+
+        >>> voxels, codes, distances, closest_voxels_ras_coords = locator.get_closest_not_unknown(query_vox_crs, neighborhood_size=5)
         """
         from scipy.spatial.distance import cdist
         query_voxels_ras_coords = self.get_ras_coords_at_voxel_crs(query_voxels_crs)
