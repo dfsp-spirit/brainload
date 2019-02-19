@@ -16,6 +16,7 @@ Now you have the coordinates of the mesh vertices in the required format and can
 """
 
 import numpy as np
+import brainload.freesurferdata as blfsd
 import numpy.linalg as npl  # for matrix inversion
 
 def rotate_3D_coordinates_around_axes(x, y, z, radians_x, radians_y, radians_z):
@@ -528,7 +529,7 @@ def apply_affine(i, j, k, affine_matrix):
 
     See also
     --------
-    apply_affine_3D can handle a 2D matrix of coordinates, e.g., with shape (n, 3) for n 3D coordinates.
+    ```apply_affine_3D``` can handle a 2D matrix of coordinates, e.g., with shape (n, 3) for n 3D coordinates.
     """
     if np.isscalar(i):
         return _apply_affine_scalar(i, j, k, affine_matrix)
@@ -810,3 +811,32 @@ def get_n_neighborhood_indices_3D_points(volume_shape, points, n):
         M[xstart[idx] : xend[idx], ystart[idx] : yend[idx], zstart[idx] : zend[idx]] = 1
     indices = np.nonzero(M)
     return indices
+
+
+def get_equivalent_voxel_of_raw_volume_in_conformed_volume(raw_volume_file, conformed_volume_file, raw_volume_query_voxels_crs):
+    """
+    Find the position of a voxel in the conformed volume.
+
+    Find the voxel CRS in the conformed volume that is equivalent to the query voxel CRS in the raw volume. Note that this always returns a single voxel for a query voxel. It does not compute all voxel that may represent the source voxel (e.g., if the voxel size is much smaller in the destination volume). Note that this function also works in reverse (simply exchange the order of the 2 volumes and give query voxels in the first one). In fact, it will work between any pair of volume files as long as they within the same space (i.e., the RAS coordinates of the same spot in both files are identical). The function works based on the vox2ras matrix in the source file and the ras2vox matrix in the destination file.
+
+    Parameters
+    ----------
+    raw_volume_file: string
+        Path to the raw volume, i.e., the volume that has not yet been processed using FreeSurfer. You could also use ```rawavg.mgz``` in the ```mri``` sub directory of a subject. Must be in mgh or mgz format. You can use the ```mri_convert``` binary that comes with FreeSurfer to convert from nifti to mgz.
+
+    conformed_volume_file: string
+        Path to a conformed volume, i.e., a volume that has been conformed to 256x256x256 voxels with 1mm^3 voxel volume. This applies to all subject volumes in the ```mri``` directory of a subject, e.g., ```brain.mgz``` or ```orig.mgz```. Must be in mgh or mgz format. You can use the ```mri_convert``` binary that comes with FreeSurfer to convert from nifti to mgz. Hint: You can create a conformed version from a raw volume using the ```--conform``` option of ```mri_convert```.
+
+    raw_volume_query_voxels_crs: numpy 2D array of int
+        The column, row, slice indices of the query voxels in the raw volume. The array must have dimension (n, 3) for n query voxels.
+
+    Returns
+    -------
+    conf_volume_voxels_crs: numpy 2D array of int
+        The column, row, slice indices of the query voxels in the conformed volume. The array has dimension (n, 3) for n query voxels.
+    """
+    raw_ras2vox, raw_vox2ras, raw_vox2ras_tkr = blfsd.read_mgh_header_matrices(raw_volume_file)
+    conf_ras2vox, conf_vox2ras, conf_vox2ras_tkr = blfsd.read_mgh_header_matrices(conformed_volume_file)
+    query_voxels_ras = apply_affine_3D(raw_volume_query_voxels_crs, raw_vox2ras)
+    conf_volume_voxels_crs = np.rint(apply_affine_3D(query_voxels_ras, conf_ras2vox)).astype(int)
+    return conf_volume_voxels_crs

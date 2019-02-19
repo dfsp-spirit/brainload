@@ -1,8 +1,16 @@
 import pytest
 import numpy as np
+import os
 from numpy.testing import assert_array_equal, assert_allclose
 import brainload as bl
 import brainload.spatial as st
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
+
+# Respect the environment variable BRAINLOAD_TEST_DATA_DIR if it is set. If not, fall back to default.
+TEST_DATA_DIR = os.getenv('BRAINLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
+
 
 def test_rad2deg_with_positive_input():
     deg = st.rad2deg(2 * np.pi)
@@ -483,3 +491,23 @@ def test_get_n_neighborhood_indices_3D_n1_neighborhood_points():
     assert_array_equal(indices[0], np.array([0,2], dtype=int))
     assert_array_equal(indices[1], np.array([0,2], dtype=int))
     assert_array_equal(indices[2], np.array([0,2], dtype=int))
+
+# This test requires files which are not part of the repo and will be removed soon.
+#def test_get_equivalent_voxel_of_raw_volume_in_conformed_volume():
+#    raw_volume_file = os.path.join(os.getenv('HOME'), 'data', 'allan_brain_atlas', 'final', 'H03511009.mgz')
+#    conformed_volume_file = os.path.join(os.getenv('HOME'), 'data', 'allan_brain_atlas', 'final', 'H03511009_conformed.mgz')
+#    raw_volume_query_voxels_crs = np.array([[111,41,137]], dtype=int)
+#    conf_volume_voxels_crs = st.get_equivalent_voxel_of_raw_volume_in_conformed_volume(raw_volume_file, conformed_volume_file, raw_volume_query_voxels_crs)
+#    expected = np.array([[148, 78, 100]], dtype=int)
+#    assert_array_equal(conf_volume_voxels_crs, expected)
+
+def test_get_equivalent_voxel_of_raw_volume_in_conformed_volume_2():
+    raw_volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'rawavg.mgz')
+    conformed_volume_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'orig.mgz')
+    raw_volume_query_voxels_crs = np.array([[184, 127, 46]], dtype=int)
+    conf_volume_voxels_crs = st.get_equivalent_voxel_of_raw_volume_in_conformed_volume(raw_volume_file, conformed_volume_file, raw_volume_query_voxels_crs)
+    expected = np.array([[77, 127, 73]], dtype=int)
+    assert_array_equal(conf_volume_voxels_crs, expected)
+    # now test whether the computation can be inverted and results in the source CRS values that we queried for initially
+    raw_volume_voxels_crs_restored = st.get_equivalent_voxel_of_raw_volume_in_conformed_volume(conformed_volume_file, raw_volume_file, conf_volume_voxels_crs)
+    assert_array_equal(raw_volume_voxels_crs_restored, raw_volume_query_voxels_crs)
