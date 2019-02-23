@@ -1248,3 +1248,14 @@ def test_read_lookup_file():
     assert left_insula_fields[3] == "196"
     assert left_insula_fields[4] == "98"
     assert left_insula_fields[5] == "0"
+
+
+def test_read_m3z_file():
+    m3z_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'transforms', 'talairach.m3z')
+    meta_data = fsd.read_m3z_file(m3z_file)
+    assert meta_data['version'] == pytest.approx(1.0)
+    assert meta_data['width'] == 128
+    assert meta_data['height'] == 128
+    assert meta_data['depth'] == 128
+    assert meta_data['spacing'] == 2
+    assert meta_data['exp_k'] == pytest.approx(20.0)

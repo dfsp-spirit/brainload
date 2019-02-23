@@ -16,6 +16,36 @@ import brainload.nitools as nit
 import brainload.annotations as an
 import nibabel as nib
 import numpy.linalg as npl  # for matrix inversion
+import struct   # for reading binary data
+
+
+def read_m3z_file(m3z_file):
+    """
+    Read a file in FreeSurfer m3z format.
+
+    Read a file in FreeSurfer m3z format, usually mri/transforms/talairach.m3z of a subject. An m3z file is a binary file containing a dense vector field that describes a 3D registration between two volumes/images.
+
+    Parameters
+    ----------
+    m3z_file: str
+        Path to a file in m3z format
+
+    Returns
+    -------
+    """
+    m3z = gzip.open(m3z_file, 'rb')
+    fdata = m3z.read()
+    #version = struct.unpack("f", fdata[:4])
+    (version, width, height, depth, spacing, exp_k) = struct.unpack(">fiiiif", fdata[:24])
+    meta_data = {}
+    meta_data['version'] = version
+    meta_data['width'] = width
+    meta_data['height'] = height
+    meta_data['depth'] = depth
+    meta_data['spacing'] = spacing
+    meta_data['exp_k'] = exp_k
+    return meta_data
+
 
 
 
