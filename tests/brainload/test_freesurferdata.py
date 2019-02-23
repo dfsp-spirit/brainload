@@ -1259,3 +1259,9 @@ def test_read_m3z_file():
     assert meta_data['depth'] == 128
     assert meta_data['spacing'] == 2
     assert meta_data['exp_k'] == pytest.approx(20.0)
+    assert meta_data['data_start_pos'] == 24
+    assert 75497496 == 24 + (128 * 128 * 128 * 9 * 4)     # the expected data end position in the file
+    data_end_pos_expected = 75497496
+    assert meta_data['data_end_pos'] == data_end_pos_expected
+    #date_end_pos_expected = 24 + (128 * 128 * 128 * 9 * 4)
+    #assert meta_data['data_end_pos'] == date_end_pos_expected

@@ -35,7 +35,7 @@ def read_m3z_file(m3z_file):
     """
     m3z = gzip.open(m3z_file, 'rb')
     fdata = m3z.read()
-    #version = struct.unpack("f", fdata[:4])
+    # Read the file header
     (version, width, height, depth, spacing, exp_k) = struct.unpack(">fiiiif", fdata[:24])
     meta_data = {}
     meta_data['version'] = version
@@ -44,6 +44,12 @@ def read_m3z_file(m3z_file):
     meta_data['depth'] = depth
     meta_data['spacing'] = spacing
     meta_data['exp_k'] = exp_k
+    # now the data for the 3 volumes. 9 numbers per voxel, each number is a 32 bit unsigned integer. Byte order is big endian.
+    m3z.seek(24, os.SEEK_SET)
+    meta_data['data_start_pos'] = m3z.tell()
+    num_to_read = width * height * depth * 9 * 4
+    vol_data = np.fromfile(m3z, dtype='>u8', count=num_to_read)
+    meta_data['data_end_pos'] = m3z.tell()
     return meta_data
 
 
