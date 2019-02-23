@@ -1260,8 +1260,11 @@ def test_read_m3z_file():
     assert meta_data['spacing'] == 2
     assert meta_data['exp_k'] == pytest.approx(20.0)
     assert meta_data['data_start_pos'] == 24
-    assert 75497496 == 24 + (128 * 128 * 128 * 9 * 4)     # the expected data end position in the file
+    assert 75497496 == 24 + (128 * 128 * 128 * 9 * 4)     # the expected data end position in the file. there are 9 numbers per voxel, each 4 bytes long (and width * height * depth voxels)
     data_end_pos_expected = 75497496
-    assert meta_data['data_end_pos'] == data_end_pos_expected
-    #date_end_pos_expected = 24 + (128 * 128 * 128 * 9 * 4)
-    #assert meta_data['data_end_pos'] == date_end_pos_expected
+    expected_num_to_read = 128 * 128 * 128 * 9 * 4
+    assert meta_data['num_to_read'] == expected_num_to_read
+    #assert meta_data['pos_75497496'] == 75497496
+    #assert meta_data['data_end_pos'] == data_end_pos_expected
+    assert meta_data['remaining_data_tag'] == 10
+    #assert meta_data['file_end_pos'] == 83888912        # we know this number from running the matlab implementation on our test file

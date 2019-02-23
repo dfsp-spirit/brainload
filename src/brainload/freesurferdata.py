@@ -48,8 +48,21 @@ def read_m3z_file(m3z_file):
     m3z.seek(24, os.SEEK_SET)
     meta_data['data_start_pos'] = m3z.tell()
     num_to_read = width * height * depth * 9 * 4
-    vol_data = np.fromfile(m3z, dtype='>u8', count=num_to_read)
-    meta_data['data_end_pos'] = m3z.tell()
+    data_end_pos_expected = 24 + num_to_read
+    #vol_data = np.fromfile(m3z, dtype='>u8', count=num_to_read)
+    vol_data = fdata[24:data_end_pos_expected]
+    #meta_data['data_end_pos'] = m3z.tell()
+    meta_data['num_to_read'] = num_to_read
+
+    # Go to end of data block and read the ID that tells us what kind of data follows
+    #m3z.seek(data_end_pos_expected)
+    #meta_data['pos_75497496'] = m3z.tell()  # debug only
+    #meta_data['remaining_data_tag'] = np.fromfile(m3z, dtype='>u8', count=1)[0]
+    meta_data['remaining_data_tag'] = struct.unpack(">i", fdata[data_end_pos_expected:data_end_pos_expected+4])[0]
+
+    # go to end of file to check how much data is left
+    #m3z.seek(0, os.SEEK_END);
+    #meta_data['file_end_pos'] = m3z.tell();
     return meta_data
 
 
