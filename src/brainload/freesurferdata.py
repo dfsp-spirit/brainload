@@ -34,7 +34,7 @@ def read_m3z_file(m3z_file):
     -------
     """
     m3z = gzip.open(m3z_file, 'rb')
-    fdata = m3z.read()
+    fdata = m3z.read()      # read the whole file contents
     # Read the file header
     (version, width, height, depth, spacing, exp_k) = struct.unpack(">fiiiif", fdata[:24])
     meta_data = {}
@@ -44,25 +44,14 @@ def read_m3z_file(m3z_file):
     meta_data['depth'] = depth
     meta_data['spacing'] = spacing
     meta_data['exp_k'] = exp_k
-    # now the data for the 3 volumes. 9 numbers per voxel, each number is a 32 bit unsigned integer. Byte order is big endian.
-    m3z.seek(24, os.SEEK_SET)
-    meta_data['data_start_pos'] = m3z.tell()
+    meta_data['data_start_pos'] = 24
     num_to_read = width * height * depth * 9 * 4
-    data_end_pos_expected = 24 + num_to_read
-    #vol_data = np.fromfile(m3z, dtype='>u8', count=num_to_read)
-    vol_data = fdata[24:data_end_pos_expected]
-    #meta_data['data_end_pos'] = m3z.tell()
+    data_end_pos = 24 + num_to_read
+    vol_data = struct.unpack(">%di" % (num_to_read / 4), fdata[24:data_end_pos])
+    meta_data['data_end_pos'] = data_end_pos
     meta_data['num_to_read'] = num_to_read
-
-    # Go to end of data block and read the ID that tells us what kind of data follows
-    #m3z.seek(data_end_pos_expected)
-    #meta_data['pos_75497496'] = m3z.tell()  # debug only
-    #meta_data['remaining_data_tag'] = np.fromfile(m3z, dtype='>u8', count=1)[0]
-    meta_data['remaining_data_tag'] = struct.unpack(">i", fdata[data_end_pos_expected:data_end_pos_expected+4])[0]
-
-    # go to end of file to check how much data is left
-    #m3z.seek(0, os.SEEK_END);
-    #meta_data['file_end_pos'] = m3z.tell();
+    meta_data['remaining_data_tag'] = struct.unpack(">i", fdata[data_end_pos:data_end_pos+4])[0]
+    meta_data['file_end_pos'] = len(fdata)
     return meta_data
 
 

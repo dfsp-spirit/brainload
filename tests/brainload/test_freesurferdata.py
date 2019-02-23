@@ -1264,7 +1264,6 @@ def test_read_m3z_file():
     data_end_pos_expected = 75497496
     expected_num_to_read = 128 * 128 * 128 * 9 * 4
     assert meta_data['num_to_read'] == expected_num_to_read
-    #assert meta_data['pos_75497496'] == 75497496
-    #assert meta_data['data_end_pos'] == data_end_pos_expected
+    assert meta_data['data_end_pos'] == data_end_pos_expected
     assert meta_data['remaining_data_tag'] == 10
-    #assert meta_data['file_end_pos'] == 83888912        # we know this number from running the matlab implementation on our test file
+    assert meta_data['file_end_pos'] == 83888912        # we know this number from running the matlab implementation on our test file
