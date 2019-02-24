@@ -1278,3 +1278,15 @@ def test_read_m3z_file():
     assert debug['indices'].shape == (12, 2097152)
     assert debug['indices'][0][0] == 0
     assert debug['indices'][0][1] == 1
+    assert debug['indices'][0][2] == 2
+    assert debug['indices'][0][3] == 3
+
+    assert debug['vox_offset'].shape == (12, 2097152)
+    assert debug['vox_offset'][0][0] == 0
+    assert debug['vox_offset'][1][0] == 0
+    assert debug['vox_offset'][0][1] == 36
+    assert debug['vox_offset'][1][1] == 36
+    assert debug['vox_offset'][0][2] == 72
+    assert debug['vox_offset'][1][2] == 72
+    assert debug['vox_offset'][0][3] == 108
+    assert debug['vox_offset'][1][3] == 108
