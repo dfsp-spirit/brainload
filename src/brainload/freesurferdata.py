@@ -66,6 +66,11 @@ def read_m3z_file(m3z_file):
     debug['indices'] = indices
     debug['vox_offset'] = vox_offset
 
+    #[4:-1:1 8:-1:5 12:-1:9]';
+    repeated = np.array([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10 , 9])
+    reshaped_offsets = np.reshape(vox_offset, -1)
+    inds = np.kron(np.ones((width * height * depth, 1)), repeated) + reshaped_offsets;
+
     return meta_data, vol_data, debug
 
 
