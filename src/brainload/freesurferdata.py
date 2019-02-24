@@ -60,7 +60,13 @@ def read_m3z_file(m3z_file):
     meta_data['file_end_pos'] = len(fdata)
 
     # create indices into the vol_data, the indices mark the
-    return meta_data, vol_data
+    indices = np.kron(np.ones((12,1)), range(width * height * depth))
+    vox_offset = 9 * 4 * indices
+    debug = {}
+    debug['indices'] = indices
+    debug['vox_offset'] = vox_offset
+
+    return meta_data, vol_data, debug
 
 
 

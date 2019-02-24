@@ -1252,7 +1252,7 @@ def test_read_lookup_file():
 
 def test_read_m3z_file():
     m3z_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'transforms', 'talairach.m3z')
-    meta_data, vol_data = fsd.read_m3z_file(m3z_file)
+    meta_data, vol_data, debug = fsd.read_m3z_file(m3z_file)
     assert meta_data['version'] == pytest.approx(1.0)
     assert meta_data['width'] == 128
     assert meta_data['height'] == 128
@@ -1274,3 +1274,7 @@ def test_read_m3z_file():
     assert vol_data[0] == 61
     assert vol_data[1] == 185
     assert vol_data[2] == 116
+    # some more checks
+    assert debug['indices'].shape == (12, 2097152)
+    assert debug['indices'][0][0] == 0
+    assert debug['indices'][0][1] == 1
