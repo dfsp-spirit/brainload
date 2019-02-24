@@ -1262,8 +1262,10 @@ def test_read_m3z_file():
     assert meta_data['data_start_pos'] == 24
     assert 75497496 == 24 + (128 * 128 * 128 * 9 * 4)     # the expected data end position in the file. there are 9 numbers per voxel, each 4 bytes long (and width * height * depth voxels)
     data_end_pos_expected = 75497496
-    expected_num_to_read = 128 * 128 * 128 * 9 * 4
-    assert meta_data['num_to_read'] == expected_num_to_read
+    expected_numbers_to_read = 128 * 128 * 128 * 9
+    expected_bytes_to_read = 128 * 128 * 128 * 9 * 4
+    assert meta_data['bytes_to_read'] == expected_bytes_to_read
+    assert meta_data['numbers_to_read'] == expected_numbers_to_read
     assert meta_data['data_end_pos'] == data_end_pos_expected
     assert meta_data['remaining_data_tag'] == 10
     assert meta_data['file_end_pos'] == 83888912        # we know this number from running the matlab implementation on our test file

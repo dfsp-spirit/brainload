@@ -45,12 +45,17 @@ def read_m3z_file(m3z_file):
     meta_data['spacing'] = spacing
     meta_data['exp_k'] = exp_k
     meta_data['data_start_pos'] = 24
-    num_to_read = width * height * depth * 9 * 4
-    data_end_pos = 24 + num_to_read
-    vol_data = struct.unpack(">%di" % (num_to_read / 4), fdata[24:data_end_pos])
+
+    numbers_per_voxel = 9
+    bytes_uint8 = 4
+    numbers_to_read = width * height * depth * numbers_per_voxel
+    bytes_to_read = numbers_to_read * bytes_uint8
+    data_end_pos = 24 + bytes_to_read
+    vol_data = struct.unpack(">%di" % (numbers_to_read), fdata[24:data_end_pos])
     meta_data['data_end_pos'] = data_end_pos
-    meta_data['num_to_read'] = num_to_read
-    meta_data['remaining_data_tag'] = struct.unpack(">i", fdata[data_end_pos:data_end_pos+4])[0]
+    meta_data['bytes_to_read'] = bytes_to_read
+    meta_data['numbers_to_read'] = numbers_to_read
+    meta_data['remaining_data_tag'] = struct.unpack(">i", fdata[data_end_pos:data_end_pos+4])[0]    # the first 4 bytes after the data are an integer tag, that holds information on what kind of data follows. We do not read that data but check the tag here.
     meta_data['file_end_pos'] = len(fdata)
     return meta_data
 
