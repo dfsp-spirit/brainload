@@ -69,7 +69,7 @@ def read_m3z_file(m3z_file):
     #[4:-1:1 8:-1:5 12:-1:9]';
     to_repeat = np.array([3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8])
     debug['to_repeat'] = to_repeat
-    reshaped_offsets = np.reshape(vox_offset, -1, order='F')    # we could also vox_offset.flatten(), I guess
+    reshaped_offsets = np.reshape(vox_offset, -1, order='F').copy()
     debug['reshaped_offsets'] = reshaped_offsets
     repeated = np.kron(np.ones((width * height * depth, )), to_repeat)
     debug['repeated'] = repeated
@@ -84,6 +84,8 @@ def read_m3z_file(m3z_file):
     debug['single_casted'] = single_casted
     vol_orig_step1 = np.reshape(single_casted, (3, depth, width, height), order='F').copy()
     debug['vol_orig_step1'] = vol_orig_step1
+    vol_orig = np.transpose(vol_orig_step1, (3, 2, 1, 0))
+    debug['vol_orig'] = vol_orig
     return meta_data, vol_data, debug
 
 
