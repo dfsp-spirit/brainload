@@ -59,14 +59,13 @@ def read_m3z_file(m3z_file):
     meta_data['remaining_data_tag'] = struct.unpack(">i", fdata[data_end_pos:data_end_pos+4])[0]    # the first 4 bytes after the data are an integer tag, that holds information on what kind of data follows. We do not read that data but check the tag here.
     meta_data['file_end_pos'] = len(fdata)
 
-    # create indices into the vol_data, the indices mark the
+    # create indices into the vol_data
     indices = np.kron(np.ones((12,1), dtype=np.int), range(width * height * depth))
     vox_offset = 9 * 4 * indices
     debug = {}
     debug['indices'] = indices
     debug['vox_offset'] = vox_offset
 
-    #[4:-1:1 8:-1:5 12:-1:9]';
     to_repeat = np.array([3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8])
     debug['to_repeat'] = to_repeat
     reshaped_offsets = np.reshape(vox_offset, -1, order='F').copy()
@@ -86,6 +85,16 @@ def read_m3z_file(m3z_file):
     debug['vol_orig_step1'] = vol_orig_step1
     vol_orig = np.transpose(vol_orig_step1, (3, 2, 1, 0))
     debug['vol_orig'] = vol_orig
+
+    # OK, vol_orig is reconstructed. Now for vol_dest
+    inds = inds + 12
+    buf_at_inds = buf[inds]
+    single_casted = buf_at_inds.view(dtype=np.single)
+    vol_dest_step1 = np.reshape(single_casted, (3, depth, width, height), order='F').copy()
+    vol_dest = np.transpose(vol_dest_step1, (3, 2, 1, 0))
+    debug['vol_dest'] = vol_dest
+
+
     return meta_data, vol_data, debug
 
 
