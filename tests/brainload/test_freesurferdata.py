@@ -1323,21 +1323,21 @@ def test_read_m3z_file():
 
     assert debug['inds'].shape == (25165824, )
     assert debug['inds'].dtype == int
-    assert debug['inds'][0] == 4
-    assert debug['inds'][1] == 3
-    assert debug['inds'][2] == 2
-    assert debug['inds'][3] == 1
-    assert debug['inds'][4] == 8
-    assert debug['inds'][5] == 7
-    assert debug['inds'][6] == 6
-    assert debug['inds'][7] == 5
-    assert debug['inds'][8] == 12
+    assert debug['inds'][0] == 3
+    assert debug['inds'][1] == 2
+    assert debug['inds'][2] == 1
+    assert debug['inds'][3] == 0
+    assert debug['inds'][4] == 7
+    assert debug['inds'][5] == 6
+    assert debug['inds'][6] == 5
+    assert debug['inds'][7] == 4
+    assert debug['inds'][8] == 11
     assert debug['repeated'].shape == (25165824, )
     assert debug['buf'].dtype == np.int64
     assert debug['buf'].shape == (75497472, )
     assert debug['buf_at_inds'].shape == (25165824, )
-    #assert debug['buf_at_inds'][0] == 248
-    #assert debug['buf_at_inds'][1] == 116
+    assert debug['buf_at_inds'][0] == 248
+    assert debug['buf_at_inds'][1] == 116
     assert debug['buf_at_inds'][2] == 185
     assert debug['buf_at_inds'][3] == 61
     assert debug['single_casted'].shape == (6291456, )
