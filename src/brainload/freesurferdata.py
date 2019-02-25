@@ -80,7 +80,7 @@ def read_m3z_file(m3z_file):
     debug['buf'] = buf
     buf_at_inds = buf[inds]
     debug['buf_at_inds'] = buf_at_inds
-    single_casted = buf_at_inds.view(np.single)
+    single_casted = buf_at_inds.view(dtype=np.single)
     debug['single_casted'] = single_casted
     return meta_data, vol_data, debug
 
