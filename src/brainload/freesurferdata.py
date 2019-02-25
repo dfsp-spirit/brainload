@@ -94,6 +94,14 @@ def read_m3z_file(m3z_file):
     vol_dest = np.transpose(vol_dest_step1, (3, 2, 1, 0))
     debug['vol_dest'] = vol_dest
 
+    # now for vol_ind0
+    inds = inds + 12
+    buf_at_inds = buf[inds]
+    casted = buf_at_inds.view(dtype=np.int32)
+    vol_ind0_step1 = np.reshape(casted, (3, depth, width, height), order='F').copy()
+    vol_ind0 = np.transpose(vol_ind0_step1, (3, 2, 1, 0))
+    debug['vol_ind0'] = vol_ind0
+
 
     return meta_data, vol_data, debug
 

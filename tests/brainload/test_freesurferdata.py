@@ -1359,3 +1359,6 @@ def test_read_m3z_file():
     assert debug['vol_dest'][63,63,63,0] == pytest.approx(124.8608, 0.001)
     assert debug['vol_dest'][63,63,63,1] == pytest.approx(80.8703, 0.001)
     assert debug['vol_dest'][63,63,63,2] == pytest.approx(117.6641, 0.001)
+    assert debug['vol_ind0'][63,63,63,0] == 63
+    assert debug['vol_ind0'][63,63,63,1] == 63
+    assert debug['vol_ind0'][63,63,63,2] == 63
