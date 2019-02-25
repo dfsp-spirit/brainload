@@ -1333,13 +1333,13 @@ def test_read_m3z_file():
     assert debug['inds'][7] == 4
     assert debug['inds'][8] == 11
     assert debug['repeated'].shape == (25165824, )
-    assert debug['buf'].dtype == np.int64
+    assert debug['buf'].dtype == np.uint8
     assert debug['buf'].shape == (75497472, )
     assert debug['buf'][0] == 61
     assert debug['buf'][1] == 185
     assert debug['buf'][2] == 116
     assert debug['buf_at_inds'].shape == (25165824, )
-    assert debug['buf_at_inds'].dtype == np.int64
+    assert debug['buf_at_inds'].dtype == np.uint8
     assert debug['buf_at_inds'][0] == 248
     assert debug['buf_at_inds'][1] == 116
     assert debug['buf_at_inds'][2] == 185

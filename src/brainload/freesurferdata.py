@@ -76,7 +76,7 @@ def read_m3z_file(m3z_file):
     inds = repeated + reshaped_offsets;
     inds = inds.astype(int)
     debug['inds'] = inds
-    buf = np.array(vol_data)
+    buf = np.array(vol_data, dtype=np.uint8)
     debug['buf'] = buf
     buf_at_inds = buf[inds]
     debug['buf_at_inds'] = buf_at_inds
