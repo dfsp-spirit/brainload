@@ -1290,3 +1290,5 @@ def test_read_m3z_file():
     assert debug['vox_offset'][1][2] == 72
     assert debug['vox_offset'][0][3] == 108
     assert debug['vox_offset'][1][3] == 108
+
+    assert debug['reshaped_offsets'].shape == (25165824, )
