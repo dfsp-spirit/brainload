@@ -60,21 +60,24 @@ def read_m3z_file(m3z_file):
     meta_data['file_end_pos'] = len(fdata)
 
     # create indices into the vol_data, the indices mark the
-    indices = np.kron(np.ones((12,1)), range(width * height * depth))
+    indices = np.kron(np.ones((12,1), dtype=np.int), range(width * height * depth))
     vox_offset = 9 * 4 * indices
     debug = {}
     debug['indices'] = indices
     debug['vox_offset'] = vox_offset
 
     #[4:-1:1 8:-1:5 12:-1:9]';
-    to_repeat = np.array([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10 , 9])
+    to_repeat = np.array([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9])
     debug['to_repeat'] = to_repeat
-    reshaped_offsets = np.reshape(vox_offset, -1)
+    reshaped_offsets = np.reshape(vox_offset, -1, order='F')
     debug['reshaped_offsets'] = reshaped_offsets
     repeated = np.kron(np.ones((width * height * depth, )), to_repeat)
     debug['repeated'] = repeated
     inds = repeated + reshaped_offsets;
+    inds = inds.astype(int)
     debug['inds'] = inds
+    #single_casted = vol_data[inds].view(np.single)
+    #debug['single_casted'] = single_casted
     return meta_data, vol_data, debug
 
 

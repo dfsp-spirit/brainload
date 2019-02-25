@@ -1284,12 +1284,53 @@ def test_read_m3z_file():
     assert debug['vox_offset'].shape == (12, 2097152)
     assert debug['vox_offset'][0][0] == 0
     assert debug['vox_offset'][1][0] == 0
+    assert debug['vox_offset'][2][0] == 0
+    assert debug['vox_offset'][3][0] == 0
+    assert debug['vox_offset'][4][0] == 0
+    assert debug['vox_offset'][5][0] == 0
+    assert debug['vox_offset'][6][0] == 0
+    assert debug['vox_offset'][7][0] == 0
+    assert debug['vox_offset'][8][0] == 0
+    assert debug['vox_offset'][9][0] == 0
+    assert debug['vox_offset'][10][0] == 0
+    assert debug['vox_offset'][11][0] == 0
     assert debug['vox_offset'][0][1] == 36
     assert debug['vox_offset'][1][1] == 36
+    assert debug['vox_offset'][11][1] == 36
     assert debug['vox_offset'][0][2] == 72
     assert debug['vox_offset'][1][2] == 72
+    assert debug['vox_offset'][11][2] == 72
     assert debug['vox_offset'][0][3] == 108
     assert debug['vox_offset'][1][3] == 108
+    assert debug['vox_offset'][11][3] == 108
 
     assert debug['reshaped_offsets'].shape == (25165824, )
+    assert debug['reshaped_offsets'][0] == 0
+    assert debug['reshaped_offsets'][1] == 0
+    assert debug['reshaped_offsets'][2] == 0
+    assert debug['reshaped_offsets'][3] == 0
+    assert debug['reshaped_offsets'][4] == 0
+    assert debug['reshaped_offsets'][5] == 0
+    assert debug['reshaped_offsets'][6] == 0
+    assert debug['reshaped_offsets'][7] == 0
+    assert debug['reshaped_offsets'][8] == 0
+    assert debug['reshaped_offsets'][9] == 0
+    assert debug['reshaped_offsets'][10] == 0
+    assert debug['reshaped_offsets'][11] == 0
+    assert debug['reshaped_offsets'][12] == 36
+    assert debug['reshaped_offsets'][23] == 36
+    assert debug['reshaped_offsets'][24] == 72
+
+    assert debug['inds'].shape == (25165824, )
+    assert debug['inds'][0] == 4
+    assert debug['inds'][1] == 3
+    assert debug['inds'][2] == 2
+    assert debug['inds'][3] == 1
+    assert debug['inds'][4] == 8
+    assert debug['inds'][5] == 7
+    assert debug['inds'][6] == 6
+    assert debug['inds'][7] == 5
+    assert debug['inds'][8] == 12
     assert debug['repeated'].shape == (25165824, )
+    #assert debug['single_casted'].shape == (6291456, )
+    #assert debug['single_casted'].dtype == np.single    # single precision float (this is an alias for np.float32)
