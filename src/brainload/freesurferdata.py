@@ -67,11 +67,11 @@ def read_m3z_file(m3z_file):
     debug['vox_offset'] = vox_offset
 
     #[4:-1:1 8:-1:5 12:-1:9]';
-    to_repeat = np.array([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9])
+    to_repeat = np.array([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9], dtype=int)
     debug['to_repeat'] = to_repeat
     reshaped_offsets = np.reshape(vox_offset, -1, order='F')
     debug['reshaped_offsets'] = reshaped_offsets
-    repeated = np.kron(np.ones((width * height * depth, )), to_repeat)
+    repeated = np.kron(np.ones((width * height * depth, ), dtype=int), to_repeat)
     debug['repeated'] = repeated
     inds = repeated + reshaped_offsets;
     inds = inds.astype(int)
