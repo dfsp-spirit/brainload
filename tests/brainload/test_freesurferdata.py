@@ -1346,3 +1346,6 @@ def test_read_m3z_file():
     assert debug['buf_at_inds'][3] == 61
     assert debug['single_casted'].shape == (6291456, )
     assert debug['single_casted'].dtype == np.single    # single precision float (this is an alias for np.float32)
+    assert debug['single_casted'][0] == pytest.approx(0.0906, 0.001)
+    assert debug['single_casted'][1] == pytest.approx(16.8382, 0.001)
+    assert debug['single_casted'][2] == pytest.approx(-37.7883, 0.001)
