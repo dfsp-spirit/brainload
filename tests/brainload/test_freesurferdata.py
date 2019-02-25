@@ -1362,12 +1362,18 @@ def test_read_m3z_file():
     assert debug['vol_ind0'][63,63,63,0] == 63
     assert debug['vol_ind0'][63,63,63,1] == 63
     assert debug['vol_ind0'][63,63,63,2] == 63
+    assert vol_orig.shape == (128, 128, 128, 3)
+    assert vol_orig.dtype == np.single
     assert vol_orig[63,63,63,0] == pytest.approx(124.9153, 0.001)
     assert vol_orig[63,63,63,1] == pytest.approx(80.8790, 0.001)
     assert vol_orig[63,63,63,2] == pytest.approx(117.6751, 0.001)
+    assert vol_dest.shape == (128, 128, 128, 3)
+    assert vol_dest.dtype == np.single
     assert vol_dest[63,63,63,0] == pytest.approx(124.8608, 0.001)
     assert vol_dest[63,63,63,1] == pytest.approx(80.8703, 0.001)
     assert vol_dest[63,63,63,2] == pytest.approx(117.6641, 0.001)
+    assert vol_ind0.shape == (128, 128, 128, 3)
+    assert vol_ind0.dtype == np.int32
     assert vol_ind0[63,63,63,0] == 63
     assert vol_ind0[63,63,63,1] == 63
     assert vol_ind0[63,63,63,2] == 63
