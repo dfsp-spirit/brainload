@@ -1322,6 +1322,7 @@ def test_read_m3z_file():
     assert debug['reshaped_offsets'][24] == 72
 
     assert debug['inds'].shape == (25165824, )
+    assert debug['inds'].dtype == int
     assert debug['inds'][0] == 4
     assert debug['inds'][1] == 3
     assert debug['inds'][2] == 2
