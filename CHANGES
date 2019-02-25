@@ -8,6 +8,8 @@ Version 0.3.3
 - Support for parsing talairach.xfm files
 - Add brainlocator class that allows to conveniently find the vertex in a surface file that is closest to some RAS coordinate.
 - Add BrainVoxLocator class that allows to conveniently find the segmentation label of a voxel. Also supports finding the label of the closest voxel with non-empty (not 'Unknown') label and gives the distance to it.
+- Add support for loading m3z files, like mri/transforms/talairach.m3z
+
 
 Version 0.3.2
 --------------
