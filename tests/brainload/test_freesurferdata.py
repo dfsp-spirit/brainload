@@ -1252,7 +1252,7 @@ def test_read_lookup_file():
 
 def test_read_m3z_file():
     m3z_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'transforms', 'talairach.m3z')
-    meta_data, vol_data, debug = fsd.read_m3z_file(m3z_file)
+    vol_orig, vol_dest, vol_ind0, meta_data, debug = fsd.read_m3z_file(m3z_file)
     assert meta_data['version'] == pytest.approx(1.0)
     assert meta_data['width'] == 128
     assert meta_data['height'] == 128
@@ -1269,11 +1269,11 @@ def test_read_m3z_file():
     assert meta_data['data_end_pos'] == data_end_pos_expected
     assert meta_data['remaining_data_tag'] == 10
     assert meta_data['file_end_pos'] == 83888912        # we know this number from running the matlab implementation on our test file (mris_read_m3z from FreeSurfer soure repo at Github)
-    assert len(vol_data) == expected_numbers_to_read * 4   # vol_data is a tuple
+    assert len(debug['vol_data']) == expected_numbers_to_read * 4   # vol_data is a tuple
     # some checks on the raw vol_data. Again, these are from the matlab implementation.
-    assert vol_data[0] == 61
-    assert vol_data[1] == 185
-    assert vol_data[2] == 116
+    assert debug['vol_data'][0] == 61
+    assert debug['vol_data'][1] == 185
+    assert debug['vol_data'][2] == 116
     # some more checks
     assert debug['indices'].shape == (12, 2097152)
     assert debug['indices'][0][0] == 0
@@ -1362,3 +1362,12 @@ def test_read_m3z_file():
     assert debug['vol_ind0'][63,63,63,0] == 63
     assert debug['vol_ind0'][63,63,63,1] == 63
     assert debug['vol_ind0'][63,63,63,2] == 63
+    assert vol_orig[63,63,63,0] == pytest.approx(124.9153, 0.001)
+    assert vol_orig[63,63,63,1] == pytest.approx(80.8790, 0.001)
+    assert vol_orig[63,63,63,2] == pytest.approx(117.6751, 0.001)
+    assert vol_dest[63,63,63,0] == pytest.approx(124.8608, 0.001)
+    assert vol_dest[63,63,63,1] == pytest.approx(80.8703, 0.001)
+    assert vol_dest[63,63,63,2] == pytest.approx(117.6641, 0.001)
+    assert vol_ind0[63,63,63,0] == 63
+    assert vol_ind0[63,63,63,1] == 63
+    assert vol_ind0[63,63,63,2] == 63

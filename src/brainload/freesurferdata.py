@@ -63,6 +63,7 @@ def read_m3z_file(m3z_file):
     indices = np.kron(np.ones((12,1), dtype=np.int), range(width * height * depth))
     vox_offset = 9 * 4 * indices
     debug = {}
+    debug['vol_data'] = vol_data
     debug['indices'] = indices
     debug['vox_offset'] = vox_offset
 
@@ -101,9 +102,7 @@ def read_m3z_file(m3z_file):
     vol_ind0_step1 = np.reshape(casted, (3, depth, width, height), order='F').copy()
     vol_ind0 = np.transpose(vol_ind0_step1, (3, 2, 1, 0))
     debug['vol_ind0'] = vol_ind0
-
-
-    return meta_data, vol_data, debug
+    return vol_orig, vol_dest, vol_ind0, meta_data, debug
 
 
 
