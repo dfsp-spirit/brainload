@@ -1292,3 +1292,4 @@ def test_read_m3z_file():
     assert debug['vox_offset'][1][3] == 108
 
     assert debug['reshaped_offsets'].shape == (25165824, )
+    assert debug['repeated'].shape == (25165824, )

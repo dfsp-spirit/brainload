@@ -71,10 +71,10 @@ def read_m3z_file(m3z_file):
     debug['to_repeat'] = to_repeat
     reshaped_offsets = np.reshape(vox_offset, -1)
     debug['reshaped_offsets'] = reshaped_offsets
-    repeated = np.kron(np.ones((width * height * depth, 1)), to_repeat)
+    repeated = np.kron(np.ones((width * height * depth, )), to_repeat)
     debug['repeated'] = repeated
-    #inds = repeated + reshaped_offsets;
-    #debug['inds'] = inds
+    inds = repeated + reshaped_offsets;
+    debug['inds'] = inds
     return meta_data, vol_data, debug
 
 
