@@ -82,6 +82,8 @@ def read_m3z_file(m3z_file):
     debug['buf_at_inds'] = buf_at_inds
     single_casted = buf_at_inds.view(dtype=np.single)
     debug['single_casted'] = single_casted
+    vol_orig_step1 = np.reshape(single_casted, (3, depth, width, height), order='F').copy()
+    debug['vol_orig_step1'] = vol_orig_step1
     return meta_data, vol_data, debug
 
 

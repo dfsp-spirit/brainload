@@ -1349,3 +1349,7 @@ def test_read_m3z_file():
     assert debug['single_casted'][0] == pytest.approx(0.0906, 0.001)
     assert debug['single_casted'][1] == pytest.approx(16.8382, 0.001)
     assert debug['single_casted'][2] == pytest.approx(-37.7883, 0.001)
+    assert debug['vol_orig_step1'].shape == (3, 128, 128, 128)
+    assert debug['vol_orig_step1'][0,63,63,63] == pytest.approx(124.9153, 0.001)
+    assert debug['vol_orig_step1'][1,63,63,63] == pytest.approx(80.8790, 0.001)
+    assert debug['vol_orig_step1'][2,63,63,63] == pytest.approx(117.6751, 0.001)
