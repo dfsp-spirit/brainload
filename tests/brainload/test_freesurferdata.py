@@ -1323,17 +1323,6 @@ def test_read_m3z_file():
 
     assert debug['inds'].shape == (25165824, )
     assert debug['inds'].dtype == int
-<<<<<<< HEAD
-    assert debug['inds'][0] == 4
-    assert debug['inds'][1] == 3
-    assert debug['inds'][2] == 2
-    assert debug['inds'][3] == 1
-    assert debug['inds'][4] == 8
-    assert debug['inds'][5] == 7
-    assert debug['inds'][6] == 6
-    assert debug['inds'][7] == 5
-    assert debug['inds'][8] == 12
-=======
     assert debug['inds'][0] == 3    # in matlab, these are 4, 3, 2, 1, 8, 7, 6, 5, 12 because matlab has 1-based indexing
     assert debug['inds'][1] == 2
     assert debug['inds'][2] == 1
@@ -1343,7 +1332,6 @@ def test_read_m3z_file():
     assert debug['inds'][6] == 5
     assert debug['inds'][7] == 4
     assert debug['inds'][8] == 11
->>>>>>> 60aa9707d798f38f7cc19e63d43b7538026af222
     assert debug['repeated'].shape == (25165824, )
     assert debug['buf'].dtype == np.uint8
     assert debug['buf'].shape == (75497472, )
