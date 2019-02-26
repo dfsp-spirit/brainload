@@ -1252,7 +1252,7 @@ def test_read_lookup_file():
 
 def test_read_m3z_file():
     m3z_file = os.path.join(TEST_DATA_DIR, 'subject1', 'mri', 'transforms', 'talairach.m3z')
-    vol_orig, vol_dest, vol_ind0, meta_data, debug = fsd.read_m3z_file(m3z_file)
+    vol_orig, vol_dest, vol_ind0, meta_data = fsd.read_m3z_file(m3z_file)
     assert meta_data['version'] == pytest.approx(1.0)
     assert meta_data['width'] == 128
     assert meta_data['height'] == 128
@@ -1269,99 +1269,6 @@ def test_read_m3z_file():
     assert meta_data['data_end_pos'] == data_end_pos_expected
     assert meta_data['remaining_data_tag'] == 10
     assert meta_data['file_end_pos'] == 83888912        # we know this number from running the matlab implementation on our test file (mris_read_m3z from FreeSurfer soure repo at Github)
-    assert len(debug['vol_data']) == expected_numbers_to_read * 4   # vol_data is a tuple
-    # some checks on the raw vol_data. Again, these are from the matlab implementation.
-    assert debug['vol_data'][0] == 61
-    assert debug['vol_data'][1] == 185
-    assert debug['vol_data'][2] == 116
-    # some more checks
-    assert debug['indices'].shape == (12, 2097152)
-    assert debug['indices'][0][0] == 0
-    assert debug['indices'][0][1] == 1
-    assert debug['indices'][0][2] == 2
-    assert debug['indices'][0][3] == 3
-
-    assert debug['vox_offset'].shape == (12, 2097152)
-    assert debug['vox_offset'][0][0] == 0
-    assert debug['vox_offset'][1][0] == 0
-    assert debug['vox_offset'][2][0] == 0
-    assert debug['vox_offset'][3][0] == 0
-    assert debug['vox_offset'][4][0] == 0
-    assert debug['vox_offset'][5][0] == 0
-    assert debug['vox_offset'][6][0] == 0
-    assert debug['vox_offset'][7][0] == 0
-    assert debug['vox_offset'][8][0] == 0
-    assert debug['vox_offset'][9][0] == 0
-    assert debug['vox_offset'][10][0] == 0
-    assert debug['vox_offset'][11][0] == 0
-    assert debug['vox_offset'][0][1] == 36
-    assert debug['vox_offset'][1][1] == 36
-    assert debug['vox_offset'][11][1] == 36
-    assert debug['vox_offset'][0][2] == 72
-    assert debug['vox_offset'][1][2] == 72
-    assert debug['vox_offset'][11][2] == 72
-    assert debug['vox_offset'][0][3] == 108
-    assert debug['vox_offset'][1][3] == 108
-    assert debug['vox_offset'][11][3] == 108
-
-    assert debug['reshaped_offsets'].shape == (25165824, )
-    assert debug['reshaped_offsets'][0] == 0
-    assert debug['reshaped_offsets'][1] == 0
-    assert debug['reshaped_offsets'][2] == 0
-    assert debug['reshaped_offsets'][3] == 0
-    assert debug['reshaped_offsets'][4] == 0
-    assert debug['reshaped_offsets'][5] == 0
-    assert debug['reshaped_offsets'][6] == 0
-    assert debug['reshaped_offsets'][7] == 0
-    assert debug['reshaped_offsets'][8] == 0
-    assert debug['reshaped_offsets'][9] == 0
-    assert debug['reshaped_offsets'][10] == 0
-    assert debug['reshaped_offsets'][11] == 0
-    assert debug['reshaped_offsets'][12] == 36
-    assert debug['reshaped_offsets'][23] == 36
-    assert debug['reshaped_offsets'][24] == 72
-
-    assert debug['inds'].shape == (25165824, )
-    assert debug['inds'].dtype == int
-    assert debug['inds'][0] == 3    # in matlab, these are 4, 3, 2, 1, 8, 7, 6, 5, 12 because matlab has 1-based indexing
-    assert debug['inds'][1] == 2
-    assert debug['inds'][2] == 1
-    assert debug['inds'][3] == 0
-    assert debug['inds'][4] == 7
-    assert debug['inds'][5] == 6
-    assert debug['inds'][6] == 5
-    assert debug['inds'][7] == 4
-    assert debug['inds'][8] == 11
-    assert debug['repeated'].shape == (25165824, )
-    assert debug['buf'].dtype == np.uint8
-    assert debug['buf'].shape == (75497472, )
-    assert debug['buf'][0] == 61
-    assert debug['buf'][1] == 185
-    assert debug['buf'][2] == 116
-    assert debug['buf_at_inds'].shape == (25165824, )
-    assert debug['buf_at_inds'].dtype == np.uint8
-    assert debug['buf_at_inds'][0] == 248
-    assert debug['buf_at_inds'][1] == 116
-    assert debug['buf_at_inds'][2] == 185
-    assert debug['buf_at_inds'][3] == 61
-    assert debug['single_casted'].shape == (6291456, )
-    assert debug['single_casted'].dtype == np.single    # single precision float (this is an alias for np.float32)
-    assert debug['single_casted'][0] == pytest.approx(0.0906, 0.001)
-    assert debug['single_casted'][1] == pytest.approx(16.8382, 0.001)
-    assert debug['single_casted'][2] == pytest.approx(-37.7883, 0.001)
-    assert debug['vol_orig_step1'].shape == (3, 128, 128, 128)
-    assert debug['vol_orig_step1'][0,63,63,63] == pytest.approx(124.9153, 0.001)
-    assert debug['vol_orig_step1'][1,63,63,63] == pytest.approx(80.8790, 0.001)
-    assert debug['vol_orig_step1'][2,63,63,63] == pytest.approx(117.6751, 0.001)
-    assert debug['vol_orig'][63,63,63,0] == pytest.approx(124.9153, 0.001)
-    assert debug['vol_orig'][63,63,63,1] == pytest.approx(80.8790, 0.001)
-    assert debug['vol_orig'][63,63,63,2] == pytest.approx(117.6751, 0.001)
-    assert debug['vol_dest'][63,63,63,0] == pytest.approx(124.8608, 0.001)
-    assert debug['vol_dest'][63,63,63,1] == pytest.approx(80.8703, 0.001)
-    assert debug['vol_dest'][63,63,63,2] == pytest.approx(117.6641, 0.001)
-    assert debug['vol_ind0'][63,63,63,0] == 63
-    assert debug['vol_ind0'][63,63,63,1] == 63
-    assert debug['vol_ind0'][63,63,63,2] == 63
     assert vol_orig.shape == (128, 128, 128, 3)
     assert vol_orig.dtype == np.single
     assert vol_orig[63,63,63,0] == pytest.approx(124.9153, 0.001)
