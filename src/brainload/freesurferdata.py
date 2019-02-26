@@ -23,7 +23,7 @@ def read_m3z_file(m3z_file):
     """
     Read a file in FreeSurfer m3z format.
 
-    Read a file in FreeSurfer m3z format, usually mri/transforms/talairach.m3z of a subject. An m3z file is a binary file containing a dense vector field that describes a 3D registration between two volumes/images. It is gzipped.
+    Read a file in FreeSurfer m3z format, usually mri/transforms/talairach.m3z of a subject. An m3z file is a binary file containing a dense vector field that describes a 3D registration between two volumes/images. It is gzipped. This implementation follows the Matlab implementation from the FreeSurfer source repository at .
 
     Parameters
     ----------
@@ -102,12 +102,7 @@ def read_m3z_file(m3z_file):
     debug['indices'] = indices
     debug['vox_offset'] = vox_offset
 
-<<<<<<< HEAD
-    #[4:-1:1 8:-1:5 12:-1:9]';
-    to_repeat = np.array([4, 3, 2, 1, 8, 7, 6, 5, 12, 11, 10, 9], dtype=int)
-=======
     to_repeat = np.array([3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8])
->>>>>>> 60aa9707d798f38f7cc19e63d43b7538026af222
     debug['to_repeat'] = to_repeat
     reshaped_offsets = np.reshape(vox_offset, -1, order='F').copy()
     debug['reshaped_offsets'] = reshaped_offsets
