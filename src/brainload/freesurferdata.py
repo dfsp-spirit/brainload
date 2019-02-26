@@ -43,18 +43,12 @@ def read_m3z_file(m3z_file):
 
     meta_data: dictionary
         Contains meta data on the registration. The following keys are included:
-        - version: float
-            File format version
-        - width: int
-            Volume width
-        - height: int
-            Volume height
-        - depth: int
-            Volume depth
-        - spacing: int
-            voxel spacing of the volume
-        - exp_k: float
-            exp_k of the volume
+            - version: float, File format version
+            - width: int, Volume width
+            - height: int, Volume height
+            - depth: int, Volume depth
+            - spacing: int, voxel spacing of the volume
+            - exp_k: float, exp_k of the volume
 
     Examples
     --------

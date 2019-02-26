@@ -8,7 +8,7 @@ except ImportError:
 
 setup(
     name='brainload',
-    version='0.3.2',
+    version='0.3.3',
     description='Load FreeSurfer brain imaging data with minimal cognitive load.',
     long_description='Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.',
     keywords='neuroimaging freesurfer nibabel load mgh curv MRI morphometry',
@@ -23,7 +23,6 @@ setup(
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7'],
