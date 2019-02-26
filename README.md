@@ -1,6 +1,8 @@
 # brainload
 Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.
 
+This is my personal collection of Python/numpy functions for (structural) neuroimaging. Feel free to use it.
+
 ## About
 
 `brainload` provides a simple high-level interface to access [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) neuroimaging data in python. It is intended for developers and scientists who need to access neuroimaging data for their research.
