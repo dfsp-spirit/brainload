@@ -23,7 +23,7 @@ def read_m3z_file(m3z_file):
     """
     Read a file in FreeSurfer m3z format.
 
-    Read a file in FreeSurfer m3z format, usually mri/transforms/talairach.m3z of a subject. An m3z file is a gzipped binary file containing a dense vector field that describes a 3D registration between two volumes/images. This implementation follows the Matlab implementation from the FreeSurfer source repository at github, see https://github.com/freesurfer/freesurfer/blob/dev/matlab/mris_read_m3z.m.
+    Read a file in FreeSurfer m3z format, usually mri/transforms/talairach.m3z of a subject. An m3z file is a gzipped binary file containing a dense vector field that describes a 3D registration between two volumes/images. This implementation follows the Matlab implementation from the FreeSurfer source repository at github, see https://github.com/freesurfer/freesurfer/blob/dev/matlab/mris_read_m3z.m. This function is released under the Freesurfer license: https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferSoftwareLicense
 
     Parameters
     ----------
