@@ -540,7 +540,10 @@ def test_extract_table_data_indices_where():
         pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
     subjects_list = ['subject1', 'subject2']
     _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
-    row_indices = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
+    struct_name_data = all_subjects_table_data_dict['StructName']
+    assert struct_name_data.shape == (2, 45)
+    assert struct_name_data[0][12] == b'Left-Amygdala'
+    row_indices = st.extract_table_data_indices_where('StructName', b'Left-Amygdala', all_subjects_table_data_dict)
     assert len(row_indices) == 1
     assert row_indices[0] == 12        # see aseg.stats table: amygdala is row 12
 
@@ -551,7 +554,7 @@ def test_extract_field_from_table_data():
         pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
     subjects_list = ['subject1', 'subject2']
     _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
-    row_index_amygdala = st.extract_table_data_indices_where('StructName', 'Left-Amygdala', all_subjects_table_data_dict)
+    row_index_amygdala = st.extract_table_data_indices_where('StructName', b'Left-Amygdala', all_subjects_table_data_dict)
     assert not isinstance(row_index_amygdala, tuple)    # must be np.array
     assert row_index_amygdala.shape == (1, )
     amygdala_column_all_subjects = st.extract_field_from_table_data('Volume_mm3', row_index_amygdala, all_subjects_table_data_dict)
@@ -566,12 +569,12 @@ def test_extract_column_from_table_data():
     _, all_subjects_table_data_dict = st.group_stats_aseg(subjects_list, TEST_DATA_DIR)
     res = st.extract_column_from_table_data(all_subjects_table_data_dict, 'StructName', 'NVoxels')
     assert len(res) == 45
-    assert 'Left-Lateral-Ventricle' in res
+    assert b'Left-Lateral-Ventricle' in res
     for struct_name in res:
         num_voxels_of_structure = res[struct_name]
         assert num_voxels_of_structure.shape == (2, )
-    assert res['Left-Lateral-Ventricle'][0] == pytest.approx(12159, 0.01)
-    assert res['Left-Lateral-Ventricle'][1] == pytest.approx(12159, 0.01)    # subject2 is copied from subject1
+    assert res[b'Left-Lateral-Ventricle'][0] == pytest.approx(12159, 0.01)
+    assert res[b'Left-Lateral-Ventricle'][1] == pytest.approx(12159, 0.01)    # subject2 is copied from subject1
 
 
 def test_extract_column_from_table_data_invalid_label_name():

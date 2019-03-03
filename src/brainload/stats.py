@@ -629,8 +629,8 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
     colum_name: str
         The name of the column that should be handled, i.e., the key in all_subjects_table_data_dict.  In combination with row_index, this defines the field that should be handled.
 
-    target_value_string: str
-        The value identifying the row you want. Note that this should be unique. If it is not, the returned list has length > 1. Also note that the comparison happens before casting to dtype, so the value given here must be of type str.
+    target_value_string: byte string
+        The value identifying the row you want. Note that this should be unique. If it is not, the returned list has length > 1. Also note that the comparison happens before casting to dtype, so the value given here must be of type str. Note that this must a byte string, so in Python 3 you have to explicitely pass something like ```b'word_here'```.
 
     all_subjects_table_data_dict: dict of str to numpy 2D array
         Data as returned by the ```group_stats``` function.
@@ -649,6 +649,7 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
     >>> assert len(row_indices) == 1
     >>> assert row_indices[0] == 12        # see aseg.stats table: amygdala is row 12
     """
+    target_value_string = target_value_string
     column_2D_arr = all_subjects_table_data_dict[column_name]
     if column_2D_arr.shape[0] < 1:
         return np.array([])
