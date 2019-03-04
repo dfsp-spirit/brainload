@@ -59,6 +59,41 @@ def get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=0,
 
 
 def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200], dtype=np.uint8):
+    """
+    Generates a surface overlay volume.
+
+    Generates a surface overlay volume. The volume contains one color value per vertex of the surface and can be used to visualize different vertices on a brain surface. This functions supports coloring different sets of vertices with different colors. All vertices which are not explicitely listed with a color to assign to them are given the background color.
+
+    Parameters
+    ----------
+    num_verts: int
+        The number of vertices of the surface. E.g., 163842 if you want to color vertices on a hemisphere from the fsaverage Freesurfer subject.
+
+    vertex_mark_list: list of tuples
+        Each tuple contains first the voxel indices (1D numpy int array with shape (n, ) for n vertices) and then a 1D array of length 3 that represents the RGB values of the color to assign to all the previously given n vertices.
+
+    background_rgb: numpy 1D array of length 3, optional
+        The background color, defined as 3 RGB values. Defaults to [200, 200, 200], which is a bright gray. This is assigned to all vertices which do not occur in vertex_mark_list.
+
+    dtype: data type, optional
+        The data type of the returned data 3D array. Defaults to ```np.uint8```.
+
+    Returns
+    -------
+    voxel_data: numpy 3D array
+        A 3D array with shape (n, 3, 1) for the n vertices of the surface that contains the colors given by the 3 RGB values.
+
+    Examples
+    --------
+    Create an overlay for an fsaverage hemisphere (which always has exactly 163842 vertices) and mark 3 of the vertices in red and 4 others in green. The rest will be gray.
+    
+    >>> num_verts = 163842
+    >>> vertex_mark_list = [(np.array([0, 2, 4], dtype=int), [255, 0, 0]), (np.array([1, 3, 5, 7], dtype=int), [0, 255, 0])]
+    >>> vol_data = bw.get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200])
+
+    You could now write this to a nifti or mgz file and load it as a surface overlay.
+
+    """
     background_rgb = np.array(background_rgb, dtype=dtype)
     shape = (num_verts, 3, 1)
     voxel_data = np.zeros(shape, dtype=dtype)
