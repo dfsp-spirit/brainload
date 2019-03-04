@@ -17,7 +17,7 @@ class SurfaceGraph:
         """
         Init the graph from vertices and faces.
 
-        Init the graph from vertices and faces. Note that the faces are not stored directly in the graph, they are turned into edges and the information which edges form a face is lost (this is a graph, not a mesh representation). Also note that the verts and faces parameters which are required here fit the return values of any brainload function which loads a brain mesh, e.g., the ```subject_mesh``` function.
+        Init the graph from vertices and faces. Note that the faces are not stored directly in the graph, they are turned into edges and the information which edges form a face is lost (this is a graph, not a mesh representation). Also note that the verts and faces parameters which are required here fit the return values of any brainload function which loads a brain mesh, e.g., the ```subject_mesh``` function. When this constructor has finished, a networkx graph of the mesh is available at ```surface_graph_instance.graph```.
 
         Parameters
         ----------
