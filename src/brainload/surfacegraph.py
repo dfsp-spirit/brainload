@@ -23,4 +23,4 @@ class SurfaceGraph:
 
     def get_neighbors_up_to_dist(self, source_vert, dist):
         dist_dict = nx.single_source_shortest_path_length(self.graph, source_vert, cutoff=dist)
-        return keys(dist_dict)
+        return dist_dict.keys()
