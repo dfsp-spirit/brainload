@@ -59,7 +59,7 @@ def get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=0,
 
 
 def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200], dtype=np.uint8):
-    background_rgb = np.array(background_rgbt, dtype=dtype)
+    background_rgb = np.array(background_rgb, dtype=dtype)
     shape = (num_verts, 3, 1)
     voxel_data = np.zeros(shape, dtype=dtype)
     # set background color for all voxels/verts

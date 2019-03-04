@@ -29,6 +29,7 @@ def test_get_volume_data_with_custom_marks():
     assert vol_data[0, 2, 2] == 160
     assert vol_data[1, 2, 2] == 0
 
+
 def test_get_volume_data_with_custom_marks_no_shape_given_custom_background_value():
     voxel_mark_list = [(np.array([[1, 1, 1], [2, 2, 2]], dtype=int), 40), (np.array([[0, 1, 2], [0, 2, 2]], dtype=int), 160)]
     vol_data = bw.get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=10, dtype=np.int16)
@@ -46,3 +47,20 @@ def test_get_volume_data_with_custom_marks_no_shape_given_custom_background_valu
     assert vol_data[0, 1, 2] == 160
     assert vol_data[0, 2, 2] == 160
     assert vol_data[1, 2, 2] == 10
+
+
+def test_get_surface_vertices_overlay_volume_data():
+    num_verts = 10
+    vertex_mark_list = [(np.array([0, 2, 4], dtype=int), [20, 20, 20]), (np.array([1, 3, 5, 7], dtype=int), [40, 40, 40])]
+    vol_data = bw.get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200])
+    assert vol_data.shape == (10, 3, 1)
+    assert_array_equal(vol_data[0,:,0], [20, 20, 20])
+    assert_array_equal(vol_data[2,:,0], [20, 20, 20])
+    assert_array_equal(vol_data[4,:,0], [20, 20, 20])
+    assert_array_equal(vol_data[1,:,0], [40, 40, 40])
+    assert_array_equal(vol_data[3,:,0], [40, 40, 40])
+    assert_array_equal(vol_data[5,:,0], [40, 40, 40])
+    assert_array_equal(vol_data[7,:,0], [40, 40, 40])
+    assert_array_equal(vol_data[6,:,0], [200, 200, 200])
+    assert_array_equal(vol_data[8,:,0], [200, 200, 200])
+    assert_array_equal(vol_data[9,:,0], [200, 200, 200])
