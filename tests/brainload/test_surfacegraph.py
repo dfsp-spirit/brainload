@@ -23,3 +23,4 @@ def test_surface_graph():
     g = surface_graph.graph
     assert len(g) == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
     assert g.number_of_nodes() == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    neighbors = surface_graph.get_neighbors_up_to_dist(100, 1)
