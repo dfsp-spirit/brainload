@@ -14,6 +14,10 @@ TEST_DATA_DIR = os.getenv('BRAINLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
 SUBJECT1_SURF_LH_WHITE_NUM_VERTICES = 149244
 
 def test_surface_graph():
+    try:
+        import networkx as nx
+    except ImportError:
+        pytest.skip("Optional dependency networkx not installed, skipping tests which require it.")
     vert_coords, faces, meta_data = bl.subject_mesh('subject1', TEST_DATA_DIR, surf='white', hemi='lh')
     surface_graph = sg.SurfaceGraph(vert_coords, faces)
     g = surface_graph.graph
