@@ -31,9 +31,9 @@ def test_get_volume_data_with_custom_marks():
 
 def test_get_volume_data_with_custom_marks_no_shape_given_custom_background_value():
     voxel_mark_list = [(np.array([[1, 1, 1], [2, 2, 2]], dtype=int), 40), (np.array([[0, 1, 2], [0, 2, 2]], dtype=int), 160)]
-    vol_data = bw.get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=10)
+    vol_data = bw.get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=10, dtype=np.int16)
     assert vol_data.shape == (256, 256, 256)
-    assert vol_data.dtype == np.uint8
+    assert vol_data.dtype == np.int16
     assert vol_data[0, 0, 0] == 10
     assert vol_data[0, 0, 1] == 10
     assert vol_data[0, 0, 2] == 10
