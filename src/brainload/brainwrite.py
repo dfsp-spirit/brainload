@@ -86,13 +86,16 @@ def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, backgr
     Examples
     --------
     Create an overlay for an fsaverage hemisphere (which always has exactly 163842 vertices) and mark 3 of the vertices in red and 4 others in green. The rest will be gray.
-    
+
     >>> num_verts = 163842
     >>> vertex_mark_list = [(np.array([0, 2, 4], dtype=int), [255, 0, 0]), (np.array([1, 3, 5, 7], dtype=int), [0, 255, 0])]
     >>> vol_data = bw.get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200])
 
     You could now write this to a nifti or mgz file and load it as a surface overlay.
 
+    See also
+    --------
+    ```get_surface_vertices_overlay_volume_data```: the same data, but for writing to a similar file in text format
     """
     background_rgb = np.array(background_rgb, dtype=dtype)
     shape = (num_verts, 3, 1)
@@ -110,3 +113,7 @@ def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, backgr
             voxel_data[vert_idx,1,0] = target_vertex_rgb[1]
             voxel_data[vert_idx,2,0] = target_vertex_rgb[2]
     return voxel_data
+
+
+def get_surface_vertices_overlay_text_file_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200], dtype=np.uint8):
+    pass
