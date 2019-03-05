@@ -65,6 +65,7 @@ def test_get_surface_vertices_overlay_volume_data():
     assert_array_equal(vol_data[8,:,0], [200, 200, 200])
     assert_array_equal(vol_data[9,:,0], [200, 200, 200])
 
+
 def test_get_surface_vertices_overlay_text_file_lines():
     num_verts = 10
     vertex_mark_list = [(np.array([0, 2, 4], dtype=int), [20, 20, 20]), (np.array([1, 3, 5, 7], dtype=int), [40, 40, 40])]
@@ -76,3 +77,16 @@ def test_get_surface_vertices_overlay_text_file_lines():
     assert overlay_lines[1] == "40, 40, 40"
     assert overlay_lines[7] == "40, 40, 40"
     assert overlay_lines[6] == "200, 200, 200"
+
+
+def test_get_surface_vertices_overlay_volume_data_1color():
+    num_verts = 10
+    vertex_mark_list = [(np.array([0, 2, 4], dtype=int), 20), (np.array([1, 3, 5, 7], dtype=int), 40)]
+    vol_data = bw.get_surface_vertices_overlay_volume_data_1color(num_verts, vertex_mark_list, background_value=0)
+    assert vol_data.shape == (10, 1, 1)
+    assert vol_data[0,0,0] == 20
+    assert vol_data[2,0,0] == 20
+    assert vol_data[4,0,0] == 20
+    assert vol_data[1,0,0] == 40
+    assert vol_data[7,0,0] == 40
+    assert vol_data[6,0,0] == 0
