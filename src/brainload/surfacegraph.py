@@ -45,11 +45,11 @@ class SurfaceGraph:
         source_vert: int
             Index of the source vertex.
 
-        dist: The distance up until which neighbors should be returned. This is the number of edges to traverse in the graph (along a shortest path of length dist from source to the respective nieighbor).
+        dist: The distance up until which neighbors should be returned. This is the number of edges to traverse in the graph (along a shortest path of length dist from source to the respective neighbor).
 
         Returns
         -------
-        neighbors: set
+        neighbors: list
             The indices of all vertices which lie within distance dist of the source_vert.
         """
         dist_dict = nx.single_source_shortest_path_length(self.graph, source_vert, cutoff=dist)
