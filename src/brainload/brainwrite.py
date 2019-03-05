@@ -60,7 +60,7 @@ def get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=0,
 
 def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200], dtype=np.uint8):
     """
-    Generates a surface overlay volume.
+    Generates a surface overlay as a binary volume image file.
 
     Generates a surface overlay volume. The volume contains one color value per vertex of the surface and can be used to visualize different vertices on a brain surface. This functions supports coloring different sets of vertices with different colors. All vertices which are not explicitely listed with a color to assign to them are given the background color.
 
@@ -115,5 +115,33 @@ def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, backgr
     return voxel_data
 
 
-def get_surface_vertices_overlay_text_file_data(num_verts, vertex_mark_list, background_rgb=[200, 200, 200], dtype=np.uint8):
-    pass
+def get_surface_vertices_overlay_text_file_lines(num_verts, vertex_mark_list, background_rgb=[200, 200, 200], dtype=np.uint8):
+    """
+    Generates a surface overlay as a text file.
+
+    Performs the same task as get_surface_vertices_overlay_volume_data, but outputs the data as lines that can be written to a text file. This is an alternate format for a surface overlay file.
+
+    Parameters
+    ----------
+    num_verts: int
+        The number of vertices of the surface. E.g., 163842 if you want to color vertices on a hemisphere from the fsaverage Freesurfer subject.
+
+    vertex_mark_list: list of tuples
+        Each tuple contains first the voxel indices (1D numpy int array with shape (n, ) for n vertices) and then a 1D array of length 3 that represents the RGB values of the color to assign to all the previously given n vertices.
+
+    background_rgb: numpy 1D array of length 3, optional
+        The background color, defined as 3 RGB values. Defaults to [200, 200, 200], which is a bright gray. This is assigned to all vertices which do not occur in vertex_mark_list.
+
+    dtype: data type, optional
+        The data type of the returned data 3D array. Defaults to ```np.uint8```.
+
+    Returns
+    -------
+    lines: list of str
+        A list of lines that can be written to a text file as a surface overlay. Each line represents the color of a single vertex. Vertex order is the same as the order of vertices in the surface file that this overlay is for.
+    """
+    voxel_data = get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, background_rgb=background_rgb, dtype=dtype)
+    lines = []
+    for row in voxel_data:
+        lines.append("%d, %d, %d" % (row[0][0], row[1][0], row[2][0]))
+    return lines
