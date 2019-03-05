@@ -254,3 +254,25 @@ def do_subject_files_exist(subjects_list, subjects_dir, filename=None, filename_
         if not os.path.isfile(full_file):
             missing_files_by_subject[subject_id] = full_file
     return missing_files_by_subject
+
+
+def write_lines_to_text_file(lines, file_name, line_sep="\n"):
+    """
+    Write the lines to a text file.
+
+    Write the lines to a text file, overwriting it in case it exists.
+
+    Parameters
+    ----------
+    lines: list of str
+        The lines, must not contain line ending.
+
+    file_name: str
+        Path to new text file to create (or overwrite if it exists).
+
+    line_sep: str, optional
+        Line separator. Defaults to "\n".
+    """
+    with open(file_name, 'w') as f:
+        for l in lines:
+            f.write("%s%s" % (l, line_sep))
