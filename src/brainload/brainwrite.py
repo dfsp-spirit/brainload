@@ -6,7 +6,7 @@ These functions are helpful if you want to generate and write volume or surface 
 """
 
 import numpy as np
-
+import nibabel as nib
 
 def get_volume_data_with_custom_marks(voxel_mark_list, background_voxel_value=0, shape=(256, 256, 256), dtype=np.uint8):
     """
@@ -62,7 +62,7 @@ def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, backgr
     """
     Generates a surface overlay as a binary volume image file.
 
-    Generates a surface overlay volume. The volume contains one color value per vertex of the surface and can be used to visualize different vertices on a brain surface. This functions supports coloring different sets of vertices with different colors. All vertices which are not explicitely listed with a color to assign to them are given the background color.
+    Generates a surface overlay volume. The volume contains one color value per vertex of the surface and can be used to visualize different vertices on a brain surface. This functions supports coloring different sets of vertices with different colors. All vertices which are not explicitely listed with a color to assign to them are given the background color. You can write the result volume to an  mgz file and load the result as a surface overlay in Freeview: load a surface like ```lh.pial```, select it on the left pane and then click ```Overlay -> Load generic...```. Note that saving to nifti will not work in many cases (depends on num_verts), as the dimensions are usually too large to be saved to nifti formats.
 
     Parameters
     ----------
@@ -95,7 +95,8 @@ def get_surface_vertices_overlay_volume_data(num_verts, vertex_mark_list, backgr
 
     See also
     --------
-    ```get_surface_vertices_overlay_volume_data```: the same data, but for writing to a similar file in text format
+    ```get_surface_vertices_overlay_volume_data_1color```: the same data, but use one intensity value per vertex instead of 3 RGB values. Allows usage of FreeSurfer hack for saving to nifti format in case of fsaverage.
+    ```get_surface_vertices_overlay_text_file_lines```: the same data, but for writing to a similar file in text format that can be loaded as a color map. Uses RGB color. No dimension limitations.
     """
     background_rgb = np.array(background_rgb, dtype=dtype)
     shape = (num_verts, 3, 1)
@@ -119,7 +120,7 @@ def get_surface_vertices_overlay_volume_data_1color(num_verts, vertex_mark_list,
     """
     Generates a surface overlay as a binary volume image file.
 
-    Generates a surface overlay volume. The volume contains one color value per vertex of the surface and can be used to visualize different vertices on a brain surface. This functions supports coloring different sets of vertices with different colors. All vertices which are not explicitely listed with a color to assign to them are given the background color.
+    Generates a surface overlay volume. The volume contains one color value per vertex of the surface and can be used to visualize different vertices on a brain surface. This functions supports coloring different sets of vertices with different colors. All vertices which are not explicitely listed with a color to assign to them are given the background color. You can write the result volume to a nifti or mgz file and load the result as a surface overlay in Freeview: load a surface like ```lh.pial```, select it on the left pane and then click ```Overlay -> Load generic...```. Note that saving to nifti will only works if num_verts is exactly 163842, the number of vertices of fsaverage, as it abuses the FreeSurfer hack to save large dimensions in nifti files.
 
     Parameters
     ----------
@@ -172,7 +173,7 @@ def get_surface_vertices_overlay_text_file_lines(num_verts, vertex_mark_list, ba
     """
     Generates a surface overlay as a text file.
 
-    Performs the same task as get_surface_vertices_overlay_volume_data, but outputs the data as lines that can be written to a text file. This is an alternate format for a surface overlay file.
+    Performs the same task as get_surface_vertices_overlay_volume_data, but outputs the data as lines that can be written to a text file. This is an alternate format for a surface overlay file. You can write the returned lines to a text file and load the result as a surface colormap in Freeview: load a surface like ```lh.pial```, select it on the left pane and then click ```Color -> Load RGB Map...```.
 
     Parameters
     ----------
@@ -198,3 +199,29 @@ def get_surface_vertices_overlay_text_file_lines(num_verts, vertex_mark_list, ba
     for row in voxel_data:
         lines.append("%d, %d, %d" % (row[0][0], row[1][0], row[2][0]))
     return lines
+
+
+def write_voldata_to_nifti_file(file_name, vol_data, affine=None, header=None):
+    """
+    Write volume data to a nifti file.
+
+    Write the volume data to a file in NIFTI v1 format. Unless you supply a header, the header will be pretty empty. Very thin wrapper around nibabel.save. Note that if you just modified data that you loaded from a source image (e.g., replaces some intensities), you should pass the affine and the header of the original image.
+
+    Parameters
+    ----------
+    file_name: str
+        Path to output file. Will be overwritten if it exists. Should have file extension nii (or ngz for gzip compression).
+
+    vol_data: the data to write, usually a multi-dimensional numpy array. Shape could be (256, 256, 256) for a 3D image, or (256, 256, 256, 50) for a 4D image containing 50 time points, but this is up to you. Note however that the Nifti 1 format is limited in how large the individual dimensions may be and how many dimensions are supported. See nibabel for details.
+
+    affine: numpy 2D array, optional
+        The affine registration matrix (4x4) relating the voxel coordinates to world coordinates in RAS+ space. See nibabel docs for details.
+
+    header: nibabel.Nifti1Header, optional
+        The nifti header. If not given, an almost empty default header will be used.
+    """
+    if header is None:
+        header = nib.Nifti1Header()
+        header.set_data_shape(vol_data.shape)
+    nifti_img = nib.Nifti1Image(vol_data, affine, header=header)
+    nib.save(nifti_image, file_name)
