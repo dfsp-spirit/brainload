@@ -102,11 +102,19 @@ def test_write_voldata_to_nifti_file():
         pytest.skip("Skipping: python 2 has no support for tempfile.TemporaryDirectory")
     with tempfile.TemporaryDirectory() as tmpdirname:
         vol_data = np.zeros((10, 10, 10), dtype=int)
+        vol_data[0,0,1] = 20
+        vol_data[0,0,2] = 40
+        vol_data[3,3,3] = 60
         nifti_file_name = os.path.join(tmpdirname, 'test.nii')
         bw.write_voldata_to_nifti_file(nifti_file_name, vol_data)
         assert os.path.isfile(nifti_file_name)
         img = nib.load(nifti_file_name)
-        assert img.get_data().shape == (10, 10, 10)
+        nifti_data = img.get_data()
+        assert nifti_data.shape == (10, 10, 10)
+        assert nifti_data[0,0,0] == 0
+        assert nifti_data[0,0,1] == 20
+        assert nifti_data[0,0,2] == 40
+        assert nifti_data[3,3,3] == 60
 
 
 def test_write_voldata_to_mgh_file():
@@ -114,8 +122,15 @@ def test_write_voldata_to_mgh_file():
         pytest.skip("Skipping: python 2 has no support for tempfile.TemporaryDirectory")
     with tempfile.TemporaryDirectory() as tmpdirname:
         vol_data = np.zeros((10, 10, 10), dtype=int)
+        vol_data[0,0,1] = 20
+        vol_data[0,0,2] = 40
+        vol_data[3,3,3] = 60
         mgh_file_name = os.path.join(tmpdirname, 'test.mgh')
         bw.write_voldata_to_mgh_file(mgh_file_name, vol_data)
         assert os.path.isfile(mgh_file_name)
         mgh_data, mgh_meta_data = fsd.read_mgh_file(mgh_file_name)
         assert mgh_data.shape == (10, 10, 10)
+        assert mgh_data[0,0,0] == 0
+        assert mgh_data[0,0,1] == 20
+        assert mgh_data[0,0,2] == 40
+        assert mgh_data[3,3,3] == 60
