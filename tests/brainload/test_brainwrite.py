@@ -3,7 +3,10 @@ import pytest
 import numpy as np
 from numpy.testing import assert_raises, assert_array_equal, assert_allclose
 import brainload.brainwrite as bw
+import brainload.freesurferdata as fsd
 import brainload as bl
+import nibabel as nib
+import tempfile
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
@@ -90,3 +93,24 @@ def test_get_surface_vertices_overlay_volume_data_1color():
     assert vol_data[1,0,0] == 40
     assert vol_data[7,0,0] == 40
     assert vol_data[6,0,0] == 0
+
+
+def test_write_voldata_to_nifti_file():
+    # This test currently assumes that the working directory is writable (and writes a file to it).
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        vol_data = np.zeros((10, 10, 10), dtype=int)
+        nifti_file_name = os.path.join(tmpdirname, 'test.nii')
+        bw.write_voldata_to_nifti_file(nifti_file_name, vol_data)
+        assert os.path.isfile(nifti_file_name)
+        img = nib.load(nifti_file_name)
+        assert img.get_data().shape == (10, 10, 10)
+
+
+def test_write_voldata_to_mgh_file():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        vol_data = np.zeros((10, 10, 10), dtype=int)
+        mgh_file_name = os.path.join(tmpdirname, 'test.mgh')
+        bw.write_voldata_to_mgh_file(mgh_file_name, vol_data)
+        assert os.path.isfile(mgh_file_name)
+        mgh_data, mgh_meta_data = fsd.read_mgh_file(mgh_file_name)
+        assert mgh_data.shape == (10, 10, 10)
