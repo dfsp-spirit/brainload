@@ -1,4 +1,5 @@
 import os
+import sys
 import pytest
 import numpy as np
 from numpy.testing import assert_raises, assert_array_equal, assert_allclose
@@ -97,6 +98,8 @@ def test_get_surface_vertices_overlay_volume_data_1color():
 
 def test_write_voldata_to_nifti_file():
     # This test currently assumes that the working directory is writable (and writes a file to it).
+    if sys.version_info.major < 3:
+        pytest.skip("Skipping: python 2 has no support for tempfile.TemporaryDirectory")
     with tempfile.TemporaryDirectory() as tmpdirname:
         vol_data = np.zeros((10, 10, 10), dtype=int)
         nifti_file_name = os.path.join(tmpdirname, 'test.nii')
@@ -107,6 +110,8 @@ def test_write_voldata_to_nifti_file():
 
 
 def test_write_voldata_to_mgh_file():
+    if sys.version_info.major < 3:
+        pytest.skip("Skipping: python 2 has no support for tempfile.TemporaryDirectory")
     with tempfile.TemporaryDirectory() as tmpdirname:
         vol_data = np.zeros((10, 10, 10), dtype=int)
         mgh_file_name = os.path.join(tmpdirname, 'test.mgh')
