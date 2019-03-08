@@ -511,3 +511,24 @@ def test_get_equivalent_voxel_of_raw_volume_in_conformed_volume_2():
     # now test whether the computation can be inverted and results in the source CRS values that we queried for initially
     raw_volume_voxels_crs_restored = st.get_equivalent_voxel_of_raw_volume_in_conformed_volume(conformed_volume_file, raw_volume_file, conf_volume_voxels_crs)
     assert_array_equal(raw_volume_voxels_crs_restored, raw_volume_query_voxels_crs)
+
+
+def test_spatial_assumptions():
+    # subject: subject1 from test data dir.
+    # This following information was obtained by opening brain.mgz in tkmedit (set SUBJECTS_DIR, then `tkmedit subject1 brain.mgz`). Then clicking on a point in the volume, and check the different coordinates. You may have to enable them under 'View' => 'Information' in the menu.
+    brain_mgz_volume_index = [150, 30, 122] # CRS
+    brain_mgz_volume_RAS = [-21.9, -5.6, 98.2]
+    brain_mgz_volume_scanner = [-22.4, 23.8, 49.3]
+    brain_mgz_MNI_talairach = [-24.1, 21.3, 53.5]
+    brain_mgz_talairach = [-23.8, 23.1, 48.1]
+    brain_mgz_value = 80
+    # tksurfer: white
+    # Now click 'Tools' => 'Save Point' and exit tkmedit. You can now open the surface in tksurfer (`tksurfer subject1 lh white`). The click 'Tools' => 'Go to saved point' and you will be at the point saved in tkmedit. Enable all the information you want in the manu under 'View' => 'Information'.
+    lh_white_vertex_index = 105828
+    lh_white_vertex_RAS = [-21.63, -5.56, 97.81]    # this coordinate seems to come from the lh.orig file. It does not matter which surface you load (white, pial, ...), tksurfer always shows the coord from the ?h.orig file.
+    lh_white_vertex_MNI_talairach = [-23.81, 21.21, 53.10]
+    lh_white_vertex_talairach = [-23.57, 22.99, 47.76]
+    lh_white_spherical_xyz = [27.19, 94.75, 12.91]
+    lh_white_spherical_rho_theta = [82.5, 74.0]
+    # tksurfer: pial
+    # Now open pial surface in tksurfer and load the saved point once more. Note that all values are identical to those when opening the white surface, so we skip them here.
