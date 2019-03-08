@@ -28,7 +28,7 @@ def vol_info():
 
     vol_data = nib.load(volume_file).get_data()
     if verbose:
-        print("Volume has shape %s and data type %s." % (vol_data.shape, vol_data.dtype))
+        print("Volume has %d dimensions, shape %s and data type %s." % (len(vol_data.shape), vol_data.shape, vol_data.dtype))
 
     voxel_value_print_format = "%f"
     if np.issubdtype(vol_data.dtype, np.integer):
