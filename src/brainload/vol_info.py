@@ -3,7 +3,7 @@ from __future__ import print_function
 import os
 import sys
 import numpy as np
-import brainload as bl
+import nibabel as nib
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainview active) from REPO_ROOT:
@@ -27,15 +27,15 @@ def vol_info():
     voxel_index = tuple([int(x) for x in args.crs])
     verbose = args.verbose
 
-    mgh_data, mgh_meta_data = bl.freesurferdata.read_mgh_file(volume_file)
+    vol_data = nib.load(volume_file).get_data()
     if verbose:
-        print("Volume has shape %s and data type %s." % (mgh_data.shape, mgh_data.dtype))
+        print("Volume has shape %s and data type %s." % (vol_data.shape, vol_data.dtype))
 
     voxel_value_print_format = "%f"
-    if np.issubdtype(mgh_data.dtype, np.integer):
+    if np.issubdtype(vol_data.dtype, np.integer):
         voxel_value_print_format = "%d"
 
-    print(voxel_value_print_format % (mgh_data[voxel_index]))
+    print(voxel_value_print_format % (vol_data[voxel_index]))
     sys.exit(0)
 
 
