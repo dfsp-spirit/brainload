@@ -5,7 +5,7 @@ import numpy as np
 import nibabel as nib
 import argparse
 
-# To run this in dev mode (in virtual env, pip -e install of brainview active) from REPO_ROOT:
+# To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
 # PYTHONPATH=./src/brainload python src/brainload/vol_info.py tests/test_data/subject1/mri/orig.mgz --crs 10 10 10 -v
 
 def vol_info():
