@@ -38,14 +38,30 @@ def intersurface():
     vert_coords_surf1, faces_surf1, morphometry_data_surf1, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
     vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
 
+    face_areas_surf1 = get_mesh_face_areas(vert_coords_surf1, faces_surf1)
+    #print("Computed %d areas for all %d faces." % (face_areas_surf1.shape[0], faces_surf1.shape[0]))
+
     for vert_idx, vert_coords in enumerate(vert_coords_surf1):
         faces_with_vert_at_pos0 = np.nonzero(faces_surf1[:,0]==vert_idx)[0].tolist()
         faces_with_vert_at_pos1 = np.nonzero(faces_surf1[:,1]==vert_idx)[0].tolist()
         faces_with_vert_at_pos2 = np.nonzero(faces_surf1[:,2]==vert_idx)[0].tolist()
         all_face_indices = set(faces_with_vert_at_pos0 + faces_with_vert_at_pos1 + faces_with_vert_at_pos2)
+        summed_area = face_areas_surf1[all_face_indices].sum()
         if vert_idx % 1000 == 0:
-            print('At vertex %d. Vertex is part of the following %d faces: %s' % (vert_idx, len(all_face_indices), ','.join([str(x) for x in all_face_indices])))
+            print('At vertex %d. Vertex is part of the following %d faces with total area %f: %s' % (vert_idx, len(all_face_indices), summed_area, ','.join([str(x) for x in all_face_indices])))
 
+
+def get_mesh_face_areas(vert_coords, faces):
+    """
+    Compute the area of all faces.
+    """
+    a = vert_coords[faces[:,0]]
+    b = vert_coords[faces[:,1]]
+    c = vert_coords[faces[:,2]]
+    print("a is:")
+    print(a)
+    areas = face_area(a, b, c)
+    return areas
 
 
 def face_area(a, b, c):
