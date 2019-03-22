@@ -42,10 +42,12 @@ def intersurface():
     print("Computed %d areas for all %d faces." % (face_areas_surf1.shape[0], faces_surf1.shape[0]))
 
     for vert_idx, vert_coords in enumerate(vert_coords_surf1):
-        faces_with_vert_at_pos0 = np.nonzero(faces_surf1[:,0]==vert_idx)[0].tolist()
-        faces_with_vert_at_pos1 = np.nonzero(faces_surf1[:,1]==vert_idx)[0].tolist()
-        faces_with_vert_at_pos2 = np.nonzero(faces_surf1[:,2]==vert_idx)[0].tolist()
-        all_face_indices = list(set(faces_with_vert_at_pos0 + faces_with_vert_at_pos1 + faces_with_vert_at_pos2))
+        mask = np.any(faces_surf1 == vert_idx, axis=1)
+        all_face_indices = np.nonzero(mask)[0]
+        #faces_with_vert_at_pos0 = np.nonzero(faces_surf1[:,0]==vert_idx)[0]
+        #faces_with_vert_at_pos1 = np.nonzero(faces_surf1[:,1]==vert_idx)[0]
+        #faces_with_vert_at_pos2 = np.nonzero(faces_surf1[:,2]==vert_idx)[0]
+        #all_face_indices = np.unique(np.concatenate((faces_with_vert_at_pos0, faces_with_vert_at_pos1, faces_with_vert_at_pos2)))
         summed_area = face_areas_surf1[all_face_indices].sum()
         if vert_idx % 1000 == 0:
             print('At vertex %d. Vertex is part of the following %d faces with total area %f: %s' % (vert_idx, len(all_face_indices), summed_area, ','.join([str(x) for x in all_face_indices])))
