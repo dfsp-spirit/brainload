@@ -82,10 +82,11 @@ def intersurface():
 
         if args.outputfile is not None:
             output_csv_file = args.outputfile
-            with open(output_csv_file, 'w', newline='') as csvfile:
+            with open(output_csv_file, 'w') as csvfile:
                 feature_writer = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 for vertex_id in range(vert_coords_surf1.shape[0]):
-                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], actual_volume[vertex_id]])
+                    expected_minus_actual = expected_volume[vertex_id] - actual_volume[vertex_id]
+                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], actual_volume[vertex_id], expected_minus_actual])
             print("Output CSV file in line format (vertex_id expected_volume actual_volume) written to '%s'." % (output_csv_file))
 
 

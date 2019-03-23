@@ -3,10 +3,13 @@ import numpy as np
 import os
 from numpy.testing import assert_array_equal, assert_allclose
 import brainload as bl
-import brainload.intersurface as blis
 
 
 def test_face_area_single_face():
+    try:
+        import brainload.intersurface as blis
+    except ImportError:
+        pytest.skip("Optional dependencies scipy, networkx not installed, skipping tests which require it.")
     points_x = np.array([0, 5, 5])
     points_y = np.array([0, 0, 5])
     points_z = np.array([0, 0, 0])
@@ -15,6 +18,10 @@ def test_face_area_single_face():
 
 
 def test_get_mesh_face_areas():
+    try:
+        import brainload.intersurface as blis
+    except ImportError:
+        pytest.skip("Optional dependencies scipy, networkx not installed, skipping tests which require it.")
     vert_coords = np.array([[0.0, 0.0, 0.0], [5.0, 0.0, 0.0], [5.0, 5.0, 0.0], [10.0, 0.0, 0.0]])
     faces = np.array([[0, 1, 2], [1, 2, 3]], dtype=int)
     areas = blis.get_mesh_face_areas(vert_coords, faces)
@@ -24,6 +31,10 @@ def test_get_mesh_face_areas():
 
 
 def test_get_convex_polygon_volumes():
+    try:
+        import brainload.intersurface as blis
+    except ImportError:
+        pytest.skip("Optional dependencies scipy, networkx not installed, skipping tests which require it.")
     # define a 3D box with size 2x2x2
     polygon_points = np.array([[0,0,0], [2,0,0], [2,2,0], [0,2,0], [0,0,2], [2,0,2], [2,2,2], [0,2,2]], dtype=float)
     vol = blis.get_convex_polygon_volume(polygon_points)
