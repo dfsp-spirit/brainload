@@ -11,6 +11,7 @@ from numpy.linalg import norm
 import brainload.surfacegraph as sg
 import networkx
 from scipy.spatial import ConvexHull
+import csv
 
 # To run this in dev mode (in virtual env, pip -e install of brainview active) from REPO_ROOT:
 # PYTHONPATH=./src/brainload python src/brainload/intersurface.py tim -d ~/data/tim_only/ --hemi lh
@@ -23,8 +24,8 @@ def intersurface():
     parser.add_argument("-f", "--first-surface", help="The first surface to load. String, defaults to 'white'.", default="white")
     parser.add_argument("-s", "--second-surface", help="The second surface to load. String, defaults to 'pial'.", default="pial")
     parser.add_argument("-e", "--hemi", help="The hemisphere to load. One of ('lh, 'rh').", choices=['lh', 'rh'])
-    parser.add_argument("-c", "--compute-value", help="What to compute for the two surfaces. One of ('expected_vol', 'actual_vol'). Defaults to 'expected_vol'.", default="expected_vol", choices=['expected_vol', 'actual_vol'])
-    parser.add_argument("-o", "--outputfile", help="Output file name. Will be in FreeSurfer surf format (like lh.area or lh.thickness).", default="")
+    parser.add_argument("-c", "--compute-value", help="What to compute for the two surfaces. One of ('expected_vol', 'actual_vol', 'both'). Defaults to 'expected_vol'.", default="expected_vol", choices=['expected_vol', 'actual_vol', 'both'])
+    parser.add_argument("-o", "--outputfile", help="Output CSV file name.", default=None)
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
     args = parser.parse_args()
 
@@ -38,46 +39,97 @@ def intersurface():
     surf1 = args.first_surface
     surf2 = args.second_surface
     hemi = args.hemi
+    verbose = args.verbose
+
+    print("-----Intersurface volume-----")
+    print("Note that the volume computed at each vertex is based on the area of all faces adjacent to the vertex. The area is NOT divided by 3!")
+    print("So the sum of the volumes over all vertices is NOT the volume of the cortex! It is much more - roughly 3 times more, but that depends on expected vs actual.")
+    if verbose:
+        print("Computing '%s' for subject '%s' in subjects dir '%s'." % (args.compute_value, subject_id, subjects_dir))
 
     if args.compute_value == "expected_vol":
+        if verbose:
+            print("Computing '%s' based on surface '%s' and cortical thickness, hemi '%s'." % (args.compute_value, surf1, hemi))
         vert_coords_surf1, faces_surf1, cortical_thickness, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
-        expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness)
+        expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness, verbose=verbose)
         print("Received expected volume for %d vertices." % (expected_volume.shape[0]))
-    else:
+
+    elif args.compute_value == "actual_vol":
+        if verbose:
+            print("Computing '%s' between surfaces '%s' and '%s', hemi '%s'." % (args.compute_value, surf1, surf2, hemi))
         vert_coords_surf1, faces_surf1, meta_data_surf1 = bl.subject_mesh(subject_id, subjects_dir, surf=surf1, hemi=hemi)
         vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
+        actual_volume = get_actual_volume_per_vertex(vert_coords_surf1, faces_surf1, vert_coords_surf2, faces_surf2, verbose=verbose)
+        print("Received actual volume for %d vertices." % (actual_volume.shape[0]))
+    else:
+        if verbose:
+            print("Computing both expected and actual volumes between surfaces '%s' and '%s', hemi '%s'. May take a while." % (surf1, surf2, hemi))
 
-        num_vertices_surf1 = vert_coords_surf1.shape[0]
-        num_vertices_surf2 = vert_coords_surf2.shape[0]
+        vert_coords_surf1, faces_surf1, cortical_thickness, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
+        expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness, verbose=verbose, verbose_print_each=10000)
+        if verbose:
+            print("Received expected volume for %d vertices." % (expected_volume.shape[0]))
 
-        if num_vertices_surf1 != num_vertices_surf2:
-            print("ERROR: Surfaces %s and %s do not have identical vertex count: %d vs %d. Exiting." % (surf1, surf2, num_vertices_surf1, num_vertices_surf2))
-            sys.exit(1)
+        vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
+        actual_volume = get_actual_volume_per_vertex(vert_coords_surf1, faces_surf1, vert_coords_surf2, faces_surf2, verbose=verbose, verbose_print_each=10000)
+        if verbose:
+            print("Received actual volume for %d vertices." % (actual_volume.shape[0]))
+            print("Total expected volume is %d, total actual volume is %d over the %d vertices." % (expected_volume.sum(), actual_volume.sum(), actual_volume.shape[0]))
 
-        # create surface graphs so we can find all neighboring vertices quickly
-        surface_graph_surf1 = sg.SurfaceGraph(vert_coords_surf1, faces_surf1)
-        surface_graph_surf2 = sg.SurfaceGraph(vert_coords_surf2, faces_surf2)
+        for vertex_id in range(vert_coords_surf1.shape[0]):
+            if verbose and vertex_id % 1000 == 0:
+                print('At vertex %d. Expected volume is %f, actual is %f.' % (vertex_id, expected_volume[vertex_id], actual_volume[vertex_id]))
 
-        actual_volume = np.zeros((num_vertices_surf1,))
-
-        for source_vertex in range(num_vertices_surf1):
-            neighbors_surf1 = surface_graph_surf1.get_neighbors_up_to_dist(source_vertex, 1)
-            neighbors_surf2 = surface_graph_surf2.get_neighbors_up_to_dist(source_vertex, 1)
-            coords_of_surf1_vertices = np.array(vert_coords_surf1[neighbors_surf1])
-            coords_of_surf2_vertices = np.array(vert_coords_surf2[neighbors_surf2])
-            all_coords = np.concatenate((coords_of_surf1_vertices, coords_of_surf2_vertices))
-            actual_volume[source_vertex] = get_convex_polygon_volume(all_coords)
-            if source_vertex % 1000 == 0:
-                print('At vertex %d. Vertex has %d neighbors in surface %s and %d in surface %s. Actual volume between surfaces at vertex is %f.' % (source_vertex, len(neighbors_surf1), surf1, len(neighbors_surf2), surf2, actual_volume[source_vertex]))
+        if args.outputfile is not None:
+            output_csv_file = args.outputfile
+            with open(output_csv_file, 'w', newline='') as csvfile:
+                feature_writer = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                for vertex_id in range(vert_coords_surf1.shape[0]):
+                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], actual_volume[vertex_id]])
+            print("Output CSV file in line format (vertex_id expected_volume actual_volume) written to '%s'." % (output_csv_file))
 
 
 
-def get_expected_volume_per_vertex(vert_coords, faces, cortical_thickness):
+
+def get_actual_volume_per_vertex(vert_coords_surf1, faces_surf1, vert_coords_surf2, faces_surf2, verbose=False, verbose_print_each=1000):
+    num_vertices_surf1 = vert_coords_surf1.shape[0]
+    num_vertices_surf2 = vert_coords_surf2.shape[0]
+
+    if num_vertices_surf1 != num_vertices_surf2:
+        print("ERROR: Surfaces do not have identical vertex count: %d vs %d. Exiting." % (num_vertices_surf1, num_vertices_surf2))
+        sys.exit(1)
+
+    # create surface graphs so we can find all neighboring vertices quickly
+    surface_graph_surf1 = sg.SurfaceGraph(vert_coords_surf1, faces_surf1)
+    surface_graph_surf2 = sg.SurfaceGraph(vert_coords_surf2, faces_surf2)
+
+    actual_volume = np.zeros((num_vertices_surf1,))
+
+    if verbose:
+        print("Created graphs. Computing expected volume at each of the %d vertices of the surface." % (num_vertices_surf1))
+
+    for source_vertex in range(num_vertices_surf1):
+        neighbors_surf1 = surface_graph_surf1.get_neighbors_up_to_dist(source_vertex, 1)
+        neighbors_surf2 = surface_graph_surf2.get_neighbors_up_to_dist(source_vertex, 1)
+        coords_of_surf1_vertices = np.array(vert_coords_surf1[neighbors_surf1])
+        coords_of_surf2_vertices = np.array(vert_coords_surf2[neighbors_surf2])
+        all_coords = np.concatenate((coords_of_surf1_vertices, coords_of_surf2_vertices))
+        actual_volume[source_vertex] = get_convex_polygon_volume(all_coords)
+        if verbose and source_vertex % verbose_print_each == 0:
+            print('At vertex %d. Vertex has %d neighbors in surface1 and %d in surface2. Actual volume between surfaces at vertex is %f.' % (source_vertex, len(neighbors_surf1), len(neighbors_surf2), actual_volume[source_vertex]))
+    return actual_volume
+
+
+def get_expected_volume_per_vertex(vert_coords, faces, cortical_thickness, verbose=False, verbose_print_each=1000):
     face_areas = get_mesh_face_areas(vert_coords, faces)
-    print("Computed %d areas for all %d faces of the surface." % (face_areas.shape[0], faces.shape[0]))
+    if verbose:
+        print("Computed %d areas for all %d faces of the surface." % (face_areas.shape[0], faces.shape[0]))
 
     num_vertices = vert_coords.shape[0]
     area_all_faces_around_vertex = np.zeros((num_vertices,))
+
+    if verbose:
+        print("Computing expected volume at each of the %d vertices of the surface." % (num_vertices))
 
     for vert_idx in range(num_vertices):
         mask = np.any(faces == vert_idx, axis=1)
@@ -88,9 +140,8 @@ def get_expected_volume_per_vertex(vert_coords, faces, cortical_thickness):
         #all_face_indices = np.unique(np.concatenate((faces_with_vert_at_pos0, faces_with_vert_at_pos1, faces_with_vert_at_pos2)))
         summed_area = face_areas[all_face_indices].sum()
         area_all_faces_around_vertex[vert_idx] = summed_area
-        if vert_idx % 1000 == 0:
+        if verbose and vert_idx % verbose_print_each == 0:
             print('At vertex %d. Vertex is part of the following %d faces with total area %f: %s' % (vert_idx, len(all_face_indices), summed_area, ','.join([str(x) for x in all_face_indices])))
-
     expected_volume = area_all_faces_around_vertex * cortical_thickness
     return expected_volume
 
