@@ -21,3 +21,10 @@ def test_get_mesh_face_areas():
     assert areas.shape == (2,)
     assert areas[0] == pytest.approx(12.5, 0.00001)
     assert areas[1] == pytest.approx(12.5, 0.00001)
+
+
+def test_get_convex_polygon_volumes():
+    # define a 3D box with size 2x2x2
+    polygon_points = np.array([[0,0,0], [2,0,0], [2,2,0], [0,2,0], [0,0,2], [2,0,2], [2,2,2], [0,2,2]], dtype=float)
+    vol = blis.get_convex_polygon_volume(polygon_points)
+    assert vol == pytest.approx(8, 0.000001)

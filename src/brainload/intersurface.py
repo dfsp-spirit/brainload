@@ -4,9 +4,13 @@ import os
 import sys
 import errno
 import numpy as np
+import scipy
 import argparse
 import brainload as bl
 from numpy.linalg import norm
+import brainload.surfacegraph as sg
+import networkx
+from scipy.spatial import ConvexHull
 
 # To run this in dev mode (in virtual env, pip -e install of brainview active) from REPO_ROOT:
 # PYTHONPATH=./src/brainload python src/brainload/intersurface.py tim -d ~/data/tim_only/ --hemi lh
@@ -35,22 +39,69 @@ def intersurface():
     surf2 = args.second_surface
     hemi = args.hemi
 
-    vert_coords_surf1, faces_surf1, morphometry_data_surf1, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
-    vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
+    if args.compute_value == "expected_vol":
+        vert_coords_surf1, faces_surf1, cortical_thickness, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
+        expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness)
+        print("Received expected volume for %d vertices." % (expected_volume.shape[0]))
+    else:
+        vert_coords_surf1, faces_surf1, meta_data_surf1 = bl.subject_mesh(subject_id, subjects_dir, surf=surf1, hemi=hemi)
+        vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
 
-    face_areas_surf1 = get_mesh_face_areas(vert_coords_surf1, faces_surf1)
-    print("Computed %d areas for all %d faces." % (face_areas_surf1.shape[0], faces_surf1.shape[0]))
+        num_vertices_surf1 = vert_coords_surf1.shape[0]
+        num_vertices_surf2 = vert_coords_surf2.shape[0]
 
-    for vert_idx, vert_coords in enumerate(vert_coords_surf1):
-        mask = np.any(faces_surf1 == vert_idx, axis=1)
+        if num_vertices_surf1 != num_vertices_surf2:
+            print("ERROR: Surfaces %s and %s do not have identical vertex count: %d vs %d. Exiting." % (surf1, surf2, num_vertices_surf1, num_vertices_surf2))
+            sys.exit(1)
+
+        # create surface graphs so we can find all neighboring vertices quickly
+        surface_graph_surf1 = sg.SurfaceGraph(vert_coords_surf1, faces_surf1)
+        surface_graph_surf2 = sg.SurfaceGraph(vert_coords_surf2, faces_surf2)
+
+        actual_volume = np.zeros((num_vertices_surf1,))
+
+        for source_vertex in range(num_vertices_surf1):
+            neighbors_surf1 = surface_graph_surf1.get_neighbors_up_to_dist(source_vertex, 1)
+            neighbors_surf2 = surface_graph_surf2.get_neighbors_up_to_dist(source_vertex, 1)
+            coords_of_surf1_vertices = np.array(vert_coords_surf1[neighbors_surf1])
+            coords_of_surf2_vertices = np.array(vert_coords_surf2[neighbors_surf2])
+            all_coords = np.concatenate((coords_of_surf1_vertices, coords_of_surf2_vertices))
+            actual_volume[source_vertex] = get_convex_polygon_volume(all_coords)
+            if source_vertex % 1000 == 0:
+                print('At vertex %d. Vertex has %d neighbors in surface %s and %d in surface %s. Actual volume between surfaces at vertex is %f.' % (source_vertex, len(neighbors_surf1), surf1, len(neighbors_surf2), surf2, actual_volume[source_vertex]))
+
+
+
+def get_expected_volume_per_vertex(vert_coords, faces, cortical_thickness):
+    face_areas = get_mesh_face_areas(vert_coords, faces)
+    print("Computed %d areas for all %d faces of the surface." % (face_areas.shape[0], faces.shape[0]))
+
+    num_vertices = vert_coords.shape[0]
+    area_all_faces_around_vertex = np.zeros((num_vertices,))
+
+    for vert_idx in range(num_vertices):
+        mask = np.any(faces == vert_idx, axis=1)
         all_face_indices = np.nonzero(mask)[0]
         #faces_with_vert_at_pos0 = np.nonzero(faces_surf1[:,0]==vert_idx)[0]
         #faces_with_vert_at_pos1 = np.nonzero(faces_surf1[:,1]==vert_idx)[0]
         #faces_with_vert_at_pos2 = np.nonzero(faces_surf1[:,2]==vert_idx)[0]
         #all_face_indices = np.unique(np.concatenate((faces_with_vert_at_pos0, faces_with_vert_at_pos1, faces_with_vert_at_pos2)))
-        summed_area = face_areas_surf1[all_face_indices].sum()
+        summed_area = face_areas[all_face_indices].sum()
+        area_all_faces_around_vertex[vert_idx] = summed_area
         if vert_idx % 1000 == 0:
             print('At vertex %d. Vertex is part of the following %d faces with total area %f: %s' % (vert_idx, len(all_face_indices), summed_area, ','.join([str(x) for x in all_face_indices])))
+
+    expected_volume = area_all_faces_around_vertex * cortical_thickness
+    return expected_volume
+
+
+def get_convex_polygon_volume(points):
+    """
+    Compute the volume of a convex polygon.
+
+    Compute the volume of a convex polygon, defined by its points in 3D space. Uses the convex hull of the points.
+    """
+    return ConvexHull(points).volume      # ConvexHull is: from scipy.spatial import ConvexHull
 
 
 def get_mesh_face_areas(vert_coords, faces):
@@ -69,9 +120,9 @@ def get_mesh_face_areas(vert_coords, faces):
 
 def face_area(a, b, c):
     """
-    Compute area of 3D triangles (faces).
+    Compute area of a 3D triangles (face).
 
-    Compute the area of the 3D triangles whos 3 points are given in a, b, and c.
+    Compute the area of the 3D triangle whos 3 points are given in a, b, and c.
     """
     return 0.5 * norm( np.cross( b-a, c-a ) )
 
