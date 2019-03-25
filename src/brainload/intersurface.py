@@ -79,6 +79,21 @@ def intersurface():
         if verbose:
             print("Computing both expected and actual volumes between surfaces '%s' and '%s', hemi '%s'. May take a while." % (surf1, surf2, hemi))
 
+        # collect data
+        area_curv_file_surf2 = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf2, hemi, "area")
+        per_vertex_area_surf2, meta_data_area_curv_file_surf2 = fsd.read_fs_morphometry_data_file_and_record_meta_data(area_curv_file_surf2, hemi)
+        area_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "area")
+        per_vertex_area, meta_data_area_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(area_curv_file, hemi)
+        thickness_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "thickness")
+        per_vertex_thickness, meta_data_thickness_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(thickness_curv_file, hemi)
+
+        # almost actual but quick: ignores the relative positions of the 2 vertices and assume they are right underneath each other (assumes their surface normals were identical)
+        #
+        # has_invalid_area_data = (per_vertex_area < 0).any()
+        actual_volume_fs = 1./3. * per_vertex_thickness * (per_vertex_area + per_vertex_area_surf2 + np.sqrt(per_vertex_area * per_vertex_area_surf2))
+        if verbose:
+            print("Actual volume based on FreeSurfer data computed.")
+
         # expected vol according to our computations
         vert_coords_surf1, faces_surf1, cortical_thickness, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
         expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness, verbose=verbose, verbose_print_each=10000)
@@ -86,11 +101,7 @@ def intersurface():
             print("Received expected volume for %d vertices." % (expected_volume.shape[0]))
 
         # expected vol based on FreeSurfer curv files: area * thickness
-        area_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "area")
-        per_vertex_area, meta_data_area_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(area_curv_file, hemi)
-        thickness_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "thickness")
-        per_vertex_thickness, meta_data_thickness_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(thickness_curv_file, hemi)
-        expected_fs_volume = (per_vertex_area * 3) * per_vertex_thickness
+        expected_volume_fs = (per_vertex_area * 3) * per_vertex_thickness
 
         # actual volume, computed from volume of polygon between the points of all neighboring faces of the 2 vertices (one per surface)
         vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
@@ -102,16 +113,18 @@ def intersurface():
         ### report results
         for vertex_id in range(vert_coords_surf1.shape[0]):
             if verbose and vertex_id % 1000 == 0:
-                print('At vertex %d. Expected volume (comp. face area * thickness) is %f, expected fs volume (area * thickness) is %f, actual polygon volume is %f.' % (vertex_id, expected_volume[vertex_id], expected_fs_volume[vertex_id], actual_volume[vertex_id]))
+                print('At vertex %d. Expected volume (comp. face area * thickness) is %f, expected fs volume (area * thickness) is %f, actual polygon volume is %f, almost is %f.' % (vertex_id, expected_volume[vertex_id], expected_volume_fs[vertex_id], actual_volume[vertex_id], actual_volume_fs[vertex_id]))
 
         ### write results to CSV file
         if args.outputfile is not None:
             output_csv_file = args.outputfile
-            header_field_names = ["vertex_id", "expected_vol", "expected_vol_fs", "actual_vol"]
+            header_field_names = ["vertex_id", "expected_vol", "expected_vol_fs", "actual_vol", "actual_vol_fs", "ratio_expected_by_actual", "ratio_expected_fs_by_actual_fs"]
+            ratio_expected_by_actual = expected_volume / actual_volume
+            ratio_expected_fs_by_actual_fs = expected_volume_fs / actual_volume_fs
             with open(output_csv_file, 'w') as csvfile:
                 feature_writer = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 for vertex_id in range(vert_coords_surf1.shape[0]):
-                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], expected_volume_fs[vertex_id], actual_volume[vertex_id]])
+                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], expected_volume_fs[vertex_id], actual_volume[vertex_id], actual_volume_fs[vertex_id], ratio_expected_by_actual[vertex_id], ratio_expected_fs_by_actual_fs[vertex_id]])
             print("Output CSV file written to '%s'." % (output_csv_file))
 
     else:
