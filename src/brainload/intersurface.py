@@ -9,12 +9,13 @@ import argparse
 import brainload as bl
 from numpy.linalg import norm
 import brainload.surfacegraph as sg
+import brainload.freesurferdata as fsd
 import networkx
 from scipy.spatial import ConvexHull
 import csv
 
 # To run this in dev mode (in virtual env, pip -e install of brainview active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/intersurface.py tim -d ~/data/tim_only/ --hemi lh
+# PYTHONPATH=./src/brainload python src/brainload/intersurface.py tim -d ~/data/tim_only/ --hemi lh -c expected_vol_fs -v
 
 
 def intersurface():
@@ -24,8 +25,8 @@ def intersurface():
     parser.add_argument("-f", "--first-surface", help="The first surface to load. String, defaults to 'white'.", default="white")
     parser.add_argument("-s", "--second-surface", help="The second surface to load. String, defaults to 'pial'.", default="pial")
     parser.add_argument("-e", "--hemi", help="The hemisphere to load. One of ('lh, 'rh').", choices=['lh', 'rh'])
-    parser.add_argument("-c", "--compute-value", help="What to compute for the two surfaces. One of ('expected_vol', 'actual_vol', 'both'). Defaults to 'expected_vol'.", default="expected_vol", choices=['expected_vol', 'actual_vol', 'both'])
-    parser.add_argument("-o", "--outputfile", help="Output CSV file name.", default=None)
+    parser.add_argument("-c", "--compute-value", help="What to compute for the two surfaces. One of ('expected_vol', 'expected_vol_fs', 'actual_vol', 'all'). Defaults to 'all'.", default="all", choices=['expected_vol', 'expected_vol_fs', 'actual_vol', 'all'])
+    parser.add_argument("-o", "--outputfile", help="Output CSV file name. Ignored unless -c is 'all'. If not given, the output is NOT saved to a file.", default=None)
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
     args = parser.parse_args()
 
@@ -49,10 +50,22 @@ def intersurface():
 
     if args.compute_value == "expected_vol":
         if verbose:
-            print("Computing '%s' based on surface '%s' and cortical thickness, hemi '%s'." % (args.compute_value, surf1, hemi))
+            print("Computing '%s' based on manual computation of face area of surface '%s' and cortical thickness, hemi '%s'." % (args.compute_value, surf1, hemi))
         vert_coords_surf1, faces_surf1, cortical_thickness, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
         expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness, verbose=verbose)
         print("Received expected volume for %d vertices." % (expected_volume.shape[0]))
+
+    elif args.compute_value == "expected_vol_fs":
+        if verbose:
+            print("Computing '%s' based on FreeSurfer area and cortical thickness data for surface '%s', hemi '%s'." % (args.compute_value, surf1, hemi))
+        area_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "area")
+        per_vertex_area, meta_data_area_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(area_curv_file, hemi)
+
+        thickness_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "thickness")
+        per_vertex_thickness, meta_data_thickness_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(thickness_curv_file, hemi)
+
+        expected_fs_volume = (per_vertex_area * 3) * per_vertex_thickness
+        print("Received expected FS volume based on thickness and area FreeSurfer files for %d vertices." % (expected_fs_volume.shape[0]))
 
     elif args.compute_value == "actual_vol":
         if verbose:
@@ -61,34 +74,49 @@ def intersurface():
         vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
         actual_volume = get_actual_volume_per_vertex(vert_coords_surf1, faces_surf1, vert_coords_surf2, faces_surf2, verbose=verbose)
         print("Received actual volume for %d vertices." % (actual_volume.shape[0]))
-    else:
+
+    elif args.compute_value == "all":
         if verbose:
             print("Computing both expected and actual volumes between surfaces '%s' and '%s', hemi '%s'. May take a while." % (surf1, surf2, hemi))
 
+        # expected vol according to our computations
         vert_coords_surf1, faces_surf1, cortical_thickness, meta_data_surf1 = bl.subject(subject_id, subjects_dir=subjects_dir, measure=measure, surf=surf1, hemi=hemi)
         expected_volume = get_expected_volume_per_vertex(vert_coords_surf1, faces_surf1, cortical_thickness, verbose=verbose, verbose_print_each=10000)
         if verbose:
             print("Received expected volume for %d vertices." % (expected_volume.shape[0]))
 
+        # expected vol based on FreeSurfer curv files: area * thickness
+        area_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "area")
+        per_vertex_area, meta_data_area_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(area_curv_file, hemi)
+        thickness_curv_file = fsd.get_morphometry_file_path(subjects_dir, subject_id, surf1, hemi, "thickness")
+        per_vertex_thickness, meta_data_thickness_curv_file = fsd.read_fs_morphometry_data_file_and_record_meta_data(thickness_curv_file, hemi)
+        expected_fs_volume = (per_vertex_area * 3) * per_vertex_thickness
+
+        # actual volume, computed from volume of polygon between the points of all neighboring faces of the 2 vertices (one per surface)
         vert_coords_surf2, faces_surf2, meta_data_surf2 = bl.subject_mesh(subject_id, subjects_dir, surf=surf2, hemi=hemi)
         actual_volume = get_actual_volume_per_vertex(vert_coords_surf1, faces_surf1, vert_coords_surf2, faces_surf2, verbose=verbose, verbose_print_each=10000)
         if verbose:
             print("Received actual volume for %d vertices." % (actual_volume.shape[0]))
             print("Total expected volume is %d, total actual volume is %d over the %d vertices." % (expected_volume.sum(), actual_volume.sum(), actual_volume.shape[0]))
 
+        ### report results
         for vertex_id in range(vert_coords_surf1.shape[0]):
             if verbose and vertex_id % 1000 == 0:
-                print('At vertex %d. Expected volume is %f, actual is %f.' % (vertex_id, expected_volume[vertex_id], actual_volume[vertex_id]))
+                print('At vertex %d. Expected volume (comp. face area * thickness) is %f, expected fs volume (area * thickness) is %f, actual polygon volume is %f.' % (vertex_id, expected_volume[vertex_id], expected_fs_volume[vertex_id], actual_volume[vertex_id]))
 
+        ### write results to CSV file
         if args.outputfile is not None:
             output_csv_file = args.outputfile
+            header_field_names = ["vertex_id", "expected_vol", "expected_vol_fs", "actual_vol"]
             with open(output_csv_file, 'w') as csvfile:
                 feature_writer = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 for vertex_id in range(vert_coords_surf1.shape[0]):
-                    expected_minus_actual = expected_volume[vertex_id] - actual_volume[vertex_id]
-                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], actual_volume[vertex_id], expected_minus_actual])
-            print("Output CSV file in line format (vertex_id expected_volume actual_volume) written to '%s'." % (output_csv_file))
+                    feature_writer.writerow([vertex_id, expected_volume[vertex_id], expected_volume_fs[vertex_id], actual_volume[vertex_id]])
+            print("Output CSV file written to '%s'." % (output_csv_file))
 
+    else:
+        print("ERROR: Invalid computation value. Exiting.")
+        sys.exit(1)
 
 
 
