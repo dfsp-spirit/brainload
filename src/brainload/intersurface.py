@@ -123,6 +123,7 @@ def intersurface():
             ratio_expected_fs_by_actual_fs = expected_volume_fs / actual_volume_fs
             with open(output_csv_file, 'w') as csvfile:
                 feature_writer = csv.writer(csvfile, delimiter=' ', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                feature_writer.writerow(header_field_names)
                 for vertex_id in range(vert_coords_surf1.shape[0]):
                     feature_writer.writerow([vertex_id, expected_volume[vertex_id], expected_volume_fs[vertex_id], actual_volume[vertex_id], actual_volume_fs[vertex_id], ratio_expected_by_actual[vertex_id], ratio_expected_fs_by_actual_fs[vertex_id]])
             print("Output CSV file written to '%s'." % (output_csv_file))
