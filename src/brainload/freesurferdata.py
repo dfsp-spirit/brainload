@@ -941,6 +941,13 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     return vert_coords, faces, morphometry_data, meta_data
 
 
+def get_morphometry_file_path(subjects_dir, subject_id, surf, hemi, measure, subdir='surf'):
+    """
+    Determine the path to a morphometry file.
+    """
+    return os.path.join(subjects_dir, subject_id, subdir, (hemi + '.' + measure + _get_morphometry_data_suffix_for_surface(surf)))
+
+
 def _merge_meshes(meshes):
     """
     Merge several meshes into a single one.
