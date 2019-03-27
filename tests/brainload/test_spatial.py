@@ -517,8 +517,8 @@ def test_spatial_assumptions():
     # subject: subject1 from test data dir.
     # This following information was obtained by opening brain.mgz in tkmedit (set SUBJECTS_DIR, then `tkmedit subject1 brain.mgz`). Then clicking on a point in the volume, and check the different coordinates. You may have to enable them under 'View' => 'Information' in the menu.
     brain_mgz_volume_index = [150, 30, 122] # CRS
-    brain_mgz_volume_RAS = [-21.9, -5.6, 98.2]
-    brain_mgz_volume_scanner = [-22.4, 23.8, 49.3]
+    brain_mgz_volume_RAS = [-21.9, -5.6, 98.2]      # this is what you get by applying the vox2ras-tkr matrix from the file header to the CRS.
+    brain_mgz_volume_scanner = [-22.4, 23.8, 49.3]  # this is what you get by applying the vox2ras matrix from the file header to the CRS. Applying the ras xform (see `mri_info <volume_file.mgh>`)to the volume RAS coords leads to scanner RAS, it seems.
     brain_mgz_MNI_talairach = [-24.1, 21.3, 53.5]
     brain_mgz_talairach = [-23.8, 23.1, 48.1]
     brain_mgz_value = 80
