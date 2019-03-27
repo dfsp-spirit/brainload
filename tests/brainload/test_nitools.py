@@ -156,6 +156,11 @@ def test_check_hemi_dict_fail_with_right():
     assert nit._check_hemi_dict(hemi_dict) == False
 
 
+def test_check_hemi_dict_fail_if_type_is_not_dice():
+    hemi_dict = 'not a dict'
+    assert nit._check_hemi_dict(hemi_dict) == False
+
+
 def test_check_hemi_dict_ok_with_left_not_both_needed():
     hemi_dict = {'lh': None }
     assert nit._check_hemi_dict(hemi_dict, both_required=False) == True
@@ -164,6 +169,16 @@ def test_check_hemi_dict_ok_with_left_not_both_needed():
 def test_check_hemi_dict_fail_with_right_not_both_needed():
     hemi_dict = {'rh': None }
     assert nit._check_hemi_dict(hemi_dict, both_required=False) == True
+
+
+def test_check_hemi_dict_fail_with_extra_stuff():
+    hemi_dict = {'rh': None, 'foo': None }
+    assert nit._check_hemi_dict(hemi_dict, both_required=False) == False
+
+
+def test_check_hemi_dict_fail_with_empty():
+    hemi_dict = {}
+    assert nit._check_hemi_dict(hemi_dict, both_required=False) == False
 
 
 def test_do_subject_files_exist_lh_area():
