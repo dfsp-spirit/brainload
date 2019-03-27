@@ -18,14 +18,24 @@ def brain_fs_space_info():
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Query brain space information from a FreeSurfer volume data file.")
-    parser.add_argument("volume", help="The volume file to load. Should be in mgh or mgz format.")
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-r', '--apply-ras2vox', nargs=3, help="Apply ras2vox matrix from the volume file header to the location. The location should be a voxel CRS (three integers) in this case.")
-    group.add_argument('-o', '--apply-vox2ras', nargs=3, help="Apply vox2ras matrix from the volume file header to the location. The location should be a RAS coordinate (three floats) in this case.")
-    group.add_argument('-t', '--apply-vox2ras-tkr', nargs=3, help="Apply vox2ras-tkr matrix from the volume file header to the location. The location should be a RAS coordinate (three floats) in this case.")
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument("-l", "--location", nargs=3, help="The location to which the matrix should be applied. Must be a RAS coord or a voxel CRS in the 3D volume (three digits).")
+    input_group.add_argument("-f", "--location-file", help="A file that contains multiple locations (one per line, the three digits separated by spaces within the line).")
+    matrix_to_apply_group = parser.add_mutually_exclusive_group(required=True)
+    matrix_to_apply_group.add_argument('-r', '--ras2vox-from-vol', help="Use ras2vox matrix from the header of the given mgh or mgz format file.")
+    matrix_to_apply_group.add_argument('-o', '--vox2ras-from-vol', help="Use vox2ras matrix from the header of the given mgh or mgz format file.")
+    matrix_to_apply_group.add_argument('-t', '--vox2ras-tkr-from-vol', help="Use ras2vox-tkr matrix from the header of the given mgh or mgz format file.")
     parser.add_argument("-s", "--separator", help="Output separator (between vertex coords / indices).", default=" ")
+    parser.add_argument("-i", "--inverse-matrix", help="Inverse the matrix before applying it.", action="store_true")
+    parser.add_argument("-c", "--round-output", help="Round output to closest integer. (Useful when result is a voxel CRS.)", action="store_true")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
     args = parser.parse_args()
+
+    if args.location:
+        location = tuple([float(x) for x in args.location])
+        locations = np.array([location])
+    else:
+        pass
 
     volume_file = args.volume
     verbose = args.verbose
@@ -41,15 +51,17 @@ def brain_fs_space_info():
 
     if args.apply_ras2vox:
         location = tuple([float(x) for x in args.apply_ras2vox])
-        print("Computing ras2vox for %s." % str(location))
-        res_matrix = sp.apply_affine_3D(np.array([location]), m_ras2vox)
+        if verbose:
+            print("Applying ras2vox to %s." % str(location))
+        res_matrix = np.rint(sp.apply_affine_3D(np.array([location]), m_ras2vox)).astype(int)
         for row in res_matrix:
             res = sep.join(str(x) for x in row)
             print(res)
 
     if args.apply_vox2ras:
         location = tuple([int(x) for x in args.apply_vox2ras])
-        print("Computing vox2ras for %s." % str(location))
+        if verbose:
+            print("Applying vox2ras to %s." % str(location))
         res_matrix = sp.apply_affine_3D(np.array([location]), m_vox2ras)
         for row in res_matrix:
             res = sep.join(str(x) for x in row)
@@ -57,7 +69,8 @@ def brain_fs_space_info():
 
     if args.apply_vox2ras_tkr:
         location = tuple([int(x) for x in args.apply_vox2ras_tkr])
-        print("Computing vox2ras_tkr for %s." % str(location))
+        if verbose:
+            print("Applying vox2ras_tkr to %s." % str(location))
         res_matrix = sp.apply_affine_3D(np.array([location]), m_vox2ras_tkr)
         for row in res_matrix:
             res = sep.join(str(x) for x in row)
