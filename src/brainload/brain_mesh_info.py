@@ -3,6 +3,7 @@ from __future__ import print_function
 import sys
 import numpy as np
 import nibabel.freesurfer.io as fsio
+import brainload.nitools as nit
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
@@ -18,32 +19,46 @@ def brain_mesh_info():
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Query brain surface mesh data.")
     parser.add_argument("mesh", help="The surface mesh file to load. Must be in Freesurfer geometry format. Example files are 'lh.white' or 'rh.white'.")
-    parser.add_argument("index", help="The index of the element to query (vertex index or face index, depending on mode).")
+    index_group = parser.add_mutually_exclusive_group(required=True)
+    index_group.add_argument("-i", "--index", help="The index of the element to query (vertex index or face index, depending on mode). A single integer or several integers separated by commata (no spaces allowed.).")
+    index_group.add_argument("-f", "--index-file", help="A file containing a list of the indices of the element to query (vertex indices or face indices, depending on mode).")
     parser.add_argument("-m", "--mode", help="The query mode, i.e., whether you want to query information on a 'vertex' or a 'face'.", default="vertex", choices=['vertex', 'face'])
-    parser.add_argument("-s", "--separator", help="Output separator (between vertex coords / indices).", default=" ")
+    parser.add_argument("-s", "--separator", help="Output separator (between vertex coords / indices). Defaults to ','.", default=",")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
     args = parser.parse_args()
 
     mesh_file = args.mesh
-    query_index = int(args.index)
     query_mode = args.mode
     verbose = args.verbose
     sep = args.separator
 
+    if verbose:
+        print("---Brain Mesh Info---")
+
+    if args.index:
+        query_indices = [int(s) for s in args.index.split(',')]
+        if verbose:
+            print("Querying mesh for the %d %s indices from the command line." % (query_indices.shape[0], args.mode))
+    else:
+        query_indices = nit.load_vertex_indices(args.index_file)
+        if verbose:
+            print("Querying mesh for the %d %s indices from file '%s'. (File should contain indices separated by '%s'.)" % (query_indices.shape[0], args.mode, args.index_file, args.separator))
+
+
     vert_coords, faces = fsio.read_geometry(mesh_file)
     if verbose:
-        print("Mesh has %d vertices and %d faces. Mode is '%s'." % (vert_coords.shape[0], faces.shape[0], query_mode))
+        print("Mesh from file '%s' has %d vertices and %d faces." % (mesh_file, vert_coords.shape[0], faces.shape[0]))
 
     if query_mode == "vertex":
-        res = sep.join(str(x) for x in vert_coords[query_index,:])
+        res = sep.join(str(x) for x in vert_coords[query_indices,:])
         if verbose:
-            print("Coords of vertex # %d are: %s" % (query_index, res))
+            print("Coords of vertices # %s are: %s" % ([str(x) for x in query_indices], res))
         else:
             print(res)
     else:
-        res = sep.join(str(x) for x in faces[query_index,:])
+        res = sep.join(str(x) for x in faces[query_indices,:])
         if verbose:
-            print("Vertices forming face # %d are: %s" % (query_index, res))
+            print("Vertices forming faces # %s are: %s" % ([str(x) for x in query_indices], res))
         else:
             print(res)
 
