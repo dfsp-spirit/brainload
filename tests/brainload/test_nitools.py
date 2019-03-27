@@ -271,3 +271,14 @@ def test_do_subject_files_exist_with_custom_dir_None():
     missing = nit.do_subject_files_exist(subjects_list, subjects_dir, filename='subject2x.txt', sub_dir=None)
     assert len(missing) == 1
     assert 'subject3x' in missing
+
+
+def test_load_vertex_indices():
+    vert_idx_file = os.path.join(TEST_DATA_DIR, 'verts.txt')
+    vert_indices = np.array([0,2,6,8,9,9], dtype=int)
+    nit.save_vertex_indices(vert_idx_file, vert_indices)
+    loaded = nit.load_vertex_indices(vert_idx_file)
+    assert loaded.shape == (6,)
+    assert np.issubdtype(loaded.dtype, np.integer)
+    assert_array_equal(loaded, vert_indices)
+    os.remove(vert_idx_file)

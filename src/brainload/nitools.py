@@ -276,3 +276,10 @@ def write_lines_to_text_file(lines, file_name, line_sep="\n"):
     with open(file_name, 'w') as f:
         for l in lines:
             f.write("%s%s" % (l, line_sep))
+
+
+def load_vertex_indices(vertex_indices_file):
+    return np.loadtxt(vertex_indices_file, dtype=np.uint32, delimiter=",")
+
+def save_vertex_indices(vertex_indices_file, vertex_indices):
+    np.savetxt(vertex_indices_file, vertex_indices, delimiter=",")
