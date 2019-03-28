@@ -7,7 +7,7 @@ import brainload.nitools as nit
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/brain_mesh_info.py tests/test_data/subject1/surf/lh.white 10 -v
+# PYTHONPATH=./src/brainload python src/brainload/clients/brain_mesh_info.py tests/test_data/subject1/surf/lh.white 10 -v
 
 def brain_mesh_info():
     """
@@ -36,7 +36,7 @@ def brain_mesh_info():
         print("---Brain Mesh Info---")
 
     if args.index:
-        query_indices = [int(s) for s in args.index.split(',')]
+        query_indices = np.array([int(s) for s in args.index.split(',')], dtype=int)
         if verbose:
             print("Querying mesh for the %d %s indices from the command line." % (query_indices.shape[0], args.mode))
     else:
