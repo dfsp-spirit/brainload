@@ -283,3 +283,6 @@ def load_vertex_indices(vertex_indices_file):
 
 def save_vertex_indices(vertex_indices_file, vertex_indices):
     np.savetxt(vertex_indices_file, vertex_indices, delimiter=",")
+
+def load_voxel_indices(vertex_indices_file):
+    return np.loadtxt(vertex_indices_file, dtype=np.uint32, delimiter=",")

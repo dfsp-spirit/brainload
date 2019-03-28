@@ -4,9 +4,10 @@ import sys
 import numpy as np
 import nibabel as nib
 import argparse
+import brainload.nitools as nit
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/brain_vol_info.py tests/test_data/subject1/mri/orig.mgz --crs 10 10 10 -v
+# PYTHONPATH=./src/brainload python src/brainload/clients/brain_vol_info.py tests/test_data/subject1/mri/orig.mgz --crs 10 10 10 -v
 
 def brain_vol_info():
     """
@@ -20,6 +21,7 @@ def brain_vol_info():
     parser.add_argument("volume", help="The volume file to load. Should be in mgh, mgz or nifti format.")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-c', '--crs', nargs='*', help="The query voxel, defined as a 0-based index into the volume. For a 3D volume, this would be 3 integers which represent the CRS (column, row, slice) of the voxel, like 128 128 128.")
+    group.add_argument("-f", "--crs-file", help="A file containing the voxels to query, one per line. A voxel should be given by zero-based indices into each dimension of the volume, e.g., '0 23 188'.")
     group.add_argument('-a', '--all-values', help="Instead of returning the value for a single voxel, return all voxel values which occur in the volume. Forces integer values (by rounding).", action="store_true")
     group.add_argument('-l', '--all-value-counts', help="Instead of returning the value for a single voxel, return the counts for all voxel values which occur in the volume. The order of the counts is guaranteed to be identical to the order of the output when running with '-a'. Forces integer values (by rounding).", action="store_true")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
@@ -58,8 +60,16 @@ def brain_vol_info():
             print(sep.join([str(pair[1]) for pair in sorted(occuring_values.items(), key=lambda pair: pair[0])]))
 
     else:
-        voxel_index = tuple([int(x) for x in args.crs])
-        print(voxel_value_print_format % (vol_data[voxel_index]))
+        if args.crs:
+            voxel_index = tuple([int(x) for x in args.crs])
+            print(voxel_value_print_format % (vol_data[voxel_index]))
+        else:
+            voxel_indices = nit.load_voxel_indices(args.crs_file)
+            if verbose:
+                print("Received vox indices from file '%s', shape is %s." % (args.crs_file, str(voxel_indices.shape)))
+            for voxel_index in voxel_indices:
+                voxel_index = tuple(voxel_index.tolist())
+                print(voxel_value_print_format % (vol_data[voxel_index]))
 
     sys.exit(0)
 
