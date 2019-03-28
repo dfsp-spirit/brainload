@@ -65,11 +65,13 @@ def brain_vol_info():
             print(voxel_value_print_format % (vol_data[voxel_index]))
         else:
             voxel_indices = nit.load_voxel_indices(args.crs_file)
+            voxel_values = []
             if verbose:
                 print("Received vox indices from file '%s', shape is %s." % (args.crs_file, str(voxel_indices.shape)))
             for voxel_index in voxel_indices:
                 voxel_index = tuple(voxel_index.tolist())
-                print(voxel_value_print_format % (vol_data[voxel_index]))
+                voxel_values.append(vol_data[voxel_index])
+            print(sep.join([str(v) for v in voxel_values]))
 
     sys.exit(0)
 
