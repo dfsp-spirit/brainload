@@ -7,7 +7,7 @@ import brainload.nitools as nit
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/clients/brain_mesh_info.py tests/test_data/subject1/surf/lh.white 10 -v
+# PYTHONPATH=./src/brainload python src/brainload/clients/brain_mesh_info.py tests/test_data/subject1/surf/lh.white -i 10 -v
 
 def brain_mesh_info():
     """
