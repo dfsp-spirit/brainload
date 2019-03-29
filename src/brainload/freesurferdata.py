@@ -420,6 +420,36 @@ def read_fs_surface_file_and_record_meta_data(surf_file, hemisphere_label, meta_
 
     return vert_coords, faces, meta_data
 
+def _deduce_hemisphere_label_from_file_path(file_path, default="lh"):
+    """
+    Guess a hemisphere label from a file path.
+
+    Guess a hemisphere label, i.e., one of ```lh``` or ```rh```, from a file path like ```/some/path/to/subjects/subject1/surf/lh.area```.
+
+    Parameters
+    ----------
+    file_path: str
+        The full path to a file.
+
+    default: str
+        What to return if the function cannot deduce the information from the given file_path.
+
+    Returns
+    -------
+    hemi: str
+        The hemisphere label
+
+    is_default: boolean
+        True if the file_path contained no information to deduce the hemisphere label, and the returned ```hemi``` value thus is the one from the ```default``` parameter.
+    """
+    path, file_name = os.path.split(file_path)
+    accepted_third_chars = [".", "_"]
+    for h in ["lh", "rh"]:
+        for c in accepted_third_chars:
+            if file_name.startswith(h + c):
+                return h, False
+    return default, True
+
 
 def read_fs_morphometry_data_file_and_record_meta_data(curv_file, hemisphere_label, meta_data=None, format='curv'):
     """

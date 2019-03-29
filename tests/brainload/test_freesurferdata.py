@@ -1284,3 +1284,50 @@ def test_read_m3z_file():
     assert vol_ind0[63,63,63,0] == 63
     assert vol_ind0[63,63,63,1] == 63
     assert vol_ind0[63,63,63,2] == 63
+
+
+def test_deduce_hemisphere_label_from_file_path_no_info_no_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('/dev/null')
+    assert label == "lh"
+    assert is_default == True
+
+
+def test_deduce_hemisphere_label_from_file_path_no_info_with_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('/dev/null', default='rh')
+    assert label == "rh"
+    assert is_default == True
+
+
+def test_deduce_hemisphere_label_from_file_path_with_info_right_no_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/rh.area')
+    assert label == "rh"
+    assert is_default == False
+
+
+def test_deduce_hemisphere_label_from_file_path_with_info_left_no_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/lh.area')
+    assert label == "lh"
+    assert is_default == False
+
+def test_deduce_hemisphere_label_from_file_path_with_info_underscore_right_no_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/rh_area_of_my_surf')
+    assert label == "rh"
+    assert is_default == False
+
+
+def test_deduce_hemisphere_label_from_file_path_with_info_underscore_left_no_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/lh_area_of_my_surf')
+    assert label == "lh"
+    assert is_default == False
+
+
+def test_deduce_hemisphere_label_from_file_path_with_info_right_with_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/rh.area', default='lh')
+    assert label == "rh"
+    assert is_default == False
+
+
+def test_deduce_hemisphere_label_from_file_path_with_info_left_with_default():
+    label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/lh.area', default='rh')
+    assert label == "lh"
+    assert is_default == False
