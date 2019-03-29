@@ -5,6 +5,7 @@ import numpy as np
 import nibabel as nib
 import argparse
 import brainload.nitools as nit
+import warnings
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
 # PYTHONPATH=./src/brainload python src/brainload/clients/brain_vol_info.py tests/test_data/subject1/mri/orig.mgz --crs 10 10 10 -v
@@ -41,6 +42,8 @@ def brain_vol_info():
         voxel_value_print_format = "%d"
 
     if args.all_values or args.all_value_counts:
+        if verbose:
+            print("NOTE: This mode treats the intensity values in the volume as integers. You should only use it if that is suitable for the input volume.")
         voxel_value_print_format = "%d"
         vol_data = np.rint(vol_data).astype(int)    # Force integer values. For floats, you would get as many values of there are voxels, and this does not make sense.
         vol_data_flat = np.ravel(vol_data)
@@ -62,12 +65,19 @@ def brain_vol_info():
     else:
         if args.crs:
             voxel_index = tuple([int(x) for x in args.crs])
+            voxel_display_string = " ".join(args.crs)
+            if verbose:
+                print("Received 1 voxel index (with %d dimensions) from the command line. Printing intensity value of the voxel '%s' in the volume." % (len(voxel_index), voxel_display_string))
+            if len(voxel_index) != len(vol_data.shape):
+                warnings.warn("Dimension mismatch: Received query voxel with %d dimenions, but the volume has %d." % (len(voxel_index), len(vol_data.shape)))
             print(voxel_value_print_format % (vol_data[voxel_index]))
         else:
             voxel_indices = nit.load_voxel_indices(args.crs_file)
             voxel_values = []
+            if voxel_indices.shape[1] != len(vol_data.shape):
+                warnings.warn("Dimension mismatch: Received query voxels with %d dimensions, but the volume has %d." % (voxel_indices.shape[1], len(vol_data.shape)))
             if verbose:
-                print("Received vox indices from file '%s', shape is %s." % (args.crs_file, str(voxel_indices.shape)))
+                print("Received %d voxel indices (with %d dimensions) from file '%s'. Printing their intensity values in the volume." % (voxel_indices.shape[0], voxel_indices.shape[1], args.crs_file))
             for voxel_index in voxel_indices:
                 voxel_index = tuple(voxel_index.tolist())
                 voxel_values.append(vol_data[voxel_index])
