@@ -8,13 +8,13 @@ import brainload.freesurferdata as fsd
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/clients/brain_curv_info.py tests/test_data/subject1/surf/lh.area -i 10 -v
+# PYTHONPATH=./src/brainload python src/brainload/clients/brain_morph_info.py tests/test_data/subject1/surf/lh.area -i 10 -v
 
-def brain_curv_info():
+def brain_morph_info():
     """
-    Brain surface or ```curv``` file information.
+    Brain surface morphometry data or ```curv``` file information.
 
-    Simple script to query data from a curv file that holds a scalar value (area, thickness, etc) for each surface vertex. An example file would be ```surf/lh.area```, but not ```surf/lh.white```.
+    Simple script to query morphometry data from a curv file that holds a scalar value (area, thickness, etc) for each surface vertex. An example file would be ```surf/lh.area```, but not ```surf/lh.white```.
     """
 
     # Parse command line arguments
@@ -32,7 +32,7 @@ def brain_curv_info():
     sep = args.separator
 
     if verbose:
-        print("---Brain Curv Info---")
+        print("---Brain Surface Morphometry Info---")
 
     if args.index:
         query_indices = np.array([int(s) for s in args.index.split(',')], dtype=int)
@@ -58,4 +58,4 @@ def brain_curv_info():
 
 
 if __name__ == "__main__":
-    brain_curv_info()
+    brain_morph_info()
