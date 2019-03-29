@@ -288,12 +288,28 @@ def test_do_subject_files_exist_with_custom_dir_None():
     assert 'subject3x' in missing
 
 
-def test_load_vertex_indices():
-    vert_idx_file = os.path.join(TEST_DATA_DIR, 'verts.txt')
-    vert_indices = np.array([0,2,6,8,9,9], dtype=int)
+def test_save_and_reload_vertex_indices():
+    vert_idx_file = os.path.join(TEST_DATA_DIR, 'verts.txt')    # will be created by the test
+    vert_indices = np.array([0, 2, 6, 8, 9, 9], dtype=int)
     nit.save_vertex_indices(vert_idx_file, vert_indices)
     loaded = nit.load_vertex_indices(vert_idx_file)
     assert loaded.shape == (6,)
     assert np.issubdtype(loaded.dtype, np.integer)
     assert_array_equal(loaded, vert_indices)
     os.remove(vert_idx_file)
+
+
+def test_load_existing_vertex_indices_file():
+    vert_idx_file = os.path.join(TEST_DATA_DIR, 'subject1', 'derived', 'verts.txt')    # included in test data
+    loaded = nit.load_vertex_indices(vert_idx_file)
+    assert loaded.shape == (3,)
+    assert np.issubdtype(loaded.dtype, np.integer)
+    assert_array_equal(loaded, np.array([10, 11, 14], dtype=int))
+
+
+def test_load_existing_voxel_indices_file():
+    vert_idx_file = os.path.join(TEST_DATA_DIR, 'subject1', 'derived', 'vox.txt')    # included in test data
+    loaded = nit.load_voxel_indices(vert_idx_file)
+    assert loaded.shape == (2, 3)
+    assert np.issubdtype(loaded.dtype, np.integer)
+    assert_array_equal(loaded, np.array([[10, 10, 10], [20, 20, 20]], dtype=int))
