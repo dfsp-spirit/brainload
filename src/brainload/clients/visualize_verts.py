@@ -9,7 +9,9 @@ import brainload.brainwrite as brw
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/clients/visualize_verts.py tests/test_data/subject1/surf/lh.area -i 10 -v
+# SURF=tests/test_data/subject1/surf/lh.white
+# PYTHONPATH=./src/brainload python src/brainload/clients/visualize_verts.py -t $SURF -f tests/test_data/subject1/derived/verts_with_color.txt -e $SURF 1 -v -c 255 0 0
+
 
 def visualize_verts():
     """
