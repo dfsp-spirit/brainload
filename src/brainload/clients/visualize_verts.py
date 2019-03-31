@@ -83,7 +83,6 @@ def visualize_verts():
         print("Extension of neighborhood by %d requested based on surface mesh file '%s'. Computing surface graph." % (extend_num_hops, extend_mesh_file))
         import brainload.surfacegraph as sg
         hemi_label, is_default = fsd._deduce_hemisphere_label_from_file_path(extend_mesh_file)
-        print("Hemi label is '%s' based on file '%s'." % (hemi_label, extend_mesh_file))
         vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(extend_mesh_file, hemi_label)
         mesh_graph = sg.SurfaceGraph(vert_coords, faces)
 
@@ -123,7 +122,7 @@ def visualize_verts():
 
     lines = brw.get_surface_vertices_overlay_text_file_lines(num_verts, vertex_mark_list, background_rgb=background_color)
 
-    print("Writing surface RGB map to output file '%s'. To use it, load and select a surface in Freeview, then click 'Color -> Load RGB Map'." % (args.output_file))
+    print("Writing surface RGB map to output file '%s'. To use it, load and select the respective surface in Freeview, then click 'Color -> Load RGB Map'." % (args.output_file))
     nit.write_lines_to_text_file(lines, args.output_file)
     sys.exit(0)
 
