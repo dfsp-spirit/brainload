@@ -29,6 +29,8 @@ def visualize_verts():
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
     parser.add_argument('-c', '--color', nargs=3, help="The color to use for the vertices as 3 RGB values between 0 and 255, e.g., '255 0 0' for red. Must be given unless an index file is used that contains the color values.", default=None)
     parser.add_argument('-b', '--background-color', nargs=3, help="The background color to use for all the vertices which are NOT listed on the command line or in the index file. 3 RGB values between 0 and 255. Defaults to '128 128 128', a gray.", default=[128, 128, 128])
+    parser.add_argument('-e', '--extend-neighborhood', nargs=2, help="In addition to the given vertices, also color their neighbors in the given mesh file, up to the given graph distance in hops.")
+    parser.add_argument('-o', '--output-file', help="Ouput file. The format is an RGB overlay that can be loaded into Freeview.", default="surface_RGB_map.txt")
     args = parser.parse_args()
 
     verbose = args.verbose
@@ -53,7 +55,10 @@ def visualize_verts():
             colors = query_indices[:,1:4]
             query_indices = query_indices[:,0]
             if verbose:
-                print("Using the %d vertex indices and colors from file '%s'." % (query_indices.shape[0], args.index_file))
+                if args.color:
+                    print("Using the %d vertex indices but ignoring the colors from file '%s'. Command line -c takes precedence for color." % (query_indices.shape[0], args.index_file))
+                else:
+                    print("Using the %d vertex indices and colors from file '%s'." % (query_indices.shape[0], args.index_file))
         else:
             if verbose:
                 print("Using the %d vertex indices from file '%s'." % (query_indices.shape[0], args.index_file))
@@ -70,22 +75,60 @@ def visualize_verts():
 
     background_color = [int(x) for x in args.background_color]
 
+    if args.extend_neighborhood:
+        extend_mesh_file = args.extend_neighborhood[0]
+        extend_num_hops = int(args.extend_neighborhood[1])
+        print("Extension of neighborhood by %d requested based on surface mesh file '%s'. Computing surface graph." % (extend_num_hops, extend_mesh_file))
+        import brainload.surfacegraph as sg
+        hemi_label, is_default = fsd._deduce_hemisphere_label_from_file_path(extend_mesh_file)
+        print("Hemi label is '%s' based on file '%s'." % (hemi_label, extend_mesh_file))
+        vert_coords, faces, meta_data = fsd.read_fs_surface_file_and_record_meta_data(extend_mesh_file, hemi_label)
+        mesh_graph = sg.SurfaceGraph(vert_coords, faces)
+
+
     if args.color:
         color_all = [int(x) for x in args.color]
         if verbose:
             print("Using foreground color %s for all %d foreground vertices." % (" ".join(args.color), query_indices.shape[0]))
-        vertex_mark_list = [(query_indices, color_all)]
+        #vertex_mark_list = [(query_indices, color_all)]
+        vertex_mark_list = []
+        for i, vertex in enumerate(query_indices):
+            vertex_mark_list.append(([query_indices[i]], colors[i]))
+            print("At iter %d, vertex_mark_list is now:" % (i), vertex_mark_list)
+
     else:
         if verbose:
             print("No foreground color given on command line, using per-vertex colors from vertex index file.")
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], colors[i]))
+            print("At iter %d, vertex_mark_list is now:" % (i), vertex_mark_list)
+
+    if args.extend_neighborhood:
+        for t_idx, mark_tuple in enumerate(vertex_mark_list):
+            tuple_vert_indices = mark_tuple[0]
+            tuple_colors = mark_tuple[1]
+            for marked_vertex_index in tuple_vert_indices:
+                neighbors = mesh_graph.get_neighbors_up_to_dist(marked_vertex_index, extend_num_hops)
+                print("Vertex %d has %d neighbors in dist %d." % (marked_vertex_index, len(neighbors), extend_num_hops))
+                new_mark_tuple_verts = np.concatenate((np.array(mark_tuple[0], dtype=int), np.array(neighbors, dtype=int)))
+                new_mark_tuple = (new_mark_tuple_verts, tuple_colors)
+                vertex_mark_list[t_idx] = new_mark_tuple
+
+    if verbose:
+        all_foreground_verts = np.empty((0,), dtype=int)
+        for mark_tuple in vertex_mark_list:
+            print("all_foreground_verts is now:", all_foreground_verts)
+            all_foreground_verts = np.concatenate((all_foreground_verts, mark_tuple[0]))
+        print("All iterations done. all_foreground_verts is now:", all_foreground_verts)
+        num_foreground_verts = all_foreground_verts.shape[0]
+        num_unique_foreground_verts = np.unique(all_foreground_verts).shape[0]
+        print("Resulting surface RGB map contains %d marked vertices (%d unique)." % (num_foreground_verts, num_unique_foreground_verts))
 
     lines = brw.get_surface_vertices_overlay_text_file_lines(num_verts, vertex_mark_list, background_rgb=background_color)
 
-
-
+    print("Writing surface RGB map to output file '%s'. To use it, load and select a surface in Freeview, then click 'Color -> Load RGB Map'." % (args.output_file))
+    nit.write_lines_to_text_file(lines, args.output_file)
     sys.exit(0)
 
 
