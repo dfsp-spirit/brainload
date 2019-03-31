@@ -90,11 +90,9 @@ def visualize_verts():
         color_all = [int(x) for x in args.color]
         if verbose:
             print("Using foreground color %s for all %d foreground vertices." % (" ".join(args.color), query_indices.shape[0]))
-        #vertex_mark_list = [(query_indices, color_all)]
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], color_all))
-            print("At iter %d, vertex_mark_list is now:" % (i), vertex_mark_list)
 
     else:
         if verbose:
@@ -102,7 +100,6 @@ def visualize_verts():
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], colors[i]))
-            print("At iter %d, vertex_mark_list is now:" % (i), vertex_mark_list)
 
     if args.extend_neighborhood:
         for t_idx, mark_tuple in enumerate(vertex_mark_list):
@@ -110,7 +107,6 @@ def visualize_verts():
             tuple_colors = mark_tuple[1]
             for marked_vertex_index in tuple_vert_indices:
                 neighbors = mesh_graph.get_neighbors_up_to_dist(marked_vertex_index, extend_num_hops)
-                print("Vertex %d has %d neighbors in dist %d." % (marked_vertex_index, len(neighbors), extend_num_hops))
                 new_mark_tuple_verts = np.concatenate((np.array(mark_tuple[0], dtype=int), np.array(neighbors, dtype=int)))
                 new_mark_tuple = (new_mark_tuple_verts, tuple_colors)
                 vertex_mark_list[t_idx] = new_mark_tuple
@@ -118,9 +114,7 @@ def visualize_verts():
     if verbose:
         all_foreground_verts = np.empty((0,), dtype=int)
         for mark_tuple in vertex_mark_list:
-            print("all_foreground_verts is now:", all_foreground_verts)
             all_foreground_verts = np.concatenate((all_foreground_verts, mark_tuple[0]))
-        print("All iterations done. all_foreground_verts is now:", all_foreground_verts)
         num_foreground_verts = all_foreground_verts.shape[0]
         num_unique_foreground_verts = np.unique(all_foreground_verts).shape[0]
         print("Resulting surface RGB map contains %d marked vertices (%d unique)." % (num_foreground_verts, num_unique_foreground_verts))
