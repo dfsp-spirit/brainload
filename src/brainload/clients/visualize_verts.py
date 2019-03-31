@@ -93,7 +93,7 @@ def visualize_verts():
         #vertex_mark_list = [(query_indices, color_all)]
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
-            vertex_mark_list.append(([query_indices[i]], colors[i]))
+            vertex_mark_list.append(([query_indices[i]], color_all))
             print("At iter %d, vertex_mark_list is now:" % (i), vertex_mark_list)
 
     else:
