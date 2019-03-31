@@ -28,9 +28,17 @@ setup(
           'Programming Language :: Python :: 3.7'],
     license='MIT',
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'pytest-cov'],
+    tests_require=['pytest', 'pytest-cov', 'pytest-console-scripts'],
     install_requires=['numpy', 'nibabel'],
     package_dir = {'': 'src'},                               # The root directory that contains the source for the modules (relative to setup.py) is ./src/,
     include_package_data=True,                               # respect MANIFEST.in at install time
-    zip_safe=False
+    zip_safe=False,
+    entry_points = {
+        'console_scripts': [
+            'visualize_verts = brainload.clients.visualize_verts:visualize_verts',
+            'brain_mesh_info= brainload.clients.brain_mesh_info:brain_mesh_info',
+            'brain_surf_info = brainload.clients.brain_surf_info:brain_surf_info',
+            'brain_vol_info = brainload.clients.brain_vol_info:brain_vol_info'
+        ]
+    }
 )

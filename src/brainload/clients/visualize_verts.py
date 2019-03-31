@@ -21,7 +21,7 @@ def visualize_verts():
     """
 
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Generate files to visualize vertices in Freeview.")
+    parser = argparse.ArgumentParser(description="Generate RGB map files to visualize vertices in Freeview.")
     num_vert_group = parser.add_mutually_exclusive_group(required=True)     # we need some way to determine the number of vertices to use for the overlay
     num_vert_group.add_argument("-n", "--num-verts", help="The number of vertices in the target surface, an integer. Hint: the number for the Freesurfer fsaverage subject is 163842.")
     num_vert_group.add_argument("-t", "--target-surface-file", help="A target surface file to determine the number of vertices from. E.g., '<your_study>/subject1/surf/lh.white'.")
@@ -36,9 +36,11 @@ def visualize_verts():
     args = parser.parse_args()
 
     verbose = args.verbose
+    fallback_color = [255, 0, 0]    # red
 
+    print("---Brain Surface Vertices Visualization---")
     if verbose:
-        print("---Brain Surface Vertices Visualization---")
+        print("Verbosity turned on.")
 
 
     colors = None
@@ -54,6 +56,7 @@ def visualize_verts():
             num_fields_per_row = query_indices.shape[1]
             if num_fields_per_row < 4:
                 print("ERROR: Lines in the vertex index must must contain either a single integer (the vertex index), or at least four (the index and the 3 RGB color values). Found %d." % (num_fields_per_row))
+                sys.exit(1)
             colors = query_indices[:,1:4]
             query_indices = query_indices[:,0]
             if verbose:
@@ -66,7 +69,9 @@ def visualize_verts():
                 print("Using the %d vertex indices from file '%s'." % (query_indices.shape[0], args.index_file))
 
     if not args.color and colors is None:
-        print("ERROR: No foreground color given on the command line (-c) and vertex index file contains no color values. Use -c or add colors to vertex index file.")
+        print("No foreground color given on the command line (-c) and vertex index file contains no color values. Falling back to internal default color red.")
+        colors = np.zeros((query_indices.shape[0], 3), dtype=int)
+        colors[:,0:3] = fallback_color
 
     if args.num_verts:
         num_verts = int(args.num_verts)
