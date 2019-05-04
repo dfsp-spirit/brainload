@@ -24,7 +24,7 @@ def brain_morph_info():
     index_group.add_argument("-i", "--index", help="The index of the vertex to query. A single integer or several integers separated by commata (no spaces allowed).")
     index_group.add_argument("-f", "--index-file", help="A file containing the list of vertex indices to query.")
     index_group.add_argument("-a", "--all", help="Select all vertices.", action="store_true")
-    parser.add_argument("-q", "--query", help="The query action to perform. Defaults to 'values'.", default="values", choices=['values', 'describe'])
+    parser.add_argument("-q", "--query", help="The query action to perform. Defaults to 'values'.", default="values", choices=['values', 'describe', 'sortasc', 'sortdsc'])
     parser.add_argument("-s", "--separator", help="Output separator (between vertex coords / indices). Defaults to ','.", default=",")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
     args = parser.parse_args()
@@ -55,14 +55,22 @@ def brain_morph_info():
     if verbose:
         print("Morphometry file '%s' contains %d values." % (curv_file, morphometry_data.shape[0]))
 
+    d = morphometry_data[query_indices]
     if args.query == "values":
-        res = sep.join(str(x) for x in morphometry_data[query_indices])
+        res = sep.join(str(x) for x in d)
         if verbose:
             print("Morphometry values of vertices # %s are: %s" % ([str(x) for x in query_indices], res))
         else:
             print(res)
+    elif args.query == "sortasc":
+        sorted_indices = np.argsort(d)
+        for idx in sorted_indices:
+            print("%d, %f" % (idx, d[idx]))
+    elif args.query == "sortdsc":
+        sorted_indices = np.argsort(-d)
+        for idx in sorted_indices:
+            print("%d, %f" % (idx, d[idx]))
     else:   # descriptive stats
-        d = morphometry_data[query_indices]
         if verbose:
             print("count, mean, median, .25 quantile, .75 quantile, min, max")
         print("%d, %f, %f, %f, %f, %f, %f" % (d.shape[0], np.mean(d), np.median(d), np.quantile(d, 0.25), np.quantile(d, 0.75), np.min(d), np.max(d)))
