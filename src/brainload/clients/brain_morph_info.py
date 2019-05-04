@@ -63,10 +63,14 @@ def brain_morph_info():
         else:
             print(res)
     elif args.query == "sortasc":
+        if verbose:
+            print("Printing vertex indices and their data values in ascending order.")
         sorted_indices = np.argsort(d)
         for idx in sorted_indices:
             print("%d, %f" % (idx, d[idx]))
     elif args.query == "sortdsc":
+        if verbose:
+            print("Printing vertex indices and their data values in descending order.")
         sorted_indices = np.argsort(-d)
         for idx in sorted_indices:
             print("%d, %f" % (idx, d[idx]))
