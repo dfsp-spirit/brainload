@@ -50,3 +50,14 @@ def test_brain_mesh_info_by_index_file(script_runner):
     assert 'has 149244 vertices and 298484 faces' in ret.stdout
     assert "Coords of vertices # ['12', '13', '14'] are:" in ret.stdout
     assert ret.stderr == ''
+
+
+def test_brain_mesh_info_by_single_index_face_mode(script_runner):
+    ret = script_runner.run('brain_mesh_info', TEST_SURF_FILE, '-i', '10', '-m', 'face', '-v')
+    assert ret.success
+    assert not 'usage' in ret.stdout
+    assert '---Brain Mesh Info---' in ret.stdout
+    assert 'for the 1 face' in ret.stdout
+    assert 'has 149244 vertices and 298484 faces' in ret.stdout
+    assert "ertices forming faces # ['10'] are: [2 3 8]" in ret.stdout
+    assert ret.stderr == ''
