@@ -109,7 +109,7 @@ def visualize_verts():
     if args.color:
         color_all = [int(x) for x in args.color]
         if verbose:
-            print("Using foreground color %s from command line for all %d foreground vertices." % (" ".join(args.color), query_indices.shape[0]))
+            print("Using foreground color '%s' from command line for all %d foreground vertices." % (" ".join(args.color), query_indices.shape[0]))
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], color_all))
@@ -123,6 +123,9 @@ def visualize_verts():
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], colors[i]))
+
+    if verbose:
+        print("Using background color '%s'." % (" ".join([str(x) for x in args.background_color])))
 
     if args.extend_neighborhood:
         for t_idx, mark_tuple in enumerate(vertex_mark_list):

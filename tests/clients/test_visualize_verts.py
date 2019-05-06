@@ -66,7 +66,8 @@ def test_visualize_verts_num_verts_color_on_commandline_several_foreground_verts
     assert 'Surface has 15 vertices (with indices 0 to 14).' in ret.stdout
     assert 'Using the 3 vertex indices from the command line.' in ret.stdout
     assert not 'No foreground color given on the command line (-c) and vertex index file contains no color values' in ret.stdout
-    assert 'Using foreground color 0 255 0 from command line for all 3 foreground vertices.'
+    assert "Using foreground color '0 255 0' from command line for all 3 foreground vertices."
+    assert "Using background color '128 128 128'." in ret.stdout
     assert 'Resulting surface RGB map contains 3 marked vertices (3 unique).' in ret.stdout
     assert ret.stderr == ''
 
@@ -78,6 +79,19 @@ def test_visualize_verts_num_verts_color_on_commandline_several_nonunique_foregr
     assert 'Surface has 15 vertices (with indices 0 to 14).' in ret.stdout
     assert 'Using the 3 vertex indices from the command line.' in ret.stdout
     assert not 'No foreground color given on the command line (-c) and vertex index file contains no color values' in ret.stdout
-    assert 'Using foreground color 0 255 0 from command line for all 3 foreground vertices.'
+    assert "Using foreground color '0 255 0' from command line for all 3 foreground vertices."
+    assert "Using background color '128 128 128'." in ret.stdout
+    assert 'Resulting surface RGB map contains 3 marked vertices (2 unique).' in ret.stdout      # Note that 2 are unique only!
+    assert ret.stderr == ''
+
+def test_visualize_verts_num_verts_color_on_commandline_several_nonunique_foreground_verts_with_color_and_bgcolor(script_runner):
+    ret = script_runner.run('visualize_verts', '-n' , '15', '-i',  '10,11,11', '-v', '-c', '0', '255', '0', '-b', '10', '10', '10')
+    assert ret.success
+    assert 'Verbosity' in ret.stdout
+    assert 'Surface has 15 vertices (with indices 0 to 14).' in ret.stdout
+    assert 'Using the 3 vertex indices from the command line.' in ret.stdout
+    assert not 'No foreground color given on the command line (-c) and vertex index file contains no color values' in ret.stdout
+    assert "Using foreground color '0 255 0' from command line for all 3 foreground vertices."
+    assert "Using background color '10 10 10'." in ret.stdout
     assert 'Resulting surface RGB map contains 3 marked vertices (2 unique).' in ret.stdout      # Note that 2 are unique only!
     assert ret.stderr == ''
