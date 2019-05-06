@@ -35,3 +35,17 @@ def test_visualize_verts_wrong_vertex_list_command_line_format(script_runner):
     ret = script_runner.run('visualize_verts', '-n' , '15', '-i',  '10 11 12', '-v')
     assert not ret.success
     assert ret.stderr != ''
+
+
+def test_visualize_verts_query_index_too_small(script_runner):
+    ret = script_runner.run('visualize_verts', '-n' , '15', '-i',  '10,-11', '-v')
+    assert not ret.success
+    assert ret.stderr != ''
+    assert "ERROR: All query indices must be >= 0, but encountered negative index '-11'. Exiting." in ret.stderr
+
+
+def test_visualize_verts_query_index_too_large(script_runner):
+    ret = script_runner.run('visualize_verts', '-n' , '15', '-i',  '10,200', '-v')
+    assert not ret.success
+    assert ret.stderr != ''
+    assert "ERROR: All query indices must be < 15 (i.e., the number of vertices in the mesh), but encountered larger index '200'. Exiting." in ret.stderr

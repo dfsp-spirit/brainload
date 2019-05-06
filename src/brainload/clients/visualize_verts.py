@@ -80,6 +80,16 @@ def visualize_verts():
         vert_coords, faces = fsio.read_geometry(mesh_file)
         num_verts = vert_coords.shape[0]
 
+    # Check whether one of the query indices is out of bounds
+    min_query_idx = np.min(query_indices)
+    if min_query_idx < 0:
+        print("ERROR: All query indices must be >= 0, but encountered negative index '%d'. Exiting." % (min_query_idx), file=sys.stderr)
+        sys.exit(1)
+    max_query_idx = np.max(query_indices)
+    if max_query_idx >= num_verts:
+        print("ERROR: All query indices must be < %d (i.e., the number of vertices in the mesh), but encountered larger index '%d'. Exiting." % (num_verts, max_query_idx), file=sys.stderr)
+        sys.exit(1)
+
     background_color = [int(x) for x in args.background_color]
 
     if args.extend_neighborhood:
