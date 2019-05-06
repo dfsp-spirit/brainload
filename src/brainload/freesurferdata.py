@@ -501,7 +501,7 @@ def read_fs_morphometry_data_file_and_record_meta_data(curv_file, hemisphere_lab
     if meta_data is None:
         meta_data = {}
 
-    if format == 'mgh':
+    if format == 'mgh' or curv_file.endswith(".mgh") or curv_file.endswith(".mgz"):
         full_mgh_data, mgh_meta_data = read_mgh_file(curv_file, collect_meta_data=False)
         relevant_data_inner_array = full_mgh_data[:,0]
         per_vertex_data = relevant_data_inner_array[:,0]
