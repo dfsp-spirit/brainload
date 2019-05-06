@@ -37,6 +37,7 @@ def visualize_verts():
 
     verbose = args.verbose
     fallback_color = [255, 0, 0]    # red
+    is_using_fallback_color = False
 
     print("---Brain Surface Vertices Visualization---")
     if verbose:
@@ -69,9 +70,10 @@ def visualize_verts():
                 print("Using the %d vertex indices from file '%s'." % (query_indices.shape[0], args.index_file))
 
     if not args.color and colors is None:
-        print("No foreground color given on the command line (-c) and vertex index file contains no color values. Falling back to internal default color red.")
+        print("No foreground color given on the command line (-c) and vertex index file contains no color values. Falling back to internal default color red (255 0 0).")
         colors = np.zeros((query_indices.shape[0], 3), dtype=int)
         colors[:,0:3] = fallback_color
+        is_using_fallback_color = True
 
     if args.num_verts:
         num_verts = int(args.num_verts)
@@ -81,6 +83,8 @@ def visualize_verts():
         num_verts = vert_coords.shape[0]
 
     # Check whether one of the query indices is out of bounds
+    if verbose:
+        print("Surface has %d vertices (with indices 0 to %d)." % (num_verts, num_verts-1))
     min_query_idx = np.min(query_indices)
     if min_query_idx < 0:
         print("ERROR: All query indices must be >= 0, but encountered negative index '%d'. Exiting." % (min_query_idx), file=sys.stderr)
@@ -105,14 +109,17 @@ def visualize_verts():
     if args.color:
         color_all = [int(x) for x in args.color]
         if verbose:
-            print("Using foreground color %s for all %d foreground vertices." % (" ".join(args.color), query_indices.shape[0]))
+            print("Using foreground color %s from command line for all %d foreground vertices." % (" ".join(args.color), query_indices.shape[0]))
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], color_all))
 
     else:
         if verbose:
-            print("No foreground color given on command line, using per-vertex colors from vertex index file.")
+            if is_using_fallback_color:
+                print("No foreground color given on command line, using fallback color.")
+            else:
+                print("No foreground color given on command line, using per-vertex colors from vertex index file.")
         vertex_mark_list = []
         for i, vertex in enumerate(query_indices):
             vertex_mark_list.append(([query_indices[i]], colors[i]))
