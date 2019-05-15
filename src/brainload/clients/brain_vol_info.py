@@ -35,6 +35,7 @@ def brain_vol_info():
 
     vol_data = nib.load(volume_file).get_data()
     if verbose:
+        print("---Brain Vol Info---")
         print("Volume has %d dimensions, shape %s and data type %s. It contains %d voxels." % (len(vol_data.shape), vol_data.shape, vol_data.dtype, len(np.ravel(vol_data))))
 
     voxel_value_print_format = "%f"
