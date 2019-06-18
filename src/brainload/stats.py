@@ -298,7 +298,15 @@ def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
     measure_names = []
     for line_tokens in measures:
         measure_unique_tuple = (line_tokens[0], line_tokens[1])
-        measure_value = line_tokens[3]
+
+        if len(line_tokens) == 5:   # This is how it should be for all lines, example line looks like this: "# Measure Cortex, NumVert, Number of Vertices, 140843, unitless"
+            measure_value = line_tokens[3]
+        elif len(line_tokens) == 4:        # There is a FreeSurfer bug that omits the comma in some like, e.g., the following lines in ?h.aparc.stats: "# Measure Cortex, CortexVol Total cortical gray matter volume, 536883.609483, mm^3". Note the missing comma after "CortexVol"
+            measure_value = line_tokens[2]
+        else:
+            raise ValueError("Parsing stats file failed: expected line with 5 or 4 tokens, but got %d." % (len(line_tokens)))
+
+        print("measure tuple: %s %s, value=%s" % (line_tokens[0], line_tokens[1], line_tokens[3]))
         if requested_measures is not None:
             if measure_unique_tuple in requested_measures:
                 measure_values.append(measure_value)

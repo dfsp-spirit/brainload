@@ -464,6 +464,28 @@ def test_group_stats_aseg():
         column_data = all_subjects_table_data_dict[name]
         assert column_data.shape == (2, 45)  # 2 subjects, each has a table in aseg.stats with 45 rows
 
+def test_group_stats_aparc(capsys):
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'lh.aparc.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    with capsys.disabled():
+        all_subjects_measures_dict, all_subjects_table_data_dict = st.group_stats_aparc(subjects_list, TEST_DATA_DIR, 'lh')
+    assert len(all_subjects_measures_dict) == 10
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+    assert all_subjects_table_data_dict is not None
+    assert len(all_subjects_table_data_dict) == 10
+    expected_table_column_names_aparc = ['StructName', 'NumVert', 'SurfArea', 'GrayVol', 'ThickAvg', 'ThickStd', 'MeanCurv', 'GausCurv', 'FoldInd', 'CurvInd']
+    for name in expected_table_column_names_aparc:
+        assert name in all_subjects_table_data_dict
+        column_data = all_subjects_table_data_dict[name]
+        assert column_data.shape == (2, 34)  # 2 subjects, each has a table in lh.aparc.stats with 34 rows
+
+
 
 def test_group_stats_aparc_raises_on_invalid_hemi():
     subjects_list = ['subject1', 'subject2']
