@@ -21,7 +21,7 @@ def brain_morph_info():
 
 
     epilog_example_text = '''examples:
- brain_morph_info ~/studyA/subject1/surf/lh.area -i 10
+ brain_morph_info ~/studyA/subject1/surf/lh.area -i 10 --verbose
  brain_morph_info ~/studyA/subject1/surf/lh.thickness -a -q describe
  brain_morph_info ~/studyA/subject1/surf/rh.curv -f ~/vertices_of_interest.txt -q sortasc'''
 
