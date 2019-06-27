@@ -306,7 +306,6 @@ def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
         else:
             raise ValueError("Parsing stats file failed: expected line with 5 or 4 tokens, but got %d." % (len(line_tokens)))
 
-        print("measure tuple: %s %s, value=%s" % (line_tokens[0], line_tokens[1], line_tokens[3]))
         if requested_measures is not None:
             if measure_unique_tuple in requested_measures:
                 measure_values.append(measure_value)
