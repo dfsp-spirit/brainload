@@ -18,7 +18,14 @@ def brain_morph_info():
     """
 
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Query brain surface morphometry data from a curv file.")
+
+
+    epilog_example_text = '''examples:
+ brain_morph_info ~/studyA/subject1/surf/lh.area -i 10
+ brain_morph_info ~/studyA/subject1/surf/lh.thickness -a -q describe
+ brain_morph_info ~/studyA/subject1/surf/rh.curv -f ~/vertices_of_interest.txt -q sortasc'''
+
+    parser = argparse.ArgumentParser(description="Query brain surface morphometry data from a curv file.", epilog=epilog_example_text, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("curv_file", help="The curv file to load. Must be in Freesurfer curv format. Example files are 'lh.area' or 'rh.thickness'.")
     index_group = parser.add_mutually_exclusive_group(required=True)
     index_group.add_argument("-i", "--index", help="The index of the vertex to query. A single integer or several integers separated by commata (no spaces allowed).")
