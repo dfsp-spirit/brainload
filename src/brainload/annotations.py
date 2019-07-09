@@ -8,6 +8,7 @@ import os
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import brainload.nitools as nit
+import brainload.freesurferdata as fsd
 
 
 class AnnotQuery:
@@ -181,6 +182,101 @@ def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, ori
 
     return vertex_labels, label_colors, label_names, meta_data
 
+
+def region_data_native(subject_id, subjects_dir, annotation, hemi, morphometry_data, morphometry_meta_data):
+    """
+    Get morphometry data for atlas regions.
+
+    Get morphometry data for each region in an annotation file/atlas. You can use these to compute anatomical statistics per region, like average cortical thickness.
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier.
+
+    subjects_dir: string
+        A string representing the path to the subjects dir.
+
+    annotation: string
+        An annotation to load, part of the file name of the respective file in the subjects label directory. E.g., 'aparc', 'aparc.a2009s', or 'aparc.DKTatlas'.
+
+    hemi: string, one of {'both', 'lh', 'rh'}
+        The hemisphere for which data should actually be loaded.
+
+    morphometry_data: numpy array
+        morphometry data array, one value per vertex
+
+    morphometry_meta_data: dictionary
+        morphometry meta data dictionary, as returned by the functions that load morphometry data
+
+    Returns
+    -------
+    region_data_per_hemi: nested dictionary
+        Has a key for each hemi you requested (only 'lh', only 'rh', or both 'lh' and 'rh'). The inner one has the region names as keys, and a 1D numpy array of values.
+
+    label_names: list of strings
+        Names of the atlas regions. The length differs by atlas/annotation file.
+
+    Examples
+    --------
+    Let us compute the average thickness in region 5 of the aparc atlas for a subject:
+    >>> hemi = 'lh'
+    >>> morphometry_data, morphometry_meta_data = bl.subject_data_native('subject1', TEST_DATA_DIR, 'thickness', hemi)
+    >>> region_data, label_names = an.region_data_native('subject1', TEST_DATA_DIR, 'aparc', hemi, morphometry_data, morphometry_meta_data)
+    >>> region_6_name = label_names[5]
+    >>> mean_thickness_in_region_6 = np.mean(region_data[hemi][region_6_name])
+    >>> print("Avg thickness in region '%s' is: %f" % (region_6_name, mean_thickness_in_region_6))
+    """
+    if hemi not in ('lh', 'rh', 'both'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
+
+    vertex_labels, label_colors, label_names, annot_meta_data = annot(subject_id, subjects_dir, annotation, hemi=hemi)
+
+    region_data_per_hemi = dict()
+
+    hemis = []
+    if hemi == "both":
+        hemis.append("lh")
+        hemis.append("rh")
+    else:
+        hemis.append(hemi)
+
+    for h in hemis:
+        s, e = fsd.hemi_range(morphometry_meta_data, h)
+        hemi_data = morphometry_data[s:e]
+        hemi_labels = vertex_labels[s:e]
+        region_data = _split_morph_data_into_regions(hemi_data, hemi_labels, label_names)
+        region_data_per_hemi[h] = region_data
+    return region_data_per_hemi, label_names
+
+
+def _split_morph_data_into_regions(hemi_data, vertex_labels, label_names):
+    """
+    Split morphometry data into subsets based on atlas regions.
+
+    Split morphometry data for a single hemisphere of one subject into subsets based on atlas regions.
+
+    Parameters
+    ----------
+    hemi_data: numpy 1D array
+        The morphometry data for a single hemisphere.
+
+    vertex_labels: numpy 1D array
+        Vertex labels ONLY for the vertices of the hemisphere. Shape is (n, ), where n is the number of vertices of the hemisphere. Each value is an index into label_names.
+
+    label_names: list of strings
+        The atlas region names.
+
+    Returns
+    -------
+    region_data: dictionary
+        Each key is a region name (string), and each value is a 1D numpy array of all morphometry values in the region (a subset of hemi_data).
+    """
+    data = dict()
+    for label_idx, label_name in enumerate(label_names):
+        indices = np.where(vertex_labels == label_idx)[0]
+        data[label_name] = hemi_data[indices]
+    return data
 
 
 def color_rgbt_to_rgba(rgbt):

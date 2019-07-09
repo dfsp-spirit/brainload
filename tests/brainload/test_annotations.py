@@ -387,3 +387,18 @@ def test_annotquery():
     assert np.array_equal(colors[1], np.array([0,255,0,0], dtype=int))
     assert np.array_equal(colors[2], np.array([0,0,0,0], dtype=int))
     assert np.array_equal(colors[3], np.array([255,0,0,0], dtype=int))
+
+
+def test_region_data_native():
+    hemi = 'lh'
+    morphometry_data, morphometry_meta_data = bl.subject_data_native('subject1', TEST_DATA_DIR, 'area', hemi)
+    region_data, label_names = an.region_data_native('subject1', TEST_DATA_DIR, 'aparc', hemi, morphometry_data, morphometry_meta_data)
+    assert len(label_names) == 36
+    assert len(region_data) == 1    # one hemi only requested
+    assert len(region_data[hemi]) == 36
+    some_region_name = label_names[5]
+    assert some_region_name == "cuneus"
+    some_region_data = region_data[hemi][some_region_name]
+    assert some_region_data.shape == (2183, )
+    mean_thickness_in_region = np.mean(some_region_data)
+    assert mean_thickness_in_region == pytest.approx(0.687, 0.1)
