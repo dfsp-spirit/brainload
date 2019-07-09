@@ -589,7 +589,7 @@ def rhi(rh_relative_index, meta_data):
     Parameters
     ----------
     rh_relative_index: int
-        An index relative to the right hemisphere. E.g., `0` if you want to get the index of the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and `-1` will get you the last possible index, `-2` the second-to-last, and so on.
+        An index relative to the right hemisphere. E.g., `0` if you want to get the index of the first vertex of the right hemisphere. Its absolute value must be between 0 and the number of vertices of the right hemisphere. Negative values are allowed, and `-1` will get you the second-to-last possible index, `-2` the third-to-last, and so on.
 
     meta_data: dictionary
         The meta data dictionary returned for your data. It must contain the keys 'lh.num_data_points' and 'rh.num_data_points'.
@@ -620,6 +620,40 @@ def rhi(rh_relative_index, meta_data):
         return num_lh + num_rh + rh_relative_index -1
     else:
         return num_lh + rh_relative_index
+
+
+def hemi_range(morphometry_meta_data, hemi):
+    """
+    Compute start and end index in the hemisphere data for the given hemisphere.
+
+    Parameters
+    ----------
+    morphometry_meta_data: dictionary as returned by the functions that read morphometry data (e.g., ```subject_data_native```).
+
+    hemi: string, one of 'lh' or 'rh'. The hemisphere you want to get the start and end index for.
+
+    Returns
+    -------
+    start_index: integer
+        The start index of the lh data.
+
+    end_index: integer
+        The end index of the lh data.
+
+    Examples
+    --------
+    >>> import brainload as bl
+    >>> morphometry_data, meta_data = bl.subject_data_native('subject1', '/mnt/study1_data', 'thickness', 'both')
+    >>> s, e = bl.hemi_range(meta_data, 'lh')
+    >>> print("Mean lh thickness value is: %f" % (np.mean(morphometry_data[s:e])))
+    """
+    if hemi not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh'} but is '%s'." % hemi)
+
+    if hemi == 'lh':
+        return 0, morphometry_meta_data['lh.num_data_points'] -1
+    else:
+        return rhi(0, morphometry_meta_data), rhi(-1, morphometry_meta_data)+1
 
 
 def rhv(rh_relative_index, morphometry_data, meta_data):
@@ -839,6 +873,101 @@ def fsaverage_mesh(subject_id='fsaverage', surf='white', hemi='both', subjects_d
 
     vert_coords, faces, morphometry_data, meta_data = subject(subject_id, surf=surf, hemi=hemi, subjects_dir=subjects_dir, measure=None, load_morphometry_data=False)
     return vert_coords, faces, meta_data
+
+
+def subject_data_native(subject_id, subjects_dir, measure, hemi, surf='white'):
+    """
+    Load native space morphometry data for a subject (e.g., lh.area).
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject's data, relative to `subjects_dir`. Example: 'subject33'.
+
+    measure : string
+        The measure to load, e.g., 'area' or 'curv'. Defaults to 'area'.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. For white, nothing will be added. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}
+        The hemisphere that should be loaded.
+
+    subjects_dir: string
+        A string representing the full path to a directory. This should be the directory containing all subjects of your study.
+
+    Returns
+    -------
+    morphometry_data: numpy array
+        A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. Note that the two hemispheres do in general NOT have the same number of vertices.
+
+    meta_data: dictionary
+        A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_data_points` : the number of data points loaded.
+            - `?h.morphometry_file` : the value of the `?h_morphometry_data_file` argument (data file that was loaded)
+            - `?h.morphometry_file_format` : the value for `format` that was used
+            - `subject_id` : the subject id
+            - `subjects_dir` : the subjects dir that was used
+            - `surf` : the surf that was used, e.g., 'white'
+            - `measure` : the measure that was loaded as morphometry data, e.g., 'area'
+            - `space` : always the string 'subject'. This means that the data loaded represent morphometry data taken from the subject's surface (as opposed to data mapped to a common or average subject).
+            - `hemi` : the `hemi` value that was used
+
+    Examples
+    --------
+    >>> import brainload as bl
+    >>> morphometry_data, meta_data = bl.subject_data_native('subject1', '/mnt/study1_data', 'thickness', 'both')
+    """
+    vert_coords, faces, morphometry_data, meta_data = subject(subject_id, surf=surf, measure=measure, hemi=hemi, subjects_dir=subjects_dir, load_surface_files=False)
+    return morphometry_data, meta_data
+
+
+def subject_data_standard(subject_id, subjects_dir, measure, hemi, fwhm, average_subject='fsaverage', surf='white'):
+    """
+    Load standard space data for a subject (e.g., lh.area.fwhm10.fsaverage.mgh).
+
+    Parameters
+    ----------
+    subject_id: string
+        The subject identifier of the subject. As always, it is assumed that this is the name of the directory containing the subject's data, relative to `subjects_dir`. Example: 'subject33'.
+
+    measure : string
+        The measure to load, e.g., 'area' or 'curv'.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. This will become part of the file name that is loaded. Defaults to 'white'.
+
+    hemi : {'both', 'lh', 'rh'}
+        The hemisphere that should be loaded.
+
+    fwhm : string or None
+        Which averaging version of the data should be loaded. FreeSurfer usually generates different standard space files with a number of smoothing settings. If None is passed, the `.fwhmX` part is omitted from the file name completely. Set this to '0' to get the unsmoothed version.
+
+    subjects_dir: string
+        A string representing the full path to a directory. This should be the directory containing all subjects of your study.
+
+    average_subject: string, optional
+        The name of the average subject to which the data was mapped. Defaults to 'fsaverage'.
+
+    Returns
+    -------
+    morphometry_data: numpy array
+        A numpy array with as many entries as there are vertices in the subject. If you load two hemispheres instead of one, the length doubles. You can get the start indices for data of the hemispheres in the returned `meta_data`, see `meta_data['lh.num_vertices']` and `meta_data['rh.num_vertices']`. You can be sure that the data for the left hemisphere will always come first (if both were loaded). Indices start at 0, of course. So if the left hemisphere has `n` vertices, the data for them are at indices `0..n-1`, and the data for the right hemisphere start at index `n`. Note that the two hemispheres do in general NOT have the same number of vertices.
+
+    meta_data: dictionary
+        A dictionary containing detailed information on all files that were loaded and used settings. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
+            - `?h.num_data_points` : the number of data points loaded.
+            - `?h.morphometry_file` : the value of the `?h_morphometry_data_file` argument (data file that was loaded)
+            - `?h.morphometry_file_format` : the value for `format` that was used
+            - `subject_id` : the subject id
+            - `subjects_dir` : the subjects dir that was used
+            - `surf` : the surf that was used, e.g., 'white'
+            - `measure` : the measure that was loaded as morphometry data, e.g., 'area'
+            - `space` : always the string 'common'. This means that the data loaded represent morphometry data that has been mapped to a common or average subject.
+            - `hemi` : the `hemi` value that was used
+    """
+    vert_coords, faces, morphometry_data, meta_data = subject_avg(subject_id, measure=measure, surf=surf, hemi=hemi, fwhm=fwhm, subjects_dir=subjects_dir, average_subject=average_subject, load_surface_files=False)
+    return morphometry_data, meta_data
 
 
 def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=None, meta_data=None, load_surface_files=True, load_morphometry_data=True):

@@ -1154,6 +1154,20 @@ def test_rhi_all_fine():
     assert morphometry_data_both[abs_rh_second_to_last] == pytest.approx(morphometry_data_rh[len(morphometry_data_rh)-2], 0.1)
 
 
+def test_hemi_range():
+    meta_data = dict()
+    meta_data['lh.num_data_points'] = 10
+    meta_data['rh.num_data_points'] = 9
+
+    sl, el = bl.hemi_range(meta_data, 'lh')
+    assert sl == 0
+    assert el == 9
+
+    sr, er = bl.hemi_range(meta_data, 'rh')
+    assert sr == 10
+    assert er == 18
+
+
 def test_rhi_raises_on_invalid_metadata():
     meta_data_both = 5
     with pytest.raises(ValueError) as exc_info:
@@ -1331,3 +1345,13 @@ def test_deduce_hemisphere_label_from_file_path_with_info_left_with_default():
     label, is_default = fsd._deduce_hemisphere_label_from_file_path('./subject1/surf/lh.area', default='rh')
     assert label == "lh"
     assert is_default == False
+
+
+def test_subject_data_native():
+    morphometry_data, meta_data = bl.subject_data_native('subject1', TEST_DATA_DIR, 'area', 'lh')
+    assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+
+
+def test_subject_data_standard():
+    morphometry_data, meta_data = bl.subject_data_standard('subject1', TEST_DATA_DIR, 'area', 'lh', '10')
+    assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
