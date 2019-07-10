@@ -1,5 +1,5 @@
 """
-Raed FreeSurfer vertex label and annotation files.
+Read FreeSurfer vertex label and annotation files.
 
 Functions for reading FreeSurfer vertex annotation files. These are the file in the label sub directory of a subject, with file extensions '.label' and '.annot'. Examples are 'lh.aparc.annot' and 'lh.cortex.label'. A label is a set of vertices. An annotation consists of several sets of vertices, each of which is assigned a label and a color.
 """
