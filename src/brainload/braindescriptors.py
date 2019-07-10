@@ -30,14 +30,14 @@ class BrainDescriptors:
             self.hemis = [hemi]
 
 
-    def add_parcellation_stats(atlas_list):
+    def add_parcellation_stats(self, atlas_list):
         for hemi in self.hemis:
             for atlas in atlas_list:
                 self._add_single_parcellation_stats(atlas, hemi)
 
 
-    def _add_single_parcellation_stats(atlas, hemi):
+    def _add_single_parcellation_stats(self, atlas, hemi):
         """
         Add atlas stats, e.g., 'aparc' for stats/?h.aparc.annot
         """
-        all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats(subjects_list, subjects_dir, '%s.%s.stats' % (hemi, atlas), stats_table_type_list=brainload.stats.typelist_for_aparc_atlas_stats())
+        all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats(self.subjects_list, self.subjects_dir, '%s.%s.stats' % (hemi, atlas), stats_table_type_list=brainload.stats.typelist_for_aparc_atlas_stats())
