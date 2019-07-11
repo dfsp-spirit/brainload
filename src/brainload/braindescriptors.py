@@ -56,8 +56,12 @@ class BrainDescriptors:
 
 
     def report_descriptors(self):
-        print("self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
-        print("found %d descritpor names." % (len(self.descriptor_names)))
+        print("DEBUG: self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
+        print("DEBUG: Found %d descriptor names." % (len(self.descriptor_names)))
+
+        if len(self.descriptor_names) != self.descriptor_values.shape[1] -1:    # the '-1' is because the subject ID is part of the
+            print("Mismatch between descriptor names and values.")
+
         print("---------------------------------------------------------------------")
         print("subject_id " + " ".join(self.descriptor_names))
         for sidx, subject_id in enumerate(self.subjects_list):
@@ -65,6 +69,7 @@ class BrainDescriptors:
             for i in range(len(self.descriptor_names)):
                 print("%.2f" % (self.descriptor_values[sidx,i]), end=" ")
             print("")
+
 
     def add_segmentation_stats(self):
         """
@@ -74,13 +79,28 @@ class BrainDescriptors:
         """
         all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats_aseg(self.subjects_list, self.subjects_dir)
 
-        # handle table stats
+        # handle measures dict
         for measure_unique_name in list(all_subjects_measures_dict.keys()):
             measure_data_all_subjects = all_subjects_measures_dict[measure_unique_name]
-            print("self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
-            print("add received values with shape %s" % (str(measure_data_all_subjects.shape)))
             self.descriptor_values = np.hstack((self.descriptor_values, np.expand_dims(measure_data_all_subjects, axis=1)))
-            self.descriptor_names.append("stats_aseg_%s" % (measure_unique_name))
+            self.descriptor_names.append("stats_aseg_measure_%s" % (measure_unique_name))
+
+        # handle table data
+        region_colum_name = brainload.stats.stats_table_region_label_column_name()
+        region_names = [rname.decode('utf-8') for rname in all_subjects_table_data_dict[region_colum_name][0]]
+
+        for table_column_name in all_subjects_table_data_dict.keys():
+            if table_column_name not in ('Index', 'SegId', region_colum_name):
+                #print("handling table column '%s'" % (table_column_name))
+                all_subjects_all_region_data = all_subjects_table_data_dict[table_column_name]
+                #print("self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
+                #print("add received values with shape %s" % (str(all_subjects_all_region_data.shape)))
+                self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_all_region_data))
+                for region_name in region_names:
+                    self.descriptor_names.append("stats_aseg_table_%s_%s" % (table_column_name, region_name))
+
+
+
 
 
     def add_custom_measure_stats(self, atlas_list, measure_list):

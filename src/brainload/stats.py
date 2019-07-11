@@ -501,7 +501,7 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
         The data from the measure rows in the files. Each key in the dictionary is the name of a measure, and the value is the data for all subjects in a numpy float array. The array shape is (n, ) for n subjects.
 
     all_subjects_table_data_dict: dict of string to numpy 2D array
-        The data for all table columns in the files. Each key in the dictionary is the name of a column in the stats table, and the value is the data for all rows for all subjects in a numpy 2D float array. The array shape is (n, m) for n subjects and a table with m rows. Note that the data type differs between the arrays and is defined by the argument ```stats_table_type_list```. The colums include a string column that holds the region names, it is called 'StructName' for both aparc and aseg stats files.
+        The data for all table columns in the files. Each key in the dictionary is the name of a column in the stats table, and the value is the data for all rows (i.e., atlas regions) for all subjects in a numpy 2D float array. The array shape is (n, m) for n subjects and a table with m rows. Note that the data type differs between the arrays and is defined by the argument ```stats_table_type_list```. The colums include a string column that holds the region names, it is called 'StructName' for both aparc and aseg stats files.
 
     See also
     --------
@@ -523,6 +523,12 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
             all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data)
     return all_subjects_measures_dict, all_subjects_table_data_dict
 
+
+def stats_table_region_label_column_name():
+    """
+    Returns the name of the column that contains the region names for the table in stats files. The name is identical for all standard Freesurfer parcellation and segmentation stats files (aseg.stats, ?h.aparc.stats, ?h.aparc.a2009s.stats, and ?h.aparc.DKTatlas.stats), so the current version returns a fixed string.
+    """
+    return "StructName"
 
 def group_stats_aseg(subjects_list, subjects_dir):
     return group_stats(subjects_list, subjects_dir, 'aseg.stats', stats_table_type_list=typelist_for_aseg_stats())
