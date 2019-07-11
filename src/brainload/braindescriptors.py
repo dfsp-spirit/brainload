@@ -20,7 +20,7 @@ class BrainDescriptors:
         self.subjects_dir = subjects_dir
         self.subjects_list = subjects_list
         self.descriptor_names = []
-        self.descriptor_values = []
+        self.descriptor_values = np.zeros((len(self.subjects_list), 1))
 
         if hemi not in ('lh', 'rh', 'both'):
             raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -46,6 +46,26 @@ class BrainDescriptors:
         all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats(self.subjects_list, self.subjects_dir, '%s.%s.stats' % (hemi, atlas), stats_table_type_list=brainload.stats.typelist_for_aparc_atlas_stats())
 
 
+    def add_standard_stats(self):
+        """
+        Convenience function to add all descriptors which are computed by default when running Freesurfer v6 recon-all on a subject. WARNING: In the current state, it only adds data we have available for testing.
+        """
+        self.add_parcellation_stats(['aparc', 'aparc.a2009s'])
+        self.add_segmentation_stats()
+        self.add_custom_measure_stats(['aparc'], ['area'])
+
+
+    def report_descriptors(self):
+        print("self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
+        print("found %d descritpor names." % (len(self.descriptor_names)))
+        print("---------------------------------------------------------------------")
+        print("subject_id " + " ".join(self.descriptor_names))
+        for sidx, subject_id in enumerate(self.subjects_list):
+            print("%s " % (subject_id), end="")
+            for i in range(len(self.descriptor_names)):
+                print("%.2f" % (self.descriptor_values[sidx,i]), end=" ")
+            print("")
+
     def add_segmentation_stats(self):
         """
         Add brain parcellation stats.
@@ -54,12 +74,20 @@ class BrainDescriptors:
         """
         all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats_aseg(self.subjects_list, self.subjects_dir)
 
+        # handle table stats
+        for measure_unique_name in list(all_subjects_measures_dict.keys()):
+            measure_data_all_subjects = all_subjects_measures_dict[measure_unique_name]
+            print("self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
+            print("add received values with shape %s" % (str(measure_data_all_subjects.shape)))
+            self.descriptor_values = np.hstack((self.descriptor_values, np.expand_dims(measure_data_all_subjects, axis=1)))
+            self.descriptor_names.append("stats_aseg_%s" % (measure_unique_name))
+
 
     def add_custom_measure_stats(self, atlas_list, measure_list):
         """
         Add custom stats for a measure and atlas.
 
-        Add custom stats for a measure and atlas. E.g., compute descriptive stats (min, max, mean, ...) for a measure like 'lgi_pial' in all regions of an atlas like 'aparc'.
+        Add custom stats for a measure and atlas. E.g., compute descriptive stats (min, max, mean, ...) for a measure like 'pial_lgi' in all regions of an atlas like 'aparc'.
         """
         for hemi in self.hemis:
             for atlas in atlas_list:

@@ -750,7 +750,3 @@ def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for
     for row_index, row_name in enumerate(row_names):
         res[row_name] = extract_field_from_table_data(column_name_of_values, row_index, all_subjects_table_data_dict, dtype=dtype)
     return res
-
-
-def custom_measure_atlas_stats():
-    brainload.annotations.region_data_native(subject_id, subjects_dir, annotation, hemi, morphometry_data, morphometry_meta_data)
