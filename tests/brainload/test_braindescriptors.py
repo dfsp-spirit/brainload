@@ -22,3 +22,5 @@ def test_braindescriptors_parcellation_stats():
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.add_parcellation_stats(['aparc', 'aparc.a2009s'])
+    bdi.add_segmentation_stats()
+    bdi.add_custom_measure_stats(['aparc'], ['area'])

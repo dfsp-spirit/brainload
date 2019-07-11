@@ -69,5 +69,6 @@ class BrainDescriptors:
 
     def _add_custom_measure_stats_single(self, atlas, measure, hemi):
         for subject_id in self.subjects_list:
-            morphometry_data, morphometry_meta_data = bl.subject_data_native(subject_id, self.subjects_dir, measure, hemi)
+            morphometry_data, morphometry_meta_data = brainload.freesurferdata.subject_data_native(subject_id, self.subjects_dir, measure, hemi)
             region_data_per_hemi, label_names = brainload.annotations.region_data_native(subject_id, self.subjects_dir, atlas, hemi, morphometry_data, morphometry_meta_data)
+            # TODO: compute descriptive stats
