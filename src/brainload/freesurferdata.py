@@ -754,8 +754,10 @@ def load_subject_morphometry_data_files(lh_morphometry_data_file, rh_morphometry
 
     if hemi == 'lh':
         morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh', meta_data=meta_data, format=format)
+        meta_data['rh.num_data_points'] = 0
     elif hemi == 'rh':
         morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data, format=format)
+        meta_data['lh.num_data_points'] = 0
     else:
         lh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh', meta_data=meta_data, format=format)
         rh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data, format=format)

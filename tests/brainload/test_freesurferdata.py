@@ -234,7 +234,8 @@ def test_load_subject_morphometry_data_files_works_with_left_hemisphere_only():
     assert meta_data['lh.morphometry_file'] == lh_morphometry_file
     assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
-    assert len(meta_data) == 3
+    assert meta_data['rh.num_data_points'] == 0
+    assert len(meta_data) == 4
     assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
 
 
@@ -244,7 +245,8 @@ def test_load_subject_morphometry_data_files_works_with_right_hemisphere_only():
     assert meta_data['rh.morphometry_file'] == rh_morphometry_file
     assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
-    assert len(meta_data) == 3
+    assert meta_data['lh.num_data_points'] == 0
+    assert len(meta_data) == 4
     assert morphometry_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
 
 def test_load_subject_morphometry_data_files_raises_on_invalid_format():
@@ -312,7 +314,7 @@ def test_parse_subject_raises_on_invalid_hemisphere():
 
 def test_parse_subject_works_with_left_hemisphere_only():
     vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
-    assert len(meta_data) == 14
+    assert len(meta_data) == 15
     expected_subjects_dir = TEST_DATA_DIR
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.white')
     expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area')
@@ -323,6 +325,7 @@ def test_parse_subject_works_with_left_hemisphere_only():
     assert meta_data['lh.morphometry_file'] == expected_lh_morphometry_file
     assert meta_data['lh.morphometry_file_format'] == 'curv'
     assert meta_data['lh.num_data_points'] == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert meta_data['rh.num_data_points'] == 0
 
     assert meta_data['subject_id'] == 'subject1'
     assert meta_data['subjects_dir'] == expected_subjects_dir
@@ -390,7 +393,7 @@ def test_parse_subject_works_with_single_hemispheres_data_correct():
 
 def test_parse_subject_works_with_right_hemisphere_only():
     vert_coords, faces, morphometry_data, meta_data = bl.subject('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
-    assert len(meta_data) == 14
+    assert len(meta_data) == 15
     expected_subjects_dir = TEST_DATA_DIR
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.white')
     expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area')
@@ -401,6 +404,7 @@ def test_parse_subject_works_with_right_hemisphere_only():
     assert meta_data['rh.morphometry_file'] == expected_rh_morphometry_file
     assert meta_data['rh.morphometry_file_format'] == 'curv'
     assert meta_data['rh.num_data_points'] == SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+    assert meta_data['lh.num_data_points'] == 0
 
     assert meta_data['subject_id'] == 'subject1'
     assert meta_data['subjects_dir'] == expected_subjects_dir
@@ -528,7 +532,7 @@ def test_parse_subject_standard_space_data_works_with_left_hemisphere_only():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='lh')
-    assert len(meta_data) == 18
+    assert len(meta_data) == 19
     expected_lh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'lh.white')
     expected_lh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
     assert meta_data['lh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
@@ -559,7 +563,7 @@ def test_parse_subject_standard_space_data_works_with_right_hemisphere_only():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_surf_dir)
 
     vert_coords, faces, morphometry_data, meta_data = bl.subject_avg('subject1', subjects_dir=TEST_DATA_DIR, hemi='rh')
-    assert len(meta_data) == 18
+    assert len(meta_data) == 19
     expected_rh_surf_file = os.path.join(TEST_DATA_DIR, 'fsaverage', 'surf', 'rh.white')
     expected_rh_morphometry_file = os.path.join(TEST_DATA_DIR, 'subject1', 'surf', 'rh.area.fwhm10.fsaverage.mgh')
     assert meta_data['rh.num_vertices'] == FSAVERAGE_NUM_VERTS_PER_HEMISPHERE
@@ -755,7 +759,7 @@ def test_load_group_data_works_with_left_hemisphere_only():
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
-    assert len(group_meta_data['subject1']) == 15
+    assert len(group_meta_data['subject1']) == 16
     assert group_meta_data['subject1']['lh.morphometry_file'] == expected_lh_morphometry_file_subject1
     assert group_meta_data['subject5']['lh.morphometry_file'] == expected_lh_morphometry_file_subject5
     assert not 'rh.morphometry_file' in group_meta_data['subject1']
@@ -778,7 +782,7 @@ def test_load_group_data_works_with_right_hemisphere_only():
     assert group_data.shape == (5, FSAVERAGE_NUM_VERTS_PER_HEMISPHERE)   # We have 5 subjects in the subjects.txt file in the test data dir
     assert len(group_meta_data) == 5
     assert len(group_meta_data) == len(group_data_subjects)
-    assert len(group_meta_data['subject1']) == 15
+    assert len(group_meta_data['subject1']) == 16
     assert group_meta_data['subject1']['rh.morphometry_file'] == expected_rh_morphometry_file_subject1
     assert group_meta_data['subject5']['rh.morphometry_file'] == expected_rh_morphometry_file_subject5
     assert not 'lh.morphometry_file' in group_meta_data['subject1']
@@ -1347,9 +1351,16 @@ def test_deduce_hemisphere_label_from_file_path_with_info_left_with_default():
     assert is_default == False
 
 
-def test_subject_data_native():
+def test_subject_data_native_lh():
     morphometry_data, meta_data = bl.subject_data_native('subject1', TEST_DATA_DIR, 'area', 'lh')
     assert morphometry_data.shape == (SUBJECT1_SURF_LH_WHITE_NUM_VERTICES, )
+    assert 'lh.num_data_points' in meta_data
+
+
+def test_subject_data_native_rh():
+    morphometry_data, meta_data = bl.subject_data_native('subject1', TEST_DATA_DIR, 'area', 'rh')
+    assert morphometry_data.shape == (SUBJECT1_SURF_RH_WHITE_NUM_VERTICES, )
+    assert 'rh.num_data_points' in meta_data
 
 
 def test_subject_data_standard():
