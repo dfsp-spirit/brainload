@@ -14,7 +14,7 @@ import warnings
 import os
 import numpy as np
 import brainload.nitools as nit
-
+import brainload.annotations
 
 
 
@@ -81,7 +81,19 @@ def stat(file_name):
 
 def _parse_stats_lines(lines):
     """
-    Parse all lines from a stats file. See read_stats_file for details.
+    Parse stats lines.
+
+    Parse all lines from a stats file and sort them into line classes. See read_stats_file for details.
+
+    Parameters
+    ----------
+    lines: list of strings
+        The lines of the stats file.
+
+    Returns
+    -------
+    dictionary of string to list
+        The result dictionary, containing the following 5 keys: 'ignored_lines', 'measures', 'table_data', 'table_meta_data' and 'table_column_headers'. The value for each key in the dict is a list of lines which belong to that line class.
     """
     ignored_lines = []
     measures = []
@@ -112,6 +124,11 @@ def _measure(line):
 
     Parse a measure line. Looks similar to the following: '# Measure BrainSeg, BrainSegVol, Brain Segmentation Volume, 1243340.000000, mm^3'
 
+    Parameters
+    ----------
+    line: string
+        A stats line.
+
     Returns
     -------
     list of strings
@@ -125,6 +142,16 @@ def _table_row(line):
     Return all elements of a data line.
 
     Return all elements of a data line. Simply splits it.
+
+    Parameters
+    ----------
+    line: string
+        A stats line.
+
+    Returns
+    -------
+    list of strings
+        A list of strings, containing the data on the line, split at white space.
     """
     return line.split()
 
@@ -452,7 +479,7 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
     """
     Retrieve stats for a group of subjects.
 
-    Retrieve stats for a group of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like aseg.stats). This function does not care about hemispheres.
+    Retrieve stats for a group of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like stats_table_type_list.stats). This function does not care about hemispheres.
 
     Parameters
     ----------
@@ -474,7 +501,7 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
         The data from the measure rows in the files. Each key in the dictionary is the name of a measure, and the value is the data for all subjects in a numpy float array. The array shape is (n, ) for n subjects.
 
     all_subjects_table_data_dict: dict of string to numpy 2D array
-        The data for all table columns in the files. Each key in the dictionary is the name of a column in the stats table, and the value is the data for all rows for all subjects in a numpy 2D float array. The array shape is (n, m) for n subjects and a table with m rows.
+        The data for all table columns in the files. Each key in the dictionary is the name of a column in the stats table, and the value is the data for all rows for all subjects in a numpy 2D float array. The array shape is (n, m) for n subjects and a table with m rows. Note that the data type differs between the arrays and is defined by the argument ```stats_table_type_list```. The colums include a string column that holds the region names, it is called 'StructName' for both aparc and aseg stats files.
 
     See also
     --------
@@ -723,3 +750,7 @@ def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for
     for row_index, row_name in enumerate(row_names):
         res[row_name] = extract_field_from_table_data(column_name_of_values, row_index, all_subjects_table_data_dict, dtype=dtype)
     return res
+
+
+def custom_measure_atlas_stats():
+    brainload.annotations.region_data_native(subject_id, subjects_dir, annotation, hemi, morphometry_data, morphometry_meta_data)
