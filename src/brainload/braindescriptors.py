@@ -73,19 +73,17 @@ class BrainDescriptors:
         Convenience function to add all descriptors which are computed by default when running Freesurfer v6 recon-all on a subject. WARNING: In the current state, it only adds data we have available for testing.
         """
         self.add_parcellation_stats(['aparc', 'aparc.a2009s'])
-        self.add_segmentation_stats()
+        self.add_segmentation_stats(['aseg', 'wmparc'])
         self.add_custom_measure_stats(['aparc'], ['area'])
         self.add_curv_stats()
 
+        self.check_for_segmentation_stats_files(['aseg', 'wmparc'])
+        self.check_for_parcellation_stats_files(['aparc', 'aparc.a2009s'])
 
     def report_descriptors(self):
-        print("DEBUG: self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
-        print("DEBUG: Found %d descriptor names." % (len(self.descriptor_names)))
+        pass
 
-        if len(self.descriptor_names) != self.descriptor_values.shape[1] -1:    # the '-1' is because the subject ID is part of the
-            print("Mismatch between descriptor names and values.")
-            sys.exit(1)
-
+    def report_descriptors2(self):
         print("---------------------------------------------------------------------")
         print("subject_id " + " ".join(self.descriptor_names))
         for sidx, subject_id in enumerate(self.subjects_list):
@@ -93,15 +91,66 @@ class BrainDescriptors:
             for i in range(len(self.descriptor_names)):
                 print("%.2f" % (self.descriptor_values[sidx,i]), end=" ")
             print("")
+        print("DEBUG: self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
+        print("DEBUG: Found %d descriptor names." % (len(self.descriptor_names)))
+
+        if len(self.descriptor_names) != self.descriptor_values.shape[1] -1:    # the '-1' is because the subject ID is part of the values
+            print("Mismatch between descriptor names and values.")
+            sys.exit(1)
+
+    def check_for_parcellation_stats_files(self, atlas_list):
+        for atlas in atlas_list:
+            parts = ['stats', "%s.stats" % (atlas)]
+            self.check_for_hemi_dependent_file(parts, self.hemis)
+
+    def check_for_segmentation_stats_files(self, segmentation_list):
+        for seg in segmentation_list:
+            parts = ['stats', "%s.stats" % (seg)]
+            self.check_for_hemi_independent_file(parts)
 
 
-    def add_segmentation_stats(self):
+    def check_for_hemi_independent_file(self, parts):
+        ok = []
+        missing = []
+        for subject_id in self.subjects_list:
+            sfile = os.path.join(self.subjects_dir, subject_id, *parts)
+            self._assign_file_state(sfile, ok, missing)
+        self._report_on_file(sfile, ok, missing)
+
+
+    def check_for_hemi_dependent_file(self, parts, hemi):
+        if len(parts) == 0:
+            return
+        ok = []
+        missing = []
+        for hemi in self.hemis:
+            hemi_parts = parts.copy()
+            hemi_parts[-1] = "%s.%s" % (hemi, hemi_parts[-1])
+            for subject_id in self.subjects_list:
+                sfile = os.path.join(self.subjects_dir, subject_id, *hemi_parts)
+                self._assign_file_state(sfile, ok, missing)
+            self._report_on_file(sfile, ok, missing)
+
+
+    def _assign_file_state(self, sfile, ok, missing):
+        if os.path.isfile(sfile):
+            ok.append(sfile)
+        else:
+            missing.append(sfile)
+
+    def _report_on_file(self, sfile, ok, missing):
+        print("%d MISSING, %d OK for file '%s'" % (len(missing), len(ok), sfile))
+
+
+
+    def add_segmentation_stats(self, segmentation_list):
         """
         Add brain parcellation stats.
 
         Add brain parcellation stats. This add the data from the stats/aseg.stats file.
         """
-        self.add_single_segmentation_stats('aseg')
+        for seg in segmentation_list:
+            self.add_single_segmentation_stats(seg)
 
 
     def add_curv_stats(self):
@@ -114,7 +163,6 @@ class BrainDescriptors:
             all_subject_data_this_hemi = None
             for subject_id in self.subjects_list:
                 curv_stat_names, curv_stat_values = brainload.stats.parse_curve_stats(subject_id, self.subjects_dir, hemi)
-                print("curv_stat_values has shape %s" % str(curv_stat_values.shape))
                 if all_subject_data_this_hemi is None:
                     all_subject_data_this_hemi = curv_stat_values
                 else:
