@@ -756,3 +756,52 @@ def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for
     for row_index, row_name in enumerate(row_names):
         res[row_name] = extract_field_from_table_data(column_name_of_values, row_index, all_subjects_table_data_dict, dtype=dtype)
     return res
+
+
+def parse_curve_stats(subject_id, subjects_dir, hemi):
+    if hemi not in ('lh', 'rh'):
+        raise ValueError("ERROR: hemi must be one of {'lh', 'rh'} but is '%s'." % hemi)
+    curv_file = os.path.join(subjects_dir, subject_id, 'stats', "%s.curv.stats" % (hemi))
+    names, values = parse_curve_stats_file(curv_file)
+    hemi_tag = "%s_" % (hemi)
+    names = [hemi_tag + s for n in names]
+    return names, values
+
+
+def parse_curve_stats_file(curv_file):
+    """
+    Parse curv.stats files.
+
+    Parse files stats/lh.curv.stats or stats/rh.curv.stats. Return all values and their names.
+    """
+    lines = nit._read_text_file_lines(curv_name)
+    names = []
+    values = []
+    current_block = None
+    for lidx, line in enumerate(lines):
+        if line.starts_with("curv") and "(" in line:
+            names.append(line.split("--")[1].split("(")[0].strip().replace(" ", "_"))
+            values.append(float(line.split(":")[1].strip()))
+        elif not line:      # empty string
+            current_block = None
+        elif '<mean> +- <std> (using ' in line:
+            block_curv_measure = line.split()[0]
+            block_file_name = line.split("'")[1]
+            current_block = (block_curv_measure, block_file_name)
+            measure_part = line.split(":")[1].strip()
+            names.append("%s_%s_mean" % (block_curv_measure, block_file_name))
+            values.append(float(measure_part.split(0)))
+            names.append("%s_%s_stddev" % (block_curv_measure, block_file_name))
+            values.append(float(measure_part.split(2)))
+        elif current_block is not None and line.starts_with(current_block[0]):
+            name = line.split(":")[0].strip().replace(" ", "_")
+            measure_part = line.split(":")[1].strip()
+            try:
+                measure_value = float(measure_part.split()[0])
+                names.append(name)
+                values.append(measure_value)
+            except ValueError:
+                pass
+        else:
+            pass
+    return names, np.array(values)

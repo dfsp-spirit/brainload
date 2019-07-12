@@ -102,6 +102,19 @@ class BrainDescriptors:
         self.add_single_segmentation_stats('aseg')
 
 
+    def add_curv_stats(self):
+        """
+        Add surface curvature stats.
+
+        Add brain surface curvature stats. This add the data from the stats/?h.curv.stats files.
+        """
+        for subject_id in self.subjects_list:
+            for hemi in self.hemis:
+                curv_stat_names, curv_stat_values = brainload.stats.parse_curve_stats(subject_id, subjects_dir, hemi)
+                self.descriptor_values = np.hstack((self.descriptor_values, np.expand_dims(curv_stat_values, axis=1)))
+                self.descriptor_names.append(curv_stat_names)
+
+
     def add_single_segmentation_stats(self, atlas):
         """
         Add brain parcellation stats.
