@@ -764,7 +764,7 @@ def parse_curve_stats(subject_id, subjects_dir, hemi):
     curv_file = os.path.join(subjects_dir, subject_id, 'stats', "%s.curv.stats" % (hemi))
     names, values = parse_curve_stats_file(curv_file)
     hemi_tag = "%s_" % (hemi)
-    names = [hemi_tag + s for n in names]
+    names = [hemi_tag + n for n in names]
     return names, values
 
 
@@ -774,12 +774,12 @@ def parse_curve_stats_file(curv_file):
 
     Parse files stats/lh.curv.stats or stats/rh.curv.stats. Return all values and their names.
     """
-    lines = nit._read_text_file_lines(curv_name)
+    lines = nit._read_text_file_lines(curv_file)
     names = []
     values = []
     current_block = None
     for lidx, line in enumerate(lines):
-        if line.starts_with("curv") and "(" in line:
+        if line.startswith("curv") and "(" in line:
             names.append(line.split("--")[1].split("(")[0].strip().replace(" ", "_"))
             values.append(float(line.split(":")[1].strip()))
         elif not line:      # empty string
@@ -790,10 +790,10 @@ def parse_curve_stats_file(curv_file):
             current_block = (block_curv_measure, block_file_name)
             measure_part = line.split(":")[1].strip()
             names.append("%s_%s_mean" % (block_curv_measure, block_file_name))
-            values.append(float(measure_part.split(0)))
+            values.append(float(measure_part.split()[0]))
             names.append("%s_%s_stddev" % (block_curv_measure, block_file_name))
-            values.append(float(measure_part.split(2)))
-        elif current_block is not None and line.starts_with(current_block[0]):
+            values.append(float(measure_part.split()[2]))
+        elif current_block is not None and line.startswith(current_block[0]):
             name = line.split(":")[0].strip().replace(" ", "_")
             measure_part = line.split(":")[1].strip()
             try:

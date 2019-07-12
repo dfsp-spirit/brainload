@@ -4,7 +4,7 @@ Collect various brain descriptors.
 Functions to collect brain descriptors from neuroimaging data preprocessed with FreeSurfer.
 """
 
-import os
+import os, sys
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import brainload.nitools as nit
@@ -75,6 +75,7 @@ class BrainDescriptors:
         self.add_parcellation_stats(['aparc', 'aparc.a2009s'])
         self.add_segmentation_stats()
         self.add_custom_measure_stats(['aparc'], ['area'])
+        self.add_curv_stats()
 
 
     def report_descriptors(self):
@@ -83,6 +84,7 @@ class BrainDescriptors:
 
         if len(self.descriptor_names) != self.descriptor_values.shape[1] -1:    # the '-1' is because the subject ID is part of the
             print("Mismatch between descriptor names and values.")
+            sys.exit(1)
 
         print("---------------------------------------------------------------------")
         print("subject_id " + " ".join(self.descriptor_names))
@@ -108,11 +110,17 @@ class BrainDescriptors:
 
         Add brain surface curvature stats. This add the data from the stats/?h.curv.stats files.
         """
-        for subject_id in self.subjects_list:
-            for hemi in self.hemis:
-                curv_stat_names, curv_stat_values = brainload.stats.parse_curve_stats(subject_id, subjects_dir, hemi)
-                self.descriptor_values = np.hstack((self.descriptor_values, np.expand_dims(curv_stat_values, axis=1)))
-                self.descriptor_names.append(curv_stat_names)
+        for hemi in self.hemis:
+            all_subject_data_this_hemi = None
+            for subject_id in self.subjects_list:
+                curv_stat_names, curv_stat_values = brainload.stats.parse_curve_stats(subject_id, self.subjects_dir, hemi)
+                print("curv_stat_values has shape %s" % str(curv_stat_values.shape))
+                if all_subject_data_this_hemi is None:
+                    all_subject_data_this_hemi = curv_stat_values
+                else:
+                    all_subject_data_this_hemi = np.vstack((all_subject_data_this_hemi, curv_stat_values))
+            self.descriptor_values = np.hstack((self.descriptor_values, all_subject_data_this_hemi))
+            self.descriptor_names.extend(curv_stat_names)
 
 
     def add_single_segmentation_stats(self, atlas):
