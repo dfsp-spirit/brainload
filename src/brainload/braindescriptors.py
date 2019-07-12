@@ -77,8 +77,12 @@ class BrainDescriptors:
         self.add_custom_measure_stats(['aparc'], ['area'])
         self.add_curv_stats()
 
-        self.check_for_segmentation_stats_files(['aseg', 'wmparc'])
         self.check_for_parcellation_stats_files(['aparc', 'aparc.a2009s'])
+        self.check_for_segmentation_stats_files(['aseg', 'wmparc'])
+
+
+    def check_for_custom_measure_stats_files(self, annot_list, morph_list):
+        pass
 
     def report_descriptors(self):
         pass
@@ -101,7 +105,7 @@ class BrainDescriptors:
     def check_for_parcellation_stats_files(self, atlas_list):
         for atlas in atlas_list:
             parts = ['stats', "%s.stats" % (atlas)]
-            self.check_for_hemi_dependent_file(parts, self.hemis)
+            self.check_for_hemi_dependent_file(parts)
 
     def check_for_segmentation_stats_files(self, segmentation_list):
         for seg in segmentation_list:
@@ -118,7 +122,13 @@ class BrainDescriptors:
         self._report_on_file(sfile, ok, missing)
 
 
-    def check_for_hemi_dependent_file(self, parts, hemi):
+    def check_for_hemi_dependent_file(self, parts):
+        """
+        Checks for the existence of a file that has an lh and an rh version.
+
+        parts: list of strings
+            Path to file, relative to the subject's directory. The last list element should be the file name (all other ones are directories). The last element must NOT contain the prefix "lh." or "rh.", as these will be added automatically.
+        """
         if len(parts) == 0:
             return
         ok = []
