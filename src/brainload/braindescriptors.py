@@ -79,15 +79,29 @@ class BrainDescriptors:
 
         self.check_for_parcellation_stats_files(['aparc', 'aparc.a2009s'])
         self.check_for_segmentation_stats_files(['aseg', 'wmparc'])
+        self.check_for_custom_measure_stats_files(['aparc'], ['area'])
+        self.check_for_curv_stats_files()
 
 
-    def check_for_custom_measure_stats_files(self, annot_list, morph_list):
-        pass
+    def check_for_custom_measure_stats_files(self, annot_list, morph_list, morph_file_format="curv"):
+        for annot in annot_list:
+            parts = ['label', "%s.annot" % (annot)]
+            self.check_for_hemi_dependent_file(parts)
+
+        if morph_file_format not in ('curv', 'mgh', 'mgz'):
+            raise ValueError("ERROR: morph_file_format must be one of {'curv', 'mgh', 'mgz'} but is '%s'." % morph_file_format)
+
+        if morph_file_format == "curv":
+            morph_file_ext = ""
+        else:
+            morph_file_ext = ".%s" % (morph_file_format)
+
+        for morphometry_measure in morph_list:
+            parts = ['surf', "%s%s" % (morphometry_measure, morph_file_ext)]
+            self.check_for_hemi_dependent_file(parts)
+
 
     def report_descriptors(self):
-        pass
-
-    def report_descriptors2(self):
         print("---------------------------------------------------------------------")
         print("subject_id " + " ".join(self.descriptor_names))
         for sidx, subject_id in enumerate(self.subjects_list):
@@ -113,6 +127,11 @@ class BrainDescriptors:
             self.check_for_hemi_independent_file(parts)
 
 
+    def check_for_curv_stats_files(self):
+        parts = ['stats', "curv.stats"]
+        self.check_for_hemi_dependent_file(parts)
+
+
     def check_for_hemi_independent_file(self, parts):
         ok = []
         missing = []
@@ -131,9 +150,9 @@ class BrainDescriptors:
         """
         if len(parts) == 0:
             return
-        ok = []
-        missing = []
         for hemi in self.hemis:
+            ok = []
+            missing = []
             hemi_parts = parts.copy()
             hemi_parts[-1] = "%s.%s" % (hemi, hemi_parts[-1])
             for subject_id in self.subjects_list:
