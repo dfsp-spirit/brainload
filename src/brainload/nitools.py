@@ -278,8 +278,14 @@ def write_lines_to_text_file(lines, file_name, line_sep="\n"):
             f.write("%s%s" % (l, line_sep))
 
 
+def write_subjects_file(file_name, subjects_list):
+    lines = ["%s" % (s) for s in subjects_list]
+    write_lines_to_text_file(lines, file_name)
+
+
 def load_vertex_indices(vertex_indices_file):
     return np.loadtxt(vertex_indices_file, dtype=np.uint32, delimiter=",")
+
 
 def save_vertex_indices(vertex_indices_file, vertex_indices):
     np.savetxt(vertex_indices_file, vertex_indices, delimiter=",")

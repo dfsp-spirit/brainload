@@ -237,3 +237,29 @@ class BrainDescriptors:
                 all_subjects_data = np.vstack((all_subjects_data, am_descriptor_data))
         self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_data))
         self.descriptor_names.extend(am_descriptor_names)
+
+
+    def save(self, stats_file, subjects_file=None):
+        """
+        Save the descriptors to files.
+
+        Save the descriptors to text files in CSV format.
+
+        Parameters
+        ----------
+
+        stats_file: string
+            Path and file name for the CSV file that will hold the descriptor data.
+
+        subjects_file: string, optional
+            Path a filename of a text file. If given, the subject IDs will be written to this file, one per line. The order of the subjects matches the order of the data in the stats_file.
+
+        Examples
+        --------
+        >>> bd.save("braindescriptors.csv", subjects_file="subjects.txt")
+        """
+        if subjects_file is not None:
+            nit.write_subjects_file(subjects_file, self.subjects_list)
+
+        delim=","
+        np.savetxt(stats_file, self.descriptor_values, delimiter=delim, header=delim.join(self.descriptor_names))
