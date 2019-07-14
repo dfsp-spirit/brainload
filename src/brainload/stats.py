@@ -15,7 +15,7 @@ import os
 import numpy as np
 import brainload.nitools as nit
 import brainload.annotations
-
+import logging
 
 
 def stat(file_name):
@@ -460,6 +460,9 @@ def _stats_table_dict(all_subjects_table_data, table_data_dict):
             new_data = table_data_dict[key]   # a column array
             if key in all_subjects_table_data:
                 existing_data = all_subjects_table_data[key]
+                if existing_data.shape[1] != new_data.shape[0]:
+                    logging.warn("key=%s: Shape mismatch: Existing data for subjects had %d regions, but data for current subject only contains %d. Setting NaN values for subject." % (key, existing_data.shape[1], new_data.shape[0]))
+                    new_data = np.full((existing_data.shape[1],), np.nan)
                 updated_data = np.vstack((existing_data, new_data))
                 all_subjects_table_data[key] = updated_data
             else:
@@ -511,6 +514,7 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
     all_subjects_measures_dict = None
     all_subjects_table_data_dict = None
     for subject in subjects_list:
+        logging.info("Group stats: handling stats file '%s' for subject '%s'." % (stats_file_name, subject))
         stats_file = os.path.join(subjects_dir, subject, 'stats', stats_file_name)
         stats = stat(stats_file)
         # Handle measures
@@ -529,6 +533,7 @@ def stats_table_region_label_column_name():
     Returns the name of the column that contains the region names for the table in stats files. The name is identical for all standard Freesurfer parcellation and segmentation stats files (aseg.stats, ?h.aparc.stats, ?h.aparc.a2009s.stats, and ?h.aparc.DKTatlas.stats), so the current version returns a fixed string.
     """
     return "StructName"
+
 
 def group_stats_aseg(subjects_list, subjects_dir):
     return group_stats(subjects_list, subjects_dir, 'aseg.stats', stats_table_type_list=typelist_for_aseg_stats())

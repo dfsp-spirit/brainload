@@ -9,6 +9,7 @@ import numpy as np
 import nibabel.freesurfer.io as fsio
 import brainload.nitools as nit
 import brainload.freesurferdata as fsd
+import logging
 
 
 class AnnotQuery:
@@ -407,6 +408,7 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     if meta_data is None:
         meta_data = {}
 
+    logging.info("Reading annotation file '%s'." % (annotation_file))
     vertex_label_colors, label_colors, label_names = fsio.read_annot(annotation_file, orig_ids=orig_ids)
 
     label_file = hemisphere_label + '.annotation_file'
