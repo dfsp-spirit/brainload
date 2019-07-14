@@ -225,7 +225,15 @@ class BrainDescriptors:
 
 
     def _add_custom_measure_stats_single(self, atlas, measure, hemi):
+        all_subjects_data = None
         for subject_id in self.subjects_list:
             morphometry_data, morphometry_meta_data = brainload.freesurferdata.subject_data_native(subject_id, self.subjects_dir, measure, hemi)
             region_data_per_hemi, label_names = brainload.annotations.region_data_native(subject_id, self.subjects_dir, atlas, hemi, morphometry_data, morphometry_meta_data)
-            # TODO: compute descriptive stats
+            am_descriptor_data, am_descriptor_names = brainload.annotations.region_stats(region_data_per_hemi, label_names)
+            am_descriptor_names = ["%s_%s_%s" % (atlas, measure, n) for n in am_descriptor_names]
+            if all_subjects_data is None:
+                all_subjects_data = am_descriptor_data
+            else:
+                all_subjects_data = np.vstack((all_subjects_data, am_descriptor_data))
+        self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_data))
+        self.descriptor_names.extend(am_descriptor_names)
