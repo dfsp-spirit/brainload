@@ -20,7 +20,7 @@ class BrainDescriptors:
         self.subjects_dir = subjects_dir
         self.subjects_list = subjects_list
         self.descriptor_names = []
-        self.descriptor_values = np.zeros((len(self.subjects_list), 1))
+        self.descriptor_values = np.zeros((len(self.subjects_list), 0))
 
         if hemi not in ('lh', 'rh', 'both'):
             raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
