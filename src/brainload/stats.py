@@ -435,7 +435,7 @@ def _stats_measures_dict(measures_dict, numpy_measures, measure_name_tuples):
         return _append_stats_measures_to_dict(measures_dict, numpy_measures, measure_name_tuples)
 
 
-def _stats_table_dict(all_subjects_table_data, table_data_dict):
+def _stats_table_dict(all_subjects_table_data, table_data_dict, subject_label=None):
     """
     Append the data for a single subject to the data for all subjects).
 
@@ -449,24 +449,36 @@ def _stats_table_dict(all_subjects_table_data, table_data_dict):
     table_data_dict:
         The data for a single subject. Dictionary of string (column name) to array with n values for 1 subject, so the shape is (1, n).
 
+    subject_label: str or None, optional
+        The subject id for this data. Only used is log output if available, optional. Defaults to None.
+
     Returns
     -------
     The merged data for all subjects, including the new data from table_data_dict. All the arrays are 2D arrays.
     """
+    if subject_label is None:
+        subject_label = ""
+    else:
+        subject_label = " '%s'" % (subject_label)
+
+    data_mismatch = False
+
     if all_subjects_table_data is None:
         return _make_dict_arrays_2D(table_data_dict)
     else:
-        for key in table_data_dict:
-            new_data = table_data_dict[key]   # a column array
-            if key in all_subjects_table_data:
-                existing_data = all_subjects_table_data[key]
+        for column_name in table_data_dict:
+            new_data = table_data_dict[column_name]   # a column array
+            if column_name in all_subjects_table_data:
+                existing_data = all_subjects_table_data[column_name]
                 if existing_data.shape[1] != new_data.shape[0]:
-                    logging.warn("key=%s: Shape mismatch: Existing data for subjects had %d regions, but data for current subject only contains %d. Setting NaN values for subject." % (key, existing_data.shape[1], new_data.shape[0]))
+                    data_mismatch = (existing_data.shape[1], new_data.shape[0])
                     new_data = np.full((existing_data.shape[1],), np.nan)
                 updated_data = np.vstack((existing_data, new_data))
-                all_subjects_table_data[key] = updated_data
+                all_subjects_table_data[column_name] = updated_data
             else:
-                all_subjects_table_data[key] = new_data
+                all_subjects_table_data[column_name] = new_data
+    if data_mismatch:
+        logging.warn("Shape mismatch: Existing stats table data for subjects had %d regions, but data for current subject%s only contains %d. Setting NaN values for subject." % (data_mismatch[0], subject_label, data_mismatch[1]))
     return all_subjects_table_data
 
 
@@ -524,7 +536,7 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
         # Handle table data if possible (i.e., if stats_table_type_list was given)
         if stats_table_type_list is not None:
             table_data = stats_table_to_numpy(stats, stats_table_type_list)
-            all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data)
+            all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data, subject_label=subject)
     return all_subjects_measures_dict, all_subjects_table_data_dict
 
 

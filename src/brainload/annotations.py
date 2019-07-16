@@ -78,17 +78,17 @@ def get_atlas_region_names(annotation, subjects_dir, subject_id="fsaverage"):
     """
     Get the region names of the label for an annotation from the annot file of a subject.
     """
-    annotation_file_lh = os.path.join(subjects_dir, subject_id, 'annot', "lh.%s.annot" % (annotation))
-    annotation_file_rh = os.path.join(subjects_dir, subject_id, 'annot', "rh.%s.annot" % (annotation))
+    annotation_file_lh = os.path.join(subjects_dir, subject_id, 'label', "lh.%s.annot" % (annotation))
+    annotation_file_rh = os.path.join(subjects_dir, subject_id, 'label', "rh.%s.annot" % (annotation))
 
     if os.path.isfile(annotation_file_lh):
-        vertex_labels, label_colors, label_names, meta_data = bl.annot(subject_id, subjects_dir, annotation, hemi='lh')
+        vertex_labels, label_colors, label_names, meta_data = annot(subject_id, subjects_dir, annotation, hemi='lh')
         return label_names
     elif os.path.isfile(annotation_file_rh):
-        vertex_labels, label_colors, label_names, meta_data = bl.annot(subject_id, subjects_dir, annotation, hemi='rh')
+        vertex_labels, label_colors, label_names, meta_data = annot(subject_id, subjects_dir, annotation, hemi='rh')
         return label_names
     else:
-        raise None
+        return None
 
 
 
@@ -207,25 +207,21 @@ def region_stats(region_data_per_hemi, label_names):
     Compute descriptive stats for all regions. Return as 2D matrix.
     """
     nan = float('nan')
-    num_hemis = len(region_data_per_hemi)
     descriptor_names = []
     descriptor_data = []
     base_stat_names = ["min", "max", "mean", "std", "median", "25perc", "75perc"]
     for hemi in region_data_per_hemi:
         for region in label_names:
-            rd = region_data_per_hemi[hemi][region]
             try:
+                rd = region_data_per_hemi[hemi][region]
                 desc_stats = [np.nanmin(rd), np.nanmax(rd), np.nanmean(rd), np.nanstd(rd), np.nanmedian(rd), np.percentile(rd, 25), np.nanpercentile(rd, 75)]
-            except ValueError:  # raised on empty array
+            except (ValueError, KeyError):  # raised on empty array or if there is no data on that region
                 desc_stats = [nan] * 7
             descriptor_data.extend(desc_stats)
             descriptor_names_this_hemi_and_region = ["%s_%s_%s" % (hemi, region, n) for n in base_stat_names]
             descriptor_names.extend(descriptor_names_this_hemi_and_region)
     return np.array(descriptor_data), descriptor_names
 
-
-
-    #if len(region_data_per_hemi)
 
 def region_data_native(subject_id, subjects_dir, annotation, hemi, morphometry_data, morphometry_meta_data):
     """

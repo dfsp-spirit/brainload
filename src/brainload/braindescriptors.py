@@ -21,6 +21,7 @@ class BrainDescriptors:
         self.subjects_list = subjects_list
         self.descriptor_names = []
         self.descriptor_values = np.zeros((len(self.subjects_list), 0))
+        self.fail_on_missing_files = False
 
         if hemi not in ('lh', 'rh', 'both'):
             raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -44,8 +45,13 @@ class BrainDescriptors:
         """
         all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats(self.subjects_list, self.subjects_dir, '%s.%s.stats' % (hemi, atlas), stats_table_type_list=brainload.stats.typelist_for_aparc_atlas_stats())
 
+        # Add a prefix for the atlas and hemi to the keys in the dictionary, as these will become descriptor names (which should be unique).
+        for key in all_subjects_measures_dict.keys():
+            new_key = "%s_%s_%s" % (hemi, atlas, key)
+            all_subjects_measures_dict[new_key] = all_subjects_measures_dict.pop(key)
+
         self._add_measure_dict_stats(all_subjects_measures_dict, atlas)
-        self._add_all_subjects_table_data_stats(all_subjects_table_data_dict, atlas)
+        self._add_all_subjects_table_data_stats(all_subjects_table_data_dict, atlas, hemi_tag=hemi)
 
 
     def _add_measure_dict_stats(self, all_subjects_measures_dict, atlas):
@@ -54,7 +60,13 @@ class BrainDescriptors:
             self.descriptor_values = np.hstack((self.descriptor_values, np.expand_dims(measure_data_all_subjects, axis=1)))
             self.descriptor_names.append("stats_%s_measure_%s" % (atlas, measure_unique_name))
 
-    def _add_all_subjects_table_data_stats(self, all_subjects_table_data_dict, atlas, ignore_columns=None):
+    def _add_all_subjects_table_data_stats(self, all_subjects_table_data_dict, atlas, ignore_columns=None, hemi_tag=None):
+
+        if hemi_tag is None:
+            hemi_tag = ""
+        else:
+            hemi_tag = "%s_" % (hemi_tag)
+
         if ignore_columns is None:
             ignore_columns = []
         region_colum_name = brainload.stats.stats_table_region_label_column_name()
@@ -65,7 +77,7 @@ class BrainDescriptors:
                 all_subjects_all_region_data = all_subjects_table_data_dict[table_column_name]
                 self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_all_region_data))
                 for region_name in region_names:
-                    self.descriptor_names.append("stats_%s_table_%s_%s" % (atlas, table_column_name, region_name))
+                    self.descriptor_names.append("%sstats_%s_table_%s_%s" % (hemi_tag, atlas, table_column_name, region_name))
 
 
     def add_standard_stats(self):
@@ -112,8 +124,8 @@ class BrainDescriptors:
         print("DEBUG: self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
         print("DEBUG: Found %d descriptor names." % (len(self.descriptor_names)))
 
-        if len(self.descriptor_names) != self.descriptor_values.shape[1] -1:    # the '-1' is because the subject ID is part of the values
-            print("Mismatch between descriptor names and values.")
+        if len(self.descriptor_names) != self.descriptor_values.shape[1]:
+            print("ERROR: Mismatch between descriptor names and values. Exiting.")
             sys.exit(1)
 
     def check_for_parcellation_stats_files(self, atlas_list):
@@ -226,9 +238,17 @@ class BrainDescriptors:
 
     def _add_custom_measure_stats_single(self, atlas, measure, hemi):
         all_subjects_data = None
+        label_name_subject = "fsaverage"
+        label_names = brainload.annotations.get_atlas_region_names(atlas, self.subjects_dir, subject_id=label_name_subject)
+        if label_names is None:
+            raise ValueError("Loading region names for atlas '%s' failed, tried reading from annot file for subject '%s' in subjects directory '%s'." % (atlas, label_name_subject, self.subjects_dir))
         for subject_id in self.subjects_list:
             morphometry_data, morphometry_meta_data = brainload.freesurferdata.subject_data_native(subject_id, self.subjects_dir, measure, hemi)
-            region_data_per_hemi, label_names = brainload.annotations.region_data_native(subject_id, self.subjects_dir, atlas, hemi, morphometry_data, morphometry_meta_data)
+            try:
+                region_data_per_hemi, _ = brainload.annotations.region_data_native(subject_id, self.subjects_dir, atlas, hemi, morphometry_data, morphometry_meta_data)
+            except Exception as e:
+                region_data_per_hemi = dict()
+                region_data_per_hemi[hemi] = dict()
             am_descriptor_data, am_descriptor_names = brainload.annotations.region_stats(region_data_per_hemi, label_names)
             am_descriptor_names = ["%s_%s_%s" % (atlas, measure, n) for n in am_descriptor_names]
             if all_subjects_data is None:
