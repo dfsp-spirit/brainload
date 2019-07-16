@@ -74,6 +74,24 @@ class AnnotQuery:
         return colors
 
 
+def get_atlas_region_names(annotation, subjects_dir, subject_id="fsaverage"):
+    """
+    Get the region names of the label for an annotation from the annot file of a subject.
+    """
+    annotation_file_lh = os.path.join(subjects_dir, subject_id, 'annot', "lh.%s.annot" % (annotation))
+    annotation_file_rh = os.path.join(subjects_dir, subject_id, 'annot', "rh.%s.annot" % (annotation))
+
+    if os.path.isfile(annotation_file_lh):
+        vertex_labels, label_colors, label_names, meta_data = bl.annot(subject_id, subjects_dir, annotation, hemi='lh')
+        return label_names
+    elif os.path.isfile(annotation_file_rh):
+        vertex_labels, label_colors, label_names, meta_data = bl.annot(subject_id, subjects_dir, annotation, hemi='rh')
+        return label_names
+    else:
+        raise None
+
+
+
 def annot(subject_id, subjects_dir, annotation, hemi="both", meta_data=None, orig_ids=False):
     """
     Load annotation for the mesh vertices of a single subject.
