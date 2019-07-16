@@ -32,6 +32,16 @@ class BrainDescriptors:
 
 
     def add_parcellation_stats(self, atlas_list):
+        """
+        Add brain parcellation stats.
+
+        Add brain parcellation stats for a list of atlases, i.e., annotation files.
+
+        Parameters
+        ----------
+        atlas_list: list of strings
+            The atlas names. E.g., ```['aparc', 'aparc.a2009s']```.
+        """
         for hemi in self.hemis:
             for atlas in atlas_list:
                 self._add_single_parcellation_stats(atlas, hemi)
@@ -41,14 +51,24 @@ class BrainDescriptors:
         """
         Add brain parcellation atlas stats.
 
-        Add brain parcellation atlas stats, e.g., 'aparc' for stats/?h.aparc.annot. (Note that this function is not for segmentation stats like aseg.)
+        Compute and add brain parcellation atlas stats for one hemisphere for all subjects, e.g., 'aparc' for stats/?h.aparc.annot. (Note that this function is not for segmentation stats like aseg.)
+
+        Parameters
+        ----------
+        atlas: string
+            The atlas name, e.g., 'aparc' for the annotation file 'stats/?h.aparc.annot'.
+
+        hemi: string, one if 'lh' or 'rh'
+            The hemisphere.
         """
         all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats(self.subjects_list, self.subjects_dir, '%s.%s.stats' % (hemi, atlas), stats_table_type_list=brainload.stats.typelist_for_aparc_atlas_stats())
 
         # Add a prefix for the atlas and hemi to the keys in the dictionary, as these will become descriptor names (which should be unique).
-        for key in all_subjects_measures_dict.keys():
+        all_subjects_measures_dict_new = dict()
+        for key in all_subjects_measures_dict:
             new_key = "%s_%s_%s" % (hemi, atlas, key)
-            all_subjects_measures_dict[new_key] = all_subjects_measures_dict.pop(key)
+            all_subjects_measures_dict_new[new_key] = all_subjects_measures_dict[key]
+        all_subjects_measures_dict = all_subjects_measures_dict_new
 
         self._add_measure_dict_stats(all_subjects_measures_dict, atlas)
         self._add_all_subjects_table_data_stats(all_subjects_table_data_dict, atlas, hemi_tag=hemi)
@@ -82,7 +102,7 @@ class BrainDescriptors:
 
     def add_standard_stats(self):
         """
-        Convenience function to add all descriptors which are computed by default when running Freesurfer v6 recon-all on a subject. WARNING: In the current state, it only adds data we have available for testing.
+        Convenience function to add all descriptors which are computed by default when running Freesurfer v6 recon-all on a subject.
         """
         self.add_parcellation_stats(['aparc', 'aparc.a2009s'])
         self.add_segmentation_stats(['aseg', 'wmparc'])
