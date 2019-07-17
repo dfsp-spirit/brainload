@@ -134,19 +134,21 @@ class BrainDescriptors:
 
 
     def report_descriptors(self):
-        print("---------------------------------------------------------------------")
+        """
+        Print some information on descriptors to stdout.
+        """
         print("subject_id " + " ".join(self.descriptor_names))
         for sidx, subject_id in enumerate(self.subjects_list):
             print("%s " % (subject_id), end="")
             for i in range(len(self.descriptor_names)):
                 print("%.2f" % (self.descriptor_values[sidx,i]), end=" ")
             print("")
-        print("DEBUG: self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
-        print("DEBUG: Found %d descriptor names." % (len(self.descriptor_names)))
+        logging.debug("self.descriptor_values has shape %s" % (str(self.descriptor_values.shape)))
+        logging.debug("Found %d descriptor names." % (len(self.descriptor_names)))
 
         if len(self.descriptor_names) != self.descriptor_values.shape[1]:
-            print("ERROR: Mismatch between descriptor names and values. Exiting.")
-            sys.exit(1)
+            logging.error("Mismatch between number of descriptor names and values.")
+
 
     def check_for_parcellation_stats_files(self, atlas_list):
         for atlas in atlas_list:
@@ -175,8 +177,12 @@ class BrainDescriptors:
 
     def check_for_hemi_dependent_file(self, parts):
         """
-        Checks for the existence of a file that has an lh and an rh version.
+        Check for hemi-dependent file.
 
+        Check for the existence of a file that has an lh and an rh version.
+
+        Parameters
+        ----------
         parts: list of strings
             Path to file, relative to the subject's directory. The last list element should be the file name (all other ones are directories). The last element must NOT contain the prefix "lh." or "rh.", as these will be added automatically.
         """
@@ -194,12 +200,21 @@ class BrainDescriptors:
 
 
     def _assign_file_state(self, sfile, ok, missing):
+        """
+        Assign file to dict.
+        
+        Assign the file to one of the two given dictionaries, depending on whether or not it exists.
+        """
         if os.path.isfile(sfile):
             ok.append(sfile)
         else:
             missing.append(sfile)
 
+
     def _report_on_file(self, sfile, ok, missing):
+        """
+        Print the number of missing and the number of OK instances of the file over all subjects.
+        """
         print("%d MISSING, %d OK for file '%s'" % (len(missing), len(ok), sfile))
 
 
