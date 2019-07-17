@@ -288,10 +288,11 @@ Create a new dir for the release, copy the old `meta.yaml` file in there. Create
 mkdir ${NEW_RELEASE}
 cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the **last** release
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
-CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi tmp_brainload --version ${NEW_VERSION}
+# Before running the next command, delete the directory REPO_ROOT/develop/anaconda_dist/recipe/brainload in case it exists
+CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
 ```
 
-This created a new skeleton file at  `REPO_ROOT/develop/anaconda_dist/recipe/tmp_brainload/meta.yaml`. Open the file in a text editor and copy the file hash of the pypi release from there (see the sha256 line). This is the only reason why we need the file.
+This created a new skeleton file at  `REPO_ROOT/develop/anaconda_dist/recipe/brainload/meta.yaml`. Open the file in a text editor and copy the file hash of the pypi release from there (see the sha256 line). This is the only reason why we need the file.
 
 ```console
 vim ${NEW_RELEASE}/meta.yaml         # Update the version at the top AND paste the hash in here. Save and you have a new recipe.
