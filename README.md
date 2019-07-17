@@ -1,7 +1,7 @@
 # brainload
 Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.
 
-This is my personal collection of Python/numpy functions for (structural) neuroimaging. It's free software under the MIT license.
+This is my personal collection of Python/numpy functions for (structural) neuroimaging. It's [free software](https://www.gnu.org/philosophy/free-sw.en.html) published under the MIT license.
 
 ## About
 
