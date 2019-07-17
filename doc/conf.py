@@ -24,13 +24,13 @@ sys.path.insert(0, src_path)
 # -- Project information -----------------------------------------------------
 
 project = u'brainload'
-copyright = u'2018, Tim Schäfer'
+copyright = u'2018-2019, Tim Schäfer'
 author = u'Tim Schäfer'
 
 # The short X.Y version
-version = u'0.3.3'
+version = u'0.3.4'
 # The full version, including alpha/beta/rc tags
-release = u'v0.3.3'
+release = u'v0.3.4'
 
 
 # -- General configuration ---------------------------------------------------
