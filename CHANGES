@@ -1,8 +1,8 @@
 Brainload Changes
 =================
 
-Version 0.3.4 (WIP)
---------------
+Version 0.3.4
+-------------
 - Added functions to get custom stats for a measure and atlas region
 - Added new convenience functions for loading subject data in native and standard space
 - Added BrainDescriptors class to quickly gather all brain descriptors for a complete dataset
