@@ -386,7 +386,7 @@ def stats_table_to_numpy_by_row(stat, type_list, subject_id, label_column_index=
     num_rows = numpy_string_matrix.shape[0]
     for row_index in range(num_rows):
         numpy_string_array_row = numpy_string_matrix[row_index,:]
-        region_name = str(numpy_string_array_row[label_column_index])    
+        region_name = str(numpy_string_array_row[label_column_index])
         row_values = []
 
         for column_index, cell_value in enumerate(numpy_string_array_row):
@@ -543,6 +543,11 @@ def _make_dict_arrays_2D(data_dict):
         new_data = np.array([existing_data])
         data_dict[key] = new_data
     return data_dict
+
+
+def get_stats_table_column_names(subjects_dir, stats_file_name, stats_table_type_list, subject='fsaverage'):
+    all_subjects_measures_dict, all_subjects_table_data_dict = group_stats([subject], subjects_dir, stats_file_name, stats_table_type_list=stats_table_type_list)
+    return [str(s) for s in all_subjects_table_data_dict]
 
 
 def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_list=None):

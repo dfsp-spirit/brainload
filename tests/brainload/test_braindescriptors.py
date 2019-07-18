@@ -28,24 +28,24 @@ def test_braindescriptors_parcellation_stats():
     bdi.add_segmentation_stats(['aseg'])
     bdi.add_custom_measure_stats(['aparc'], ['area'])
     bdi.add_curv_stats()
-    assert len(bdi.descriptor_names) == 2873
-    assert bdi.descriptor_values.shape == (2, 2873)
+    assert len(bdi.descriptor_names) == 3089
+    assert bdi.descriptor_values.shape == (2, 3089)
 
 
 def test_braindescriptors_add_standard_stats():
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.add_standard_stats()
-    assert len(bdi.descriptor_names) == 3210
-    assert bdi.descriptor_values.shape == (2, 3210)
+    assert len(bdi.descriptor_names) == 3426
+    assert bdi.descriptor_values.shape == (2, 3426)
 
 
 def test_braindescriptors_standard_stats_have_unique_names():
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.add_standard_stats()
-    assert len(bdi.descriptor_names) == 3210
-    assert bdi.descriptor_values.shape == (2, 3210)
+    assert len(bdi.descriptor_names) == 3426
+    assert bdi.descriptor_values.shape == (2, 3426)
     assert len(bdi.descriptor_names) == len(list(set(bdi.descriptor_names)))
 
 

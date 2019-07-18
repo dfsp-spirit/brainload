@@ -61,7 +61,11 @@ class BrainDescriptors:
         hemi: string, one if 'lh' or 'rh'
             The hemisphere.
         """
-        all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats(self.subjects_list, self.subjects_dir, '%s.%s.stats' % (hemi, atlas), stats_table_type_list=brainload.stats.typelist_for_aparc_atlas_stats())
+        stats_filename = '%s.%s.stats' % (hemi, atlas)
+        stats_table_type_list = brainload.stats.typelist_for_aparc_atlas_stats()
+        all_subjects_measures_dict, all_subjects_table_data_dict_by_region = brainload.stats.group_stats_by_row(self.subjects_list, self.subjects_dir, stats_filename, stats_table_type_list=stats_table_type_list)
+
+        table_column_names = brainload.stats.get_stats_table_column_names(self.subjects_dir, stats_filename, stats_table_type_list, subject=self.subjects_list[0])
 
         # Add a prefix for the atlas and hemi to the keys in the dictionary, as these will become descriptor names (which should be unique).
         all_subjects_measures_dict_new = dict()
@@ -71,7 +75,7 @@ class BrainDescriptors:
         all_subjects_measures_dict = all_subjects_measures_dict_new
 
         self._add_measure_dict_stats(all_subjects_measures_dict, atlas)
-        self._add_all_subjects_table_data_stats(all_subjects_table_data_dict, atlas, hemi_tag=hemi)
+        self._add_all_subjects_table_data_stats_by_region(all_subjects_table_data_dict_by_region, atlas, table_column_names, hemi_tag=hemi)
 
 
     def _add_measure_dict_stats(self, all_subjects_measures_dict, atlas):
@@ -80,8 +84,8 @@ class BrainDescriptors:
             self.descriptor_values = np.hstack((self.descriptor_values, np.expand_dims(measure_data_all_subjects, axis=1)))
             self.descriptor_names.append("stats_%s_measure_%s" % (atlas, measure_unique_name))
 
-    def _add_all_subjects_table_data_stats(self, all_subjects_table_data_dict, atlas, ignore_columns=None, hemi_tag=None):
 
+    def _add_all_subjects_table_data_stats(self, all_subjects_table_data_dict, atlas, ignore_columns=None, hemi_tag=None):
         if hemi_tag is None:
             hemi_tag = ""
         else:
@@ -98,6 +102,30 @@ class BrainDescriptors:
                 self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_all_region_data))
                 for region_name in region_names:
                     self.descriptor_names.append("%sstats_%s_table_%s_%s" % (hemi_tag, atlas, table_column_name, region_name))
+
+
+    def _add_all_subjects_table_data_stats_by_region(self, all_subjects_table_data_dict_by_region, atlas, table_column_names, hemi_tag=None):
+        if hemi_tag is None:
+            hemi_tag = ""
+        else:
+            hemi_tag = "%s_" % (hemi_tag)
+
+        num_columns = len(table_column_names)
+        num_regions = len(all_subjects_table_data_dict_by_region)
+
+        all_subjects_all_region_data = np.zeros((len(self.subjects_list), num_columns * num_regions))  # init empty only
+
+        for subject_index, subject_id in enumerate(self.subjects_list):
+            all_data_for_subject = []
+            for region_name in all_subjects_table_data_dict_by_region:
+                all_data_for_subject.extend(all_subjects_table_data_dict_by_region[region_name][subject_id])
+            all_subjects_all_region_data[subject_index,:] = np.array(all_data_for_subject)
+
+        self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_all_region_data))
+
+        for region_name in all_subjects_table_data_dict_by_region:
+            for table_column_name in table_column_names:
+                self.descriptor_names.append("%sstats_%s_table_%s_%s" % (hemi_tag, atlas, table_column_name, region_name))
 
 
     def add_standard_stats(self):
@@ -202,7 +230,7 @@ class BrainDescriptors:
     def _assign_file_state(self, sfile, ok, missing):
         """
         Assign file to dict.
-        
+
         Assign the file to one of the two given dictionaries, depending on whether or not it exists.
         """
         if os.path.isfile(sfile):
