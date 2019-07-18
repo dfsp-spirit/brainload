@@ -3,6 +3,7 @@ import pytest
 import warnings
 import brainload as bl
 import brainload.stats as st
+import brainload.annotations
 import numpy as np
 from numpy.testing import assert_allclose
 
@@ -485,6 +486,32 @@ def test_group_stats_aparc(capsys):
         assert name in all_subjects_table_data_dict
         column_data = all_subjects_table_data_dict[name]
         assert column_data.shape == (2, 34)  # 2 subjects, each has a table in lh.aparc.stats with 34 rows
+
+def test_group_stats_by_row(capsys):
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'aseg.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    with capsys.disabled():
+        all_subjects_measures_dict, all_subjects_table_data_dict_by_region = st.group_stats_by_row(subjects_list, TEST_DATA_DIR, 'aseg.stats', stats_table_type_list=st.typelist_for_aseg_stats())
+    assert len(all_subjects_measures_dict) == 22
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+
+    assert all_subjects_table_data_dict_by_region is not None
+    assert len(all_subjects_table_data_dict_by_region) == 45    # 45 regions in aseg.stats table
+
+    # the next row just lists of subset of the 45 regions so far.
+    expected_table_row_names_aseg = ['Left-Lateral-Ventricle', 'Left-Inf-Lat-Vent', 'Left-Cerebellum-White-Matter', 'Left-Cerebellum-Cortex', 'Left-Thalamus-Proper', 'Left-Caudate']
+    for name in expected_table_row_names_aseg:
+        assert name in all_subjects_table_data_dict_by_region
+        column_data_s1 = all_subjects_table_data_dict_by_region[name]['subject1']
+        column_data_s2 = all_subjects_table_data_dict_by_region[name]['subject2']
+        assert column_data_s1.shape == (10, )  # for 1 subject, each has a table in aseg.stats with 10 columns (Index SegId NVoxels Volume_mm3 StructName normMean normStdDev normMin normMax normRange)
+        assert column_data_s2.shape == (10, )  # for 1 subject, each has a table in aseg.stats with 10 columns
 
 
 def test_group_stats_aparc_a2009s(capsys):

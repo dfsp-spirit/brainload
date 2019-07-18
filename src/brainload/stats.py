@@ -344,15 +344,70 @@ def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
     return np_measures, measure_names
 
 
-def stats_table_to_numpy(stat, type_list):
+def stats_table_to_numpy_by_row(stat, type_list, subject_id, label_column_index=-1):
     """
-    Given types, convert the string matrix to a dictionary of numpy arrays.
+    Given types, convert the string matrix to a dictionary of numpy arrays (one for each table row, i.e., atlas region).
 
-    Given types, convert the string matrix to a dictionary of numpy arrays. The stat dictionary is returned by the stat function, and you have to specify a list of numpy types, one for each column, to convert this. The type list is specific for the file that has been parsed, i.e., it differs between asge.stats and lh.aparc.stats. Determine it by looking at the file data. See the `typelist_for_*` functions in this module for pre-defined type lists for commonly parsed FreeSurfer stats files.
+    Given types, convert the string matrix to a dictionary of numpy arrays (one for each table row, i.e., atlas region).
 
     Parameters
     ----------
-    stats: dictionary
+    stat: dictionary
+        The data returned by the stat() function. Must contain the keys 'table_data' (2D list of strings, dimension n x m for n rows with m columns each) and 'table_column_headers' (1D list of m strings).
+
+    type_list: list of numpy types for columns
+        List of numpy types with length m. Types must be listed in the order in which they should be applied to the columns.
+
+    subject_id: string
+        The subject id for the data.
+
+    label_column_index: int, optional
+        The index of the label column, i.e., the column that contains the values to be used as the key in the returned dictionary. Usually the index of the column named 'StructName'. Optional. Defaults to -1, which means that the first column of type string (according to the ```type_list``` argument) will be used.
+
+    Returns
+    -------
+    dictionary of string : numpy array
+        Each key is a row (i.e., atlas region) name, and each value is a numpy row array containing the data as np.floats with shape (n, ) for n data columns in the table for the subject. If the type of a column (as specified in the ```type_list``` argument) is NOT a subtype of np.number, the value is returned as NaN.
+    """
+    table = stat['table_data']
+    header = stat['table_column_headers']
+    if not (len(type_list) == len(header)):
+        raise ValueError('Length of type_list (%d) must match number of stat[table_column_headers] (%d).' % (len(type_list), len(header)))
+
+    if label_column_index == -1:
+        s = np.string_
+        if s in type_list:
+            label_column_index = type_list.index(s)
+        else:
+            raise ValueError("stats_table_to_numpy_by_row: No column of type np.string_ found in type_list. Must set label_column_index in this case.")
+
+    result = {}
+    numpy_string_matrix = np.array(table)
+    num_rows = numpy_string_matrix.shape[0]
+    for row_index in range(num_rows):
+        numpy_string_array_row = numpy_string_matrix[row_index,:]
+        region_name = str(numpy_string_array_row[label_column_index])    
+        row_values = []
+
+        for column_index, cell_value in enumerate(numpy_string_array_row):
+            if np.issubdtype(type_list[column_index], np.number):
+                row_values.append(float(cell_value))
+            else:
+                row_values.append(float('nan'))
+        result[region_name] = dict()
+        result[region_name][subject_id] = np.array(row_values)
+    return result
+
+
+def stats_table_to_numpy(stat, type_list):
+    """
+    Given types, convert the string matrix to a dictionary of numpy arrays (one for each table column).
+
+    Given types, convert the string matrix to a dictionary of numpy arrays (one for each table column). The stat dictionary is returned by the stat function, and you have to specify a list of numpy types, one for each column, to convert this. The type list is specific for the file that has been parsed, i.e., it differs between asge.stats and lh.aparc.stats. Determine it by looking at the file data. See the `typelist_for_*` functions in this module for pre-defined type lists for commonly parsed FreeSurfer stats files. Note that this function works by column, which is fine for a single subject, but may be problematic for group stats: the reason is that Freesurfer seems to omit regions from the stats file if the subject has no vertices which are assigned to that particular region. This means one cannot rely on all subjects having the same number of lines in the same stats file. It also means that if a subject does not contain the expected, full number of rows, the row number of a certain region differs by subject. This means parsing on a column-basis, like this function does it, does not work well for group stats. See the ```stats_table_to_numpy_by_row``` function for a solution.
+
+    Parameters
+    ----------
+    stat: dictionary
         The data returned by the stat() function. Must contain the keys 'table_data' (2D list of strings, dimension n x m for n rows with m columns each) and 'table_column_headers' (1D list of m strings).
 
     type_list: list of numpy types
@@ -494,7 +549,7 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
     """
     Retrieve stats for a group of subjects.
 
-    Retrieve stats for a group of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like stats_table_type_list.stats). This function does not care about hemispheres.
+    Retrieve stats for a group of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like stats_table_type_list.stats). This function does not care about hemispheres, it parses a file.
 
     Parameters
     ----------
@@ -535,9 +590,78 @@ def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_l
 
         # Handle table data if possible (i.e., if stats_table_type_list was given)
         if stats_table_type_list is not None:
-            table_data = stats_table_to_numpy(stats, stats_table_type_list)
-            all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data, subject_label=subject)
+            # by column (e.g., average thickness in region)
+            table_data_by_column = stats_table_to_numpy(stats, stats_table_type_list)
+            all_subjects_table_data_dict = _stats_table_dict(all_subjects_table_data_dict, table_data_by_column, subject_label=subject)
+
     return all_subjects_measures_dict, all_subjects_table_data_dict
+
+
+def group_stats_by_row(subjects_list, subjects_dir, stats_file_name, stats_table_type_list=None):
+    """
+    Retrieve stats for a group of subjects.
+
+    Retrieve stats for a group of subjects. The file may be for one hemisphere (files like lh.aparc.stats) or for the entire brain (like stats_table_type_list.stats). This function does not care about hemispheres, it parses a file.
+
+    Parameters
+    ----------
+    subjects_list: list of str
+        List of subject identifiers (subjects in the subjects_dir).
+
+    subjects_dir: str
+        Subjects directory, as defined by the environment variable SUBJECTS_DIR for FreeSurfer.
+
+    stats_file_name: str
+        File name of the subjects file including file extension, relative to a subject's ```stats``` directory. Example: 'aseg.stats'.
+
+    stats_table_type_list: list of numpy types, optional.
+        A list defining the data types for the columns in the table contained in stats files. See the functions typelist_for_aseg_stats and typelist_for_aparc_atlas_stats for examples. If omitted, the table data will be returned as None. The measures data is unaffected.
+
+    Returns
+    -------
+    all_subjects_measures_dict: dict of string to numpy 1D array.
+        The data from the measure rows in the files. Each key in the dictionary is the name of a measure, and the value is the data for all subjects in a numpy float array. The array shape is (n, ) for n subjects.
+
+    all_subjects_table_data_dict_by_region: dict of string to dict of string to numpy 2D array
+        The data for all table rows (regions) in the files. Each key in the dictionary is the name of a region (row, 'StructName' column entry in that row) in the stats table. Then the value is another dictionary, where the keys are subject IDs. The value is the data for all columns in the table for that subject. If a subject has no data on a region, it still has an entry, but all the values are NaNs.
+
+    See also
+    --------
+    typelist_for_aseg_stats: pre-defined list of numpy data types for the files aseg.stats, can be used to pass stats_table_type_list
+    typelist_for_aparc_atlas_stats: pre-defined list of numpy data types for the files lh.aparc.stats and rh.aparc.stats, can be used to pass stats_table_type_list
+    brainload.annotations.get_atlas_region_names: get region names for an atlas/annotation
+    """
+    all_subjects_measures_dict = None
+
+    if stats_table_type_list is not None:
+        all_subjects_table_data_dict_by_region = dict()
+    else:
+        all_subjects_table_data_dict_by_region = None
+
+    for subject in subjects_list:
+        logging.info("Group stats by row: handling stats file '%s' for subject '%s'." % (stats_file_name, subject))
+        stats_file = os.path.join(subjects_dir, subject, 'stats', stats_file_name)
+        stats = stat(stats_file)
+        # Handle measures
+        numpy_measures, measure_name_tuples = measures_to_numpy(stats['measures'])
+        all_subjects_measures_dict = _stats_measures_dict(all_subjects_measures_dict, numpy_measures, measure_name_tuples)
+
+        # Handle table data if possible (i.e., if stats_table_type_list was given)
+        if stats_table_type_list is not None:
+            # new version, by row (=region)
+            table_data_by_row = stats_table_to_numpy_by_row(stats, stats_table_type_list, subject)
+            for region in table_data_by_row:
+                if not region in all_subjects_table_data_dict_by_region:
+                    all_subjects_table_data_dict_by_region[region] = dict()
+                all_subjects_table_data_dict_by_region[region][subject] = table_data_by_row[region][subject]
+
+    # fill region data that is missing (for a subject) with NaNs
+    for region in all_subjects_table_data_dict_by_region:
+        for subject in subjects_list:
+            if not subject in all_subjects_table_data_dict_by_region[region]:
+                all_subjects_table_data_dict_by_region[region][subject] = np.full((1, len(stats_table_type_list)), np.nan)
+    return all_subjects_measures_dict, all_subjects_table_data_dict_by_region
+
 
 
 def stats_table_region_label_column_name():
