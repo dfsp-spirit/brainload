@@ -487,7 +487,7 @@ def test_group_stats_aparc(capsys):
         column_data = all_subjects_table_data_dict[name]
         assert column_data.shape == (2, 34)  # 2 subjects, each has a table in lh.aparc.stats with 34 rows
 
-def test_group_stats_by_row(capsys):
+def test_group_stats_by_row_for_aseg(capsys):
     expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'aseg.stats')
     if not os.path.isfile(expected_stats_file):
         pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
@@ -512,6 +512,33 @@ def test_group_stats_by_row(capsys):
         column_data_s2 = all_subjects_table_data_dict_by_region[name]['subject2']
         assert column_data_s1.shape == (10, )  # for 1 subject, each has a table in aseg.stats with 10 columns (Index SegId NVoxels Volume_mm3 StructName normMean normStdDev normMin normMax normRange)
         assert column_data_s2.shape == (10, )  # for 1 subject, each has a table in aseg.stats with 10 columns
+
+
+def test_group_stats_by_row_for_aparc(capsys):
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'lh.aparc.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    with capsys.disabled():
+        all_subjects_measures_dict, all_subjects_table_data_dict_by_region = st.group_stats_by_row(subjects_list, TEST_DATA_DIR, 'lh.aparc.stats', stats_table_type_list=st.typelist_for_aparc_atlas_stats())
+    assert len(all_subjects_measures_dict) == 10
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+
+    assert all_subjects_table_data_dict_by_region is not None
+    assert len(all_subjects_table_data_dict_by_region) == 34    # 34 regions in aparc.stats table
+
+    # the next row just lists of subset of the 34 regions so far.
+    expected_table_row_names_aparc = ['bankssts', 'caudalanteriorcingulate', 'caudalmiddlefrontal', 'cuneus']
+    for name in expected_table_row_names_aparc:
+        assert name in all_subjects_table_data_dict_by_region
+        column_data_s1 = all_subjects_table_data_dict_by_region[name]['subject1']
+        column_data_s2 = all_subjects_table_data_dict_by_region[name]['subject2']
+        assert column_data_s1.shape == (10, )  # for 1 subject, each has a table in ?h.aparc.stats with 10 columns (StructName NumVert SurfArea GrayVol ThickAvg ThickStd MeanCurv GausCurv FoldInd CurvInd)
+        assert column_data_s2.shape == (10, )  # for 1 subject, each has a table in ?h.aparc.stats with 10 columns
 
 
 def test_group_stats_aparc_a2009s(capsys):
