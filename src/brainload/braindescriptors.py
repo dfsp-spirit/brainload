@@ -301,7 +301,7 @@ class BrainDescriptors:
 
     def _add_custom_measure_stats_single(self, atlas, measure, hemi):
         all_subjects_data = None
-        label_name_subject = "fsaverage"
+        label_name_subject = self.subjects_list[0]
         label_names = brainload.annotations.get_atlas_region_names(atlas, self.subjects_dir, subject_id=label_name_subject)
         if label_names is None:
             raise ValueError("Loading region names for atlas '%s' failed, tried reading from annot file for subject '%s' in subjects directory '%s'." % (atlas, label_name_subject, self.subjects_dir))

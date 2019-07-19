@@ -402,3 +402,17 @@ def test_region_data_native():
     assert some_region_data.shape == (2183, )
     mean_thickness_in_region = np.mean(some_region_data)
     assert mean_thickness_in_region == pytest.approx(0.687, 0.1)
+
+
+def test_get_atlas_region_names_hardcoded():
+    region_names = an.get_atlas_region_names_hardcoded('aseg')
+    assert len(region_names) == 44
+
+    region_names = an.get_atlas_region_names_hardcoded('aparc')
+    assert len(region_names) == 34
+
+    region_names = an.get_atlas_region_names_hardcoded('aparc.a2009s')
+    assert len(region_names) == 74
+
+    region_names = an.get_atlas_region_names_hardcoded('aparc.DKTatlas')
+    assert len(region_names) == 31
