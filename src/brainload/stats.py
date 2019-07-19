@@ -545,9 +545,10 @@ def _make_dict_arrays_2D(data_dict):
     return data_dict
 
 
-def get_stats_table_column_names(subjects_dir, stats_file_name, stats_table_type_list, subject='fsaverage'):
-    all_subjects_measures_dict, all_subjects_table_data_dict = group_stats([subject], subjects_dir, stats_file_name, stats_table_type_list=stats_table_type_list)
-    return [str(s) for s in all_subjects_table_data_dict]
+def get_stats_table_column_names(subjects_dir, stats_file_name, subject='fsaverage'):
+    stats_file_path = os.path.join(subjects_dir, subject, 'stats', stats_file_name)
+    stats = stat(stats_file_path)
+    return stats['table_column_headers']
 
 
 def group_stats(subjects_list, subjects_dir, stats_file_name, stats_table_type_list=None):
@@ -660,11 +661,18 @@ def group_stats_by_row(subjects_list, subjects_dir, stats_file_name, stats_table
                     all_subjects_table_data_dict_by_region[region] = dict()
                 all_subjects_table_data_dict_by_region[region][subject] = table_data_by_row[region][subject]
 
+    logging.debug("Group stats by row: Collected measures for %d subjects." % (len(subjects_list)))
+
     # fill region data that is missing (for a subject) with NaNs
+    num_added = 0
     for region in all_subjects_table_data_dict_by_region:
         for subject in subjects_list:
             if not subject in all_subjects_table_data_dict_by_region[region]:
-                all_subjects_table_data_dict_by_region[region][subject] = np.full((1, len(stats_table_type_list)), np.nan)
+                logging.warn("Subject '%s' is missing region data for region '%s' in stats file '%s'. Setting to NaNs." % (subject, region, stats_file_name))
+                num_added = num_added + 1
+                all_subjects_table_data_dict_by_region[region][subject] = np.full((len(stats_table_type_list),), np.nan)
+                logging.debug("Added NaN data with shape %s." % (str(all_subjects_table_data_dict_by_region[region][subject].shape)))
+    logging.debug("Group stats by row: Appended NaNs %d times." % (num_added))
     return all_subjects_measures_dict, all_subjects_table_data_dict_by_region
 
 

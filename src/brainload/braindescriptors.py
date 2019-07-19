@@ -29,6 +29,7 @@ class BrainDescriptors:
             self.hemis = ['lh', 'rh']
         else:
             self.hemis = [hemi]
+        logging.info("BrainDescriptors instance initialized, handling %s subjects in subjects_dir '%s'." % (len(self.subjects_list), self.subjects_dir))
 
 
     def add_parcellation_stats(self, atlas_list):
@@ -44,6 +45,7 @@ class BrainDescriptors:
         """
         for hemi in self.hemis:
             for atlas in atlas_list:
+                logging.info("Adding parcellation stats for atlas '%s', hemi '%s'." % (atlas, hemi))
                 self._add_single_parcellation_stats(atlas, hemi)
 
 
@@ -63,9 +65,10 @@ class BrainDescriptors:
         """
         stats_filename = '%s.%s.stats' % (hemi, atlas)
         stats_table_type_list = brainload.stats.typelist_for_aparc_atlas_stats()
+        logging.info("Getting group stats by row for atlas '%s' hemi '%s'." % (atlas, hemi))
         all_subjects_measures_dict, all_subjects_table_data_dict_by_region = brainload.stats.group_stats_by_row(self.subjects_list, self.subjects_dir, stats_filename, stats_table_type_list=stats_table_type_list)
-
-        table_column_names = brainload.stats.get_stats_table_column_names(self.subjects_dir, stats_filename, stats_table_type_list, subject=self.subjects_list[0])
+        logging.info("Getting table column names.")
+        table_column_names = brainload.stats.get_stats_table_column_names(self.subjects_dir, stats_filename, subject=self.subjects_list[0])
 
         # Add a prefix for the atlas and hemi to the keys in the dictionary, as these will become descriptor names (which should be unique).
         all_subjects_measures_dict_new = dict()
@@ -112,13 +115,16 @@ class BrainDescriptors:
 
         num_columns = len(table_column_names)
         num_regions = len(all_subjects_table_data_dict_by_region)
+        logging.info("Parsing %s stats, handling %d table columns and %d rows (regions) for %d subjects." % (atlas, num_columns, num_regions, len(self.subjects_list)))
 
         all_subjects_all_region_data = np.zeros((len(self.subjects_list), num_columns * num_regions))  # init empty only
 
         for subject_index, subject_id in enumerate(self.subjects_list):
             all_data_for_subject = []
             for region_name in all_subjects_table_data_dict_by_region:
+                logging.info("Adding data for region '%s', subject '%s' containing %d descriptor values" % (region_name, subject_id, len(all_subjects_table_data_dict_by_region[region_name][subject_id])))
                 all_data_for_subject.extend(all_subjects_table_data_dict_by_region[region_name][subject_id])
+            logging.info("Atlas %s: Descriptor data for subject '%s' contains %d values total over all regions." % (atlas, subject_id, len(all_data_for_subject)))
             all_subjects_all_region_data[subject_index,:] = np.array(all_data_for_subject)
 
         self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_all_region_data))
@@ -254,6 +260,7 @@ class BrainDescriptors:
         Add brain parcellation stats. This add the data from the stats/aseg.stats file.
         """
         for seg in segmentation_list:
+            logging.info("Adding segmenation stats for '%s'." % (seg))
             self.add_single_segmentation_stats(seg)
 
 
@@ -264,6 +271,7 @@ class BrainDescriptors:
         Add brain surface curvature stats. This add the data from the stats/?h.curv.stats files.
         """
         for hemi in self.hemis:
+            logging.info("Adding curv stats for hemi '%s'." % (hemi))
             all_subject_data_this_hemi = None
             for subject_id in self.subjects_list:
                 curv_stat_names, curv_stat_values = brainload.stats.parse_curve_stats(subject_id, self.subjects_dir, hemi)
@@ -296,6 +304,7 @@ class BrainDescriptors:
         for hemi in self.hemis:
             for atlas in atlas_list:
                 for measure in measure_list:
+                    logging.info("Adding custom measure stats for atlas '%s', measure '%s', hemi '%s'." % (atlas, measure, hemi))
                     self._add_custom_measure_stats_single(atlas, measure, hemi)
 
 
