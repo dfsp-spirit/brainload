@@ -451,7 +451,7 @@ def read_annotation_md(annotation_file, hemisphere_label, meta_data=None, encodi
     if meta_data is None:
         meta_data = {}
 
-    logging.info("Reading annotation file '%s'." % (annotation_file))
+    logging.debug("Reading annotation file '%s'." % (annotation_file))
     vertex_label_colors, label_colors, label_names = fsio.read_annot(annotation_file, orig_ids=orig_ids)
 
     label_file = hemisphere_label + '.annotation_file'
