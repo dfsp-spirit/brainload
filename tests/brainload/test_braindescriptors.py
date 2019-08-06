@@ -47,6 +47,8 @@ def test_braindescriptors_standard_stats_have_unique_names():
     assert len(bdi.descriptor_names) == 3426
     assert bdi.descriptor_values.shape == (2, 3426)
     assert len(bdi.descriptor_names) == len(list(set(bdi.descriptor_names)))
+    dup_list = bdi._check_for_duplicate_descriptor_names()
+    assert not dup_list
 
 
 def test_braindescriptors_file_checks():

@@ -11,6 +11,7 @@ import brainload.nitools as nit
 import brainload.freesurferdata as fsd
 import brainload.stats
 import logging
+import collections
 
 class BrainDescriptors:
     """
@@ -329,6 +330,21 @@ class BrainDescriptors:
                 all_subjects_data = np.vstack((all_subjects_data, am_descriptor_data))
         self.descriptor_values = np.hstack((self.descriptor_values, all_subjects_data))
         self.descriptor_names.extend(am_descriptor_names)
+
+
+    def _check_for_duplicate_descriptor_names(self):
+        """
+        Check for duplicate descriptor names.
+
+        Debug function to check for duplicate descriptor names.
+
+        Returns
+        -------
+        list of str
+            The descriptor names that occur more than once. The list should be empty.
+        """
+        dups = [item for item, count in collections.Counter(self.descriptor_names).items() if count > 1]
+        return dups
 
 
     def save(self, stats_file, subjects_file=None):
