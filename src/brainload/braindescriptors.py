@@ -344,6 +344,8 @@ class BrainDescriptors:
             The descriptor names that occur more than once. The list should be empty.
         """
         dups = [item for item, count in collections.Counter(self.descriptor_names).items() if count > 1]
+        if dups:
+            logging.warning("Duplicate descriptor names detected: %s" % (" ".join(dups)))
         return dups
 
 
