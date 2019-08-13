@@ -89,6 +89,8 @@ Test coverage statistics are displayed automatically when running the tests as d
 
 The tests are run automatically when you push to master and developers get results by email. Build status from travis-ci.org (Linux, branch master):
 
+Note: Currently the tests are failing on CI due to some missing test data. We are working on this.
+
 [![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
 
 For Windows, we use conda on AppVeyor:
@@ -133,6 +135,8 @@ git add setup.py doc/conf.py MANIFEST.in src/brainload/__init__.py
 #### Build docs
 
 First note the difference between the directories 'doc' (source for documentation and sphinx templates) and 'docs' (Github page made containing the generated documentation). Do not confuse them.
+
+If you added a new module (code file), be sure to add it to `doc/brainload.rst` so the documentation gets generated from the doc strings and it shows up in the docs.
 
 We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
 
