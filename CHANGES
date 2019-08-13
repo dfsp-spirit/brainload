@@ -1,6 +1,10 @@
 Brainload Changes
 =================
 
+WIP: Version 0.3.5
+------------------
+- Fix: Generate documentation for latest modules (braindescriptors, brainlocate, etc.)
+
 Version 0.3.4
 -------------
 - Added functions to get custom stats for a measure and atlas region
