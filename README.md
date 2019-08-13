@@ -1,5 +1,5 @@
 # brainload
-Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups.
+Python module to reduce your brain load while accessing FreeSurfer brain surface meshes and morphometry data files for single subjects and groups. Also provides feature extraction from whole brain segmentations, parcellations and morphometry data.
 
 This is my personal collection of Python/numpy functions for (structural) neuroimaging. It's [free software](https://www.gnu.org/philosophy/free-sw.en.html) published under the MIT license.
 
@@ -9,6 +9,7 @@ This is my personal collection of Python/numpy functions for (structural) neuroi
 
 `brainload` makes use of the standard output file name patterns of the FreeSurfer pre-processing pipeline (i.e., `recon-all`) to find the respective files and then uses [nibabel](http://nipy.org/nibabel/) to open them. It provides an easy-to-use functional interface to neuroimaging data on multiple levels, from accessing individual files to loading group data for a directory filled with hundreds of subjects.
 
+`brainload` can parse and compute brain descriptors from FreeSurfer statistics files and pre-processed image files (brain segmentations, parcellations, morphometry data files, ...) and store them in CSV format for machine learning.
 
 
 ## Development stage
