@@ -15,7 +15,14 @@ import collections
 
 class BrainDescriptors:
     """
-    Collects descriptors for one or more subjects.
+    Collects brain descriptors for one or more subjects.
+
+    This class can parse all standard statistics files which are written by FreeSurfer when a subject is preprocessed using the recon-all pipeline. This includes
+    brain segmentation stats (volume-based, like the ```stats/aseg.stats``` file), brain parcellation stats (surface-based, like ```?h.aparc.a2009s.stats```) and special stats file like the ```curv.stats``` files.
+
+    It can also compute stats based on a parcellation atlas and any custom morphometry measure that you may have computed (e.g., local gyrifiaction index or some arbitrary vertex-wise measure you have computed yourself).
+
+    You can export the resulting data to a CSV file so you can load them in your favorite statistical software later. (No, I did not mention AI.) If that favorite software happens to be python, you can just access the ```descriptor_names``` and ```descriptor_values``` properties of the class instead.
     """
     def __init__(self, subjects_dir, subjects_list, hemi='both'):
         self.subjects_dir = subjects_dir
@@ -239,6 +246,17 @@ class BrainDescriptors:
         Assign file to dict.
 
         Assign the file to one of the two given dictionaries, depending on whether or not it exists.
+
+        Parameters
+        ----------
+        sfile: string
+            Path to a file.
+
+        ok: list of strings
+            The file name passed as `sfile` will be appended to this if the file exists.
+
+        missing: list of strings
+            The file name passed as `sfile` will be appended to this if the file does not exist.
         """
         if os.path.isfile(sfile):
             ok.append(sfile)
@@ -248,7 +266,20 @@ class BrainDescriptors:
 
     def _report_on_file(self, sfile, ok, missing):
         """
+        Print file status.
+
         Print the number of missing and the number of OK instances of the file over all subjects.
+
+        Parameters
+        ----------
+        sfile: string
+            Path to a file.
+
+        ok: list of strings
+            The file name passed as `sfile` will be appended to this if the file exists.
+
+        missing: list of strings
+            The file name passed as `sfile` will be appended to this if the file does not exist.
         """
         print("%d MISSING, %d OK for file '%s'" % (len(missing), len(ok), sfile))
 
@@ -259,6 +290,11 @@ class BrainDescriptors:
         Add brain parcellation stats.
 
         Add brain parcellation stats. This add the data from the stats/aseg.stats file.
+
+        Parameters
+        ----------
+        segmentation_list: list of string
+            Each entry should be a valid FreeSurfer segmentation name, like ```aseg```. A file with that name has to exist in the subjects directory under ```stats/```, e.g., ```stats/aseg.stats``` for ```aseg```.
         """
         for seg in segmentation_list:
             logging.info("Adding segmenation stats for '%s'." % (seg))
@@ -269,7 +305,7 @@ class BrainDescriptors:
         """
         Add surface curvature stats.
 
-        Add brain surface curvature stats. This add the data from the stats/?h.curv.stats files.
+        Add brain surface curvature stats. This add the data from the ```stats/?h.curv.stats``` files.
         """
         for hemi in self.hemis:
             logging.info("Adding curv stats for hemi '%s'." % (hemi))
@@ -289,6 +325,11 @@ class BrainDescriptors:
         Add brain parcellation stats.
 
         Add brain parcellation stats. This add the data from the stats/aseg.stats file.
+
+        Parameters
+        ----------
+        atlas: string
+            A valid FreeSurfer segmentation name, like ```aseg```. A file with that name has to exist in the subjects directory under ```stats/```, e.g., ```stats/aseg.stats``` for ```aseg```.
         """
         all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats_aseg(self.subjects_list, self.subjects_dir)
 
@@ -301,6 +342,14 @@ class BrainDescriptors:
         Add custom stats for a measure and atlas.
 
         Add custom stats for a measure and atlas. E.g., compute descriptive stats (min, max, mean, ...) for a measure like 'pial_lgi' in all regions of an atlas like 'aparc'.
+
+        Parameters
+        ----------
+        atlas_list: list of string
+            Each entry should be a valid FreeSurfer segmentation name, like ```aseg```. A file with that name has to exist in the subjects directory under ```stats/```, e.g., ```stats/aseg.stats``` for ```aseg```.
+
+        measure_list: list of string
+            A list of vertex-wise morphometry measurements, like ```volume```, ```thickness```, or ```area```. A hemisphere-dependent file with that name has to exist in the subjects directory under ```surf/```, e.g., ```surf/lh.area``` and ```surf/rh.area``` for the two hemispheres is the given string is ```area```.
         """
         for hemi in self.hemis:
             for atlas in atlas_list:
@@ -310,6 +359,22 @@ class BrainDescriptors:
 
 
     def _add_custom_measure_stats_single(self, atlas, measure, hemi):
+        """
+        Add single custom measure stats.
+
+        Add single custom measure stats.
+
+        Parameters
+        ----------
+        atlas: string
+            A valid FreeSurfer parcellation name, like ```aparc```.
+
+        measure: string
+            A vertex-wise morphometry measurement, like ```volume```, ```thickness```, or ```area```. A hemisphere-dependent file with that name has to exist in the subjects directory under ```surf/```, e.g., ```surf/lh.area``` and ```surf/rh.area``` for the two hemispheres is the given string is ```area```.
+
+        hemi: string, one of 'lh' or 'rh'
+            The hemisphere, given as 'lh' for left or 'rh' for right.
+        """
         all_subjects_data = None
         label_name_subject = self.subjects_list[0]
         label_names = brainload.annotations.get_atlas_region_names(atlas, self.subjects_dir, subject_id=label_name_subject)
@@ -349,7 +414,7 @@ class BrainDescriptors:
         return dups
 
 
-    def save(self, stats_file, subjects_file=None):
+    def save(self, stats_file, subjects_file=None, delim=","):
         """
         Save the descriptors to files.
 
@@ -364,6 +429,9 @@ class BrainDescriptors:
         subjects_file: string, optional
             Path a filename of a text file. If given, the subject IDs will be written to this file, one per line. The order of the subjects matches the order of the data in the stats_file.
 
+        delim: str
+            Delimiter for stats_file, defaults to ",".
+
         Examples
         --------
         >>> bd.save("braindescriptors.csv", subjects_file="subjects.txt")
@@ -371,5 +439,4 @@ class BrainDescriptors:
         if subjects_file is not None:
             nit.write_subjects_file(subjects_file, self.subjects_list)
 
-        delim=","
         np.savetxt(stats_file, self.descriptor_values, delimiter=delim, header=delim.join(self.descriptor_names))
