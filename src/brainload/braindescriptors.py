@@ -414,6 +414,30 @@ class BrainDescriptors:
         return dups
 
 
+    def check_for_NaNs(self, threshold=0.6):
+        """
+        Check for descriptors and subjects with all NaN values.
+        """
+        all_nan_subject_indices = np.all(np.isnan(self.descriptor_values), axis=0)[0]
+        all_nan_subjects = np.array(self.subjects_list)[all_nan_subject_indices]
+        logging.info("There are %d subjects which have only NaN descriptors values: %s" % (all_nan_subjects.shape[0], ", ".join(all_nan_subjects)))
+
+        nan_share_per_subject = np.isnan(self.descriptor_values).sum(axis=0) / self.descriptor_values.shape[0]
+        subjects_over_threshold = [s for s, n in zip(self.subjects_list, nan_share_per_subject) if n > threshold]
+        logging.info("%d/%d Subjects over NaN threshold %f: %s" % (len(subjects_over_threshold), len(self.subjects_list), threshold, ", ".join(subjects_over_threshold)))
+
+        all_nan_descriptor_indices = np.all(np.isnan(self.descriptor_values), axis=1)[0]
+        all_nan_descriptors = np.array(self.descriptor_names)[all_nan_descriptor_indices]
+        logging.info("There are %d descriptors for which all subjects have only NaN values: %s" % (all_nan_descriptors.shape[0], ", ".join(all_nan_descriptors)))
+
+        nan_share_per_descriptor = np.isnan(self.descriptor_values).sum(axis=1) / self.descriptor_values.shape[1]
+        descriptors_over_threshold = [d for d, n in zip(self.descriptor_names, nan_share_per_descriptor) if n > threshold]
+        logging.info("%d/%d Descriptors over NaN threshold %f: %s" % (len(descriptors_over_threshold), len(self.descriptor_names), threshold, ", ".join(descriptors_over_threshold)))
+
+        logging.info("In total, %d of the %d descriptor values are NaN." % (np.isnan(self.descriptor_values).sum(), np.ravel(self.descriptor_values).shape[0]))
+        return subjects_over_threshold, descriptors_over_threshold, nan_share_per_subject, nan_share_per_descriptor
+
+
     def save(self, stats_file, subjects_file=None, delim=","):
         """
         Save the descriptors to files.
