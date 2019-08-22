@@ -128,6 +128,8 @@ class BrainDataConsistency:
                                 ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
                                 if ts_morph_file + self.time_buffer < ts_surf_file:
                                     logging.warn("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%f seconds)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), ts_morph_file-ts_surf_file))
+                                    issue_tag_file_time = "TIME_MORPH_FILE_%s_%s" % (measure, hemi)
+                                    self.subject_issues[subject_id].append(issue_tag_file_time)
 
                     except (OSError, IOError):
                         self.data[hemi][measure_key][subject_index] = 0
