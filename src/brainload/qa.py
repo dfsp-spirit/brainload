@@ -13,6 +13,7 @@ import brainload.stats
 import logging
 import collections
 import errno
+from datetime import datetime
 
 
 class BrainDataConsistency:
@@ -27,7 +28,12 @@ class BrainDataConsistency:
         self.subjects_list = subjects_list
 
         self.data = dict()
+        self.files = dict()
+
         self.surface_vertices_counted = False
+        self.check_file_modification_times = True
+        self.time_format = '%Y-%m-%d %H:%M:%S'
+        self.time_buffer = 10.0    # For files were one should have been created after the other, define a grace period in seconds.
 
         self.subject_issues = dict()
         for subject_id in self.subjects_list:
@@ -39,9 +45,12 @@ class BrainDataConsistency:
             self.hemis = ['lh', 'rh']
             self.data['lh'] = dict()
             self.data['rh'] = dict()
+            self.files['lh'] = dict()
+            self.files['rh'] = dict()
         else:
             self.hemis = [hemi]
             self.data[hemi] = dict()
+            self.files[hemi] = dict()
         logging.info("BrainDataConsistency instance initialized, handling %s subjects in subjects_dir '%s'." % (len(self.subjects_list), self.subjects_dir))
 
 
@@ -72,10 +81,14 @@ class BrainDataConsistency:
             self.data[hemi]['mesh_face_count_pial'] = np.zeros((len(self.subjects_list), 0))
 
             for subject_index, subject_id in enumerate(self.subjects_list):
+                # TODO: We should try..catch here in case of missing surface files
                 verts_white, faces_white, meta_data_white = fsd.subject_mesh(subject_id, self.subjects_dir, surf='white', hemi=hemi)
+                md_surf_file_key = "%s.surf_file" % (hemi)
+                self.files[hemi]['surf_white'] = meta_data_white[md_surf_file_key]
                 self.data[hemi]['mesh_vertex_count_white'][subject_index] = len(verts_white)
                 self.data[hemi]['mesh_face_count_white'][subject_index] = len(faces_white)
                 verts_pial, faces_pial, meta_data_pial = fsd.subject_mesh(subject_id, self.subjects_dir, surf='white', hemi=hemi)
+                self.files[hemi]['surf_pial'] = meta_data_white[md_surf_file_key]
                 self.data[hemi]['mesh_vertex_count_pial'][subject_index] = len(verts_pial)
                 self.data[hemi]['mesh_face_count_pial'][subject_index] = len(faces_pial)
         self.surface_vertices_counted = True
@@ -90,6 +103,13 @@ class BrainDataConsistency:
                     self.subject_issues[subject_id].append(issue_tag)
 
 
+    def _pts(self, timestamp):
+        """
+        Print a time stamp in readable format.
+        """
+        return datetime.utcfromtimestamp(timestamp).strftime(self.time_format)
+
+
     def _check_native_space_data(self, measures_list):
         for measure in measures_list:
             for hemi in self.hemis:
@@ -100,6 +120,15 @@ class BrainDataConsistency:
                     try:
                         morphometry_data, meta_data = fsd.subject_data_native(subject_id, self.subjects_dir, measure, hemi, surf='white')
                         self.data[hemi][measure_key][subject_index] = len(morphometry_data)
+                        md_morph_file_key = '%s.morphometry_file' % (hemi)
+                        morph_data_file = meta_data[md_morph_file_key]
+                        if self.check_file_modification_times:
+                            if self.files[hemi]['surf_pial'] is not None:
+                                ts_morph_file = os.path.getmtime(morph_data_file)
+                                ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
+                                if ts_morph_file + self.time_buffer < ts_surf_file:
+                                    logging.warn("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%f seconds)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), ts_morph_file-ts_surf_file))
+
                     except (OSError, IOError):
                         self.data[hemi][measure_key][subject_index] = 0
                         issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
