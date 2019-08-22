@@ -12,6 +12,8 @@ import brainload.freesurferdata as fsd
 import brainload.stats
 import logging
 import collections
+import errno
+
 
 class BrainDataConsistency:
     """
@@ -95,8 +97,15 @@ class BrainDataConsistency:
                 issue_tag = "MORPH_MISMATCH_%s_%s" % (measure, hemi)
                 self.data[hemi][measure_key] = np.zeros((len(self.subjects_list), 0))
                 for subject_index, subject_id in enumerate(self.subjects_list):
-                    morphometry_data, meta_data = fsd.subject_data_native(subject_id, self.subjects_dir, measure, hemi, surf='white')
-                    self.data[hemi][measure_key][subject_index] = len(morphometry_data)
+                    try:
+                        morphometry_data, meta_data = fsd.subject_data_native(subject_id, self.subjects_dir, measure, hemi, surf='white')
+                        self.data[hemi][measure_key][subject_index] = len(morphometry_data)
+                    except (OSError, IOError):
+                        self.data[hemi][measure_key][subject_index] = 0
+                        issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
+                        self.subject_issues[subject_id].append(issue_tag_no_file)
+
+
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
                         logging.warn("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
                         self.subject_issues[subject_id].append(issue_tag)
