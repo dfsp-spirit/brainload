@@ -554,7 +554,7 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
         Contains detailed information on the data that was loaded. The following keys are available (depending on the value of the `hemi` argument, you can replace ?h with 'lh' or 'rh' or both 'lh' and 'rh'):
             - `?h.num_vertices` : number of vertices in the loaded mesh
             - `?h.num_faces` : number of faces in the loaded mesh
-            - `?lh.surf_file` : the mesh file that was loaded for this hemisphere
+            - `?h.surf_file` : the mesh file that was loaded for this hemisphere
 
     Examples
     --------
