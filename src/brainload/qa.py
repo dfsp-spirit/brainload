@@ -169,4 +169,4 @@ class BrainDataConsistency:
                 num_ok = num_ok + 1
             print("%s: %s" % (subject_id, subject_report))
         print("----- End of report by subject -----")
-        print("Summary: %d subjects OK and %d with inconsistencies." % (num_ok, num_incons))
+        print("Summary: %d subjects OK and %d with inconsistencies out of %d total." % (num_ok, num_incons, len(self.subjects_list)))
