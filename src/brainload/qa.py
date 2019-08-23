@@ -75,10 +75,10 @@ class BrainDataConsistency:
 
     def _count_surface_vertices_and_faces(self):
         for hemi in self.hemis:
-            self.data[hemi]['mesh_vertex_count_white'] = np.zeros((len(self.subjects_list), 0))
-            self.data[hemi]['mesh_face_count_white'] = np.zeros((len(self.subjects_list), 0))
-            self.data[hemi]['mesh_vertex_count_pial'] = np.zeros((len(self.subjects_list), 0))
-            self.data[hemi]['mesh_face_count_pial'] = np.zeros((len(self.subjects_list), 0))
+            self.data[hemi]['mesh_vertex_count_white'] = np.zeros((len(self.subjects_list), ))
+            self.data[hemi]['mesh_face_count_white'] = np.zeros((len(self.subjects_list), ))
+            self.data[hemi]['mesh_vertex_count_pial'] = np.zeros((len(self.subjects_list), ))
+            self.data[hemi]['mesh_face_count_pial'] = np.zeros((len(self.subjects_list), ))
 
             for subject_index, subject_id in enumerate(self.subjects_list):
                 # TODO: We should try..catch here in case of missing surface files
@@ -95,6 +95,7 @@ class BrainDataConsistency:
 
 
     def _check_surfaces_have_identical_vertex_count(self):
+        logging.info("Verifying that the white and pial surfaces have identical vertex counts.")
         for hemi in self.hemis:
             issue_tag = "VERT_MISMATCH_FACES_%s" % (hemi)
             for subject_index, subject_id in enumerate(self.subjects_list):
@@ -122,10 +123,11 @@ class BrainDataConsistency:
 
     def _check_native_space_data(self, measures_list):
         for measure in measures_list:
+            logging.info("Verifying native space data for measure '%s'." % (measure))
             for hemi in self.hemis:
                 measure_key = "morphometry_vertex_data_count_%s" % (measure)
                 issue_tag = "MORPH_MISMATCH_%s_%s" % (measure, hemi)
-                self.data[hemi][measure_key] = np.zeros((len(self.subjects_list), 0))
+                self.data[hemi][measure_key] = np.zeros((len(self.subjects_list), ))
                 for subject_index, subject_id in enumerate(self.subjects_list):
                     try:
                         morphometry_data, meta_data = fsd.subject_data_native(subject_id, self.subjects_dir, measure, hemi, surf='white')
@@ -142,6 +144,7 @@ class BrainDataConsistency:
                                     self.subject_issues[subject_id].append(issue_tag_file_time)
 
                     except (OSError, IOError):
+                        morphometry_data = np.array([])
                         self.data[hemi][measure_key][subject_index] = 0
                         issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
                         self.subject_issues[subject_id].append(issue_tag_no_file)

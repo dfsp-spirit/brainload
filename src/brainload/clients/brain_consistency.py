@@ -8,7 +8,7 @@ import argparse
 import logging
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
-# PYTHONPATH=./src/brainload python src/brainload/clients/brain_consistency.py $SUBJECTS_DIR $SUBJECTS_DIR/subjects.txt -m area:volume:thickness:pial_lgi
+# PYTHONPATH=./src/brainload python src/brainload/clients/brain_consistency.py $SUBJECTS_DIR $SUBJECTS_DIR/subjects.txt -m area:volume:thickness:pial_lgi -v
 
 def brain_consistency():
     """
