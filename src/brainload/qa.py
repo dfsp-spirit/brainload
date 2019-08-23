@@ -159,12 +159,14 @@ class BrainDataConsistency:
     def _report_by_subject(self):
         num_ok = 0
         num_incons = 0
+        print("----- Report by subject follows for %d subjects -----" % (len(self.subjects_list)))
         for subject_index, subject_id in enumerate(self.subjects_list):
             if self.subject_issues[subject_id]:
-                subject_report = "%d inconsistencies detected: %s" % (len(self.subject_issues[subject_id]), " ".join(self.subject_issues[subject_id]))
+                subject_report = "%d inconsistencies: %s" % (len(self.subject_issues[subject_id]), " ".join(self.subject_issues[subject_id]))
                 num_incons = num_incons + 1
             else:
-                subject_report = "OK."
+                subject_report = "OK"
                 num_ok = num_ok + 1
             print("%s: %s" % (subject_id, subject_report))
-        print("In total, %d OK and %d with inconsistencies." % (num_ok, num_incons))
+        print("----- End of report by subject -----")
+        print("Summary: %d subjects OK and %d with inconsistencies." % (num_ok, num_incons))
