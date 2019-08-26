@@ -664,15 +664,16 @@ def group_stats_by_row(subjects_list, subjects_dir, stats_file_name, stats_table
     logging.debug("Group stats by row: Collected measures for %d subjects." % (len(subjects_list)))
 
     # fill region data that is missing (for a subject) with NaNs
-    num_added = 0
-    for region in all_subjects_table_data_dict_by_region:
-        for subject in subjects_list:
-            if not subject in all_subjects_table_data_dict_by_region[region]:
-                logging.warn("Subject '%s' is missing region data for region '%s' in stats file '%s'. Setting to NaNs." % (subject, region, stats_file_name))
-                num_added = num_added + 1
-                all_subjects_table_data_dict_by_region[region][subject] = np.full((len(stats_table_type_list),), np.nan)
-                logging.debug("Added NaN data with shape %s." % (str(all_subjects_table_data_dict_by_region[region][subject].shape)))
-    logging.debug("Group stats by row: Appended NaNs %d times." % (num_added))
+    if stats_table_type_list is not None:
+        num_added = 0
+        for region in all_subjects_table_data_dict_by_region:
+            for subject in subjects_list:
+                if not subject in all_subjects_table_data_dict_by_region[region]:
+                    logging.warn("Subject '%s' is missing region data for region '%s' in stats file '%s'. Setting to NaNs." % (subject, region, stats_file_name))
+                    num_added = num_added + 1
+                    all_subjects_table_data_dict_by_region[region][subject] = np.full((len(stats_table_type_list),), np.nan)
+                    logging.debug("Added NaN data with shape %s." % (str(all_subjects_table_data_dict_by_region[region][subject].shape)))
+        logging.debug("Group stats by row: Appended NaNs %d times." % (num_added))
     return all_subjects_measures_dict, all_subjects_table_data_dict_by_region
 
 
