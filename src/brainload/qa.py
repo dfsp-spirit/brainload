@@ -100,7 +100,7 @@ class BrainDataConsistency:
             issue_tag = "VERT_MISMATCH_FACES_%s" % (hemi)
             for subject_index, subject_id in enumerate(self.subjects_list):
                 if self.data[hemi]['mesh_vertex_count_white'][subject_index] != self.data[hemi]['mesh_vertex_count_pial'][subject_index]:
-                    logging.warn("[%s][%s] Vertex count mismatch between surfaces white and pial: %d != %d." % (subject_id, hemi, self.data[hemi]['mesh_vertex_count_white'][subject_index], self.data[hemi]['mesh_vertex_count_pial'][subject_index]))
+                    logging.warning("[%s][%s] Vertex count mismatch between surfaces white and pial: %d != %d." % (subject_id, hemi, self.data[hemi]['mesh_vertex_count_white'][subject_index], self.data[hemi]['mesh_vertex_count_pial'][subject_index]))
                     self.subject_issues[subject_id].append(issue_tag)
 
 
@@ -139,7 +139,7 @@ class BrainDataConsistency:
                                 ts_morph_file = os.path.getmtime(morph_data_file)
                                 ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
                                 if ts_morph_file + self.time_buffer < ts_surf_file:
-                                    logging.warn("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
+                                    logging.warning("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
                                     issue_tag_file_time = "TIME_MORPH_FILE_%s_%s" % (measure, hemi)
                                     self.subject_issues[subject_id].append(issue_tag_file_time)
 
@@ -148,11 +148,11 @@ class BrainDataConsistency:
                         self.data[hemi][measure_key][subject_index] = 0
                         issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
                         self.subject_issues[subject_id].append(issue_tag_no_file)
-                        logging.warn("[%s][%s] Missing file for native space vertex data of measure '%s'." % (subject_id, hemi, measure))
+                        logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s'." % (subject_id, hemi, measure))
 
 
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
-                        logging.warn("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
+                        logging.warning("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
                         self.subject_issues[subject_id].append(issue_tag)
 
 
