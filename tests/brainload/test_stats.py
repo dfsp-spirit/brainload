@@ -713,8 +713,19 @@ def test_extract_column_from_table_data_invalid_value_name():
     assert 'Given column_name_of_values' in str(exc_info.value)
     assert 'noSuchValueName' in str(exc_info.value)
 
+
 def test_extract_column_from_table_data_empty_names_matrix():
     all_subjects_table_data_dict = {'StructName': np.array([]), 'NVoxels': np.array([['333', '444'], ['333', '444']])}
     with pytest.raises(ValueError) as exc_info:
         res = st.extract_column_from_table_data(all_subjects_table_data_dict, 'StructName', 'NVoxels')
     assert 'Expected non-empty 2D matrix of strings' in str(exc_info.value)
+
+
+def test_parse_curv_stats_invalid_hemi():
+    with pytest.raises(ValueError) as exc_info:
+        names, values = st.parse_curve_stats('subject1', TEST_DATA_DIR, 'nosuchhemi')
+    assert 'ERROR: hemi must be one' in str(exc_info.value)
+
+
+def test_parse_curv_stats_invalid_hemi():
+    names, values = st.parse_curve_stats('subject1', TEST_DATA_DIR, 'lh')
