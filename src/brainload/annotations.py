@@ -123,7 +123,7 @@ def get_atlas_region_names_hardcoded(atlas, freesurfer_version=6):
         regions_v6 = ['caudalanteriorcingulate', 'caudalmiddlefrontal', 'cuneus', 'entorhinal', 'fusiform', 'inferiorparietal', 'inferiortemporal', 'isthmuscingulate', 'lateraloccipital', 'lateralorbitofrontal', 'lingual', 'medialorbitofrontal', 'middletemporal', 'parahippocampal', 'paracentral', 'parsopercularis', 'parsorbitalis', 'parstriangularis', 'pericalcarine', 'postcentral', 'posteriorcingulate', 'precentral', 'precuneus', 'rostralanteriorcingulate', 'rostralmiddlefrontal', 'superiorfrontal', 'superiorparietal', 'superiortemporal', 'supramarginal', 'transversetemporal', 'insula']
     else:
         regions_v6 = None
-    if regions is not None:
+    if regions_v6 is not None:
         if freesurfer_version == 6:
             return regions_v6
         elif freesurfer_version == 5:
