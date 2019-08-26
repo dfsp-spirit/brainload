@@ -24,11 +24,26 @@ def test_braindataconsistency_init():
     assert len(bdc.subject_issues['subject1']) == 0
     assert len(bdc.subject_issues['subject2']) == 0
 
+def test_braindataconsistency_init_invalid_hemi():
+    subjects_list = ['subject1', 'subject2']
+    with pytest.raises(ValueError) as exc_info:
+        bdc = bqa.BrainDataConsistency(TEST_DATA_DIR, subjects_list, hemi='invalid_hemi')
+    assert 'hemi must be one of' in str(exc_info.value)
+    assert 'invalid_hemi' in str(exc_info.value)
+
 
 def test_braindataconsistency_check_essentials_runs():
     subjects_list = ['subject1', 'subject2']
     bdc = bqa.BrainDataConsistency(TEST_DATA_DIR, subjects_list)
     bdc.check_essentials()
+    bdc.check_essentials()  # run again, this time no vertices should be counted
+
+
+def test_braindataconsistency_check_custom_runs():
+    subjects_list = ['subject1', 'subject2']
+    bdc = bqa.BrainDataConsistency(TEST_DATA_DIR, subjects_list, hemi='lh')
+    bdc.check_file_modification_times = False
+    bdc.check_custom(['area'])
 
 
 def test_braindataconsistency_pts():
