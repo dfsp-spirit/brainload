@@ -1366,3 +1366,23 @@ def test_subject_data_native_rh():
 def test_subject_data_standard():
     morphometry_data, meta_data = bl.subject_data_standard('subject1', TEST_DATA_DIR, 'area', 'lh', '10')
     assert morphometry_data.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE, )
+
+
+def test_get_num_fsaverage_verts_per_hemi_with_fs6():
+    assert fsd.get_num_fsaverage_verts_per_hemi() == 163842
+
+
+def test_get_num_fsaverage_verts_per_hemi_with_unsupported_version():
+    with pytest.raises(ValueError) as exc_info:
+        vc = fsd.get_num_fsaverage_verts_per_hemi(fsversion=8)
+    assert 'Currently the only supported FreeSurfer version is 6' in str(exc_info.value)
+
+
+def test_group_native():
+    morph_data, meta_data = fsd.group_native('area', TEST_DATA_DIR, ['subject1', 'subject2'])
+    assert len(morph_data) == 2
+    assert len(meta_data) == 2
+    assert 'subject1' in morph_data
+    assert 'subject2' in morph_data
+    assert 'subject1' in meta_data
+    assert 'subject2' in meta_data

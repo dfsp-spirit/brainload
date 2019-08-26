@@ -296,6 +296,20 @@ def read_mgh_file(mgh_file_name, collect_meta_data=True, collect_data=True):
     return mgh_data, mgh_meta_data
 
 
+def get_num_fsaverage_verts_per_hemi(fsversion=6):
+    """
+    Return the number of vertices per fsaverage hemisphere.
+
+    Returns
+    -------
+    vertcount: int
+         The number of vertices per fsaverage hemisphere.
+    """
+    if fsversion == 6:
+        return 163842
+    else:
+        raise ValueError("Currently the only supported FreeSurfer version is 6.")
+
 def merge_morphometry_data(morphometry_data_arrays, dtype=float):
     """
     Merge morphometry data horizontally.
@@ -1309,10 +1323,19 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     return vert_coords, faces, morphometry_data, meta_data
 
 
+def group_native(measure, subjects_dir, subjects_list, surf='white', hemi='both'):
+    morphdata_by_subject = dict()
+    metadata_by_subject = dict()
+    for subject_id in subjects_list:
+        morphometry_data, metadata = subject_data_native(subject_id, subjects_dir, measure, hemi, surf=surf)
+        morphdata_by_subject[subject_id] = morphometry_data
+        metadata_by_subject[subject_id] = metadata
+    return morphdata_by_subject, metadata_by_subject
+
 
 def group(measure, surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', group_meta_data=None, subjects_list=None, subjects_file='subjects.txt', subjects_file_dir=None, custom_morphometry_file_templates=None, subjects_detection_mode='auto'):
     """
-    Load morphometry data for a number of subjects.
+    Load standard space morphometry data for a number of subjects.
 
     Load group data, i.e., morphometry data for all subjects in a study that has already been mapped to standard space and is ready for group analysis.
     The information given in the parameters `measure`, `surf`, `hemi`, and `fwhm` are used to construct the file name that will be loaded by default. This function will NOT load the meshes.
