@@ -1215,7 +1215,7 @@ def test_fsaverage_mesh_no_dirs_given():
     del os.environ['SUBJECTS_DIR']
     del os.environ['FREESURFER_HOME']
     with pytest.raises(FileNotFoundError) as exc_info:
-        verts, faces, meta_data = bl.fsaverage_mesh()    
+        verts, faces, meta_data = bl.fsaverage_mesh()
 
 
 def test_read_mgh_file_without_data():
@@ -1403,4 +1403,4 @@ def test_group_native():
     assert 'subject2' in morph_data
     assert 'subject1' in meta_data
     assert 'subject2' in meta_data
-    assert len(morph_data['subject1']) == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
+    assert len(morph_data['subject1']) == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
