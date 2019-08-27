@@ -1386,3 +1386,4 @@ def test_group_native():
     assert 'subject2' in morph_data
     assert 'subject1' in meta_data
     assert 'subject2' in meta_data
+    assert len(morph_data['subject1']) == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES
