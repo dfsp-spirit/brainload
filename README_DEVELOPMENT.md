@@ -384,20 +384,6 @@ Create a new release (from the tag we pushed earlier) on Github and attach the s
 
 This should be pretty self-explanatory, check the GitHub documentation if you need help.
 
-## Python 3
+## Supported Python major versions
 
-### Running the dev version
-
-There is no difference to Python2, just use the equivalent commands:
-
-```console
-sudo apt install python3-pip python3-venv
-python3 -m venv venvp3      # create virtual env in REPO_ROOT
-source venvp3/bin/activate
-pip3 install -e .
-python3 setup.py test # run unit tests
-python3
->>> import brainload as bl
->>> ...                    # do stuff
->>> quit()
-```
+Python >= 3.5 is now the default Python version, and official support for Python 2.7 will end in December 2019. Brainload will also drop support for Python 2.x soon.
