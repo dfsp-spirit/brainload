@@ -122,14 +122,15 @@ def get_atlas_region_names_hardcoded(atlas, freesurfer_version=6):
     elif atlas == "aparc.DKTatlas":
         regions_v6 = ['caudalanteriorcingulate', 'caudalmiddlefrontal', 'cuneus', 'entorhinal', 'fusiform', 'inferiorparietal', 'inferiortemporal', 'isthmuscingulate', 'lateraloccipital', 'lateralorbitofrontal', 'lingual', 'medialorbitofrontal', 'middletemporal', 'parahippocampal', 'paracentral', 'parsopercularis', 'parsorbitalis', 'parstriangularis', 'pericalcarine', 'postcentral', 'posteriorcingulate', 'precentral', 'precuneus', 'rostralanteriorcingulate', 'rostralmiddlefrontal', 'superiorfrontal', 'superiorparietal', 'superiortemporal', 'supramarginal', 'transversetemporal', 'insula']
     else:
-        regions_v6 = None
-    if regions_v6 is not None:
-        if freesurfer_version == 6:
-            return regions_v6
-        elif freesurfer_version == 5:
-            return [s.replace("&", "and") for s in regions_v6]
-        else:
-            raise ValueError("FreeSurfer version must be 5 or 6.")
+        raise ValueError("Atlas must be one of ('aseg', 'aparc', 'aparc.a2009s', 'aparc.DKTatlas').")
+
+    
+    if freesurfer_version == 6:
+        return regions_v6
+    elif freesurfer_version == 5:
+        return [s.replace("&", "and") for s in regions_v6]
+    else:
+        raise ValueError("FreeSurfer version must be 5 or 6.")
 
 
 

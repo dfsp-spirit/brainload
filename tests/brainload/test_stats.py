@@ -541,6 +541,23 @@ def test_group_stats_by_row_for_aparc(capsys):
         assert column_data_s2.shape == (10, )  # for 1 subject, each has a table in ?h.aparc.stats with 10 columns
 
 
+def test_group_stats_by_row_for_aparc_none_list(capsys):
+    expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'lh.aparc.stats')
+    if not os.path.isfile(expected_stats_file):
+        pytest.skip("Test data missing: stats file '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_stats_file)
+    subjects_list = ['subject1', 'subject2']
+    with capsys.disabled():
+        all_subjects_measures_dict, all_subjects_table_data_dict_by_region = st.group_stats_by_row(subjects_list, TEST_DATA_DIR, 'lh.aparc.stats', stats_table_type_list=None)
+    assert len(all_subjects_measures_dict) == 10
+    assert 'BrainSeg,BrainSegVol' in all_subjects_measures_dict
+    brainsegvol_data = all_subjects_measures_dict['BrainSeg,BrainSegVol']
+    assert brainsegvol_data.shape == (2, )
+    assert brainsegvol_data[0] == pytest.approx(1243340.0, 0.01)
+    assert brainsegvol_data[1] == pytest.approx(1243340.0, 0.01)    # test data for subject2 is copied from subject1
+
+    assert all_subjects_table_data_dict_by_region is None
+
+
 def test_group_stats_aparc_a2009s(capsys):
     expected_stats_file = os.path.join(TEST_DATA_DIR, 'subject2', 'stats', 'lh.aparc.a2009s.stats')
     if not os.path.isfile(expected_stats_file):
@@ -713,8 +730,19 @@ def test_extract_column_from_table_data_invalid_value_name():
     assert 'Given column_name_of_values' in str(exc_info.value)
     assert 'noSuchValueName' in str(exc_info.value)
 
+
 def test_extract_column_from_table_data_empty_names_matrix():
     all_subjects_table_data_dict = {'StructName': np.array([]), 'NVoxels': np.array([['333', '444'], ['333', '444']])}
     with pytest.raises(ValueError) as exc_info:
         res = st.extract_column_from_table_data(all_subjects_table_data_dict, 'StructName', 'NVoxels')
     assert 'Expected non-empty 2D matrix of strings' in str(exc_info.value)
+
+
+def test_parse_curv_stats_invalid_hemi():
+    with pytest.raises(ValueError) as exc_info:
+        names, values = st.parse_curve_stats('subject1', TEST_DATA_DIR, 'nosuchhemi')
+    assert 'ERROR: hemi must be one' in str(exc_info.value)
+
+
+def test_parse_curv_stats_invalid_hemi():
+    names, values = st.parse_curve_stats('subject1', TEST_DATA_DIR, 'lh')

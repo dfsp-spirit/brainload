@@ -1172,6 +1172,16 @@ def test_hemi_range():
     assert er == 18
 
 
+def test_hemi_range_invalid_hemi():
+    meta_data = dict()
+    meta_data['lh.num_data_points'] = 10
+    meta_data['rh.num_data_points'] = 9
+    with pytest.raises(ValueError) as exc_info:
+        sl, el = bl.hemi_range(meta_data, 'nosuchhemi')
+    assert "ERROR: hemi must be one of {'lh', 'rh'} but" in str(exc_info.value)
+    assert 'nosuchhemi' in str(exc_info.value)
+
+
 def test_rhi_raises_on_invalid_metadata():
     meta_data_both = 5
     with pytest.raises(ValueError) as exc_info:
@@ -1199,6 +1209,13 @@ def test_fsaverage_mesh():
         pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_fsaverage_dir)
     verts, faces, meta_data = bl.fsaverage_mesh(subjects_dir=TEST_DATA_DIR, use_freesurfer_home_if_missing=True)
     assert verts.shape == (FSAVERAGE_NUM_VERTS_PER_HEMISPHERE * 2, 3)
+
+
+def test_fsaverage_mesh_no_dirs_given():
+    del os.environ['SUBJECTS_DIR']
+    del os.environ['FREESURFER_HOME']
+    with pytest.raises(FileNotFoundError) as exc_info:
+        verts, faces, meta_data = bl.fsaverage_mesh()    
 
 
 def test_read_mgh_file_without_data():

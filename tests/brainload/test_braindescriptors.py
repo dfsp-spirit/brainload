@@ -18,7 +18,65 @@ def test_braindescriptors_init_nonempty():
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     assert len(bdi.subjects_list) == 2
     assert len(bdi.descriptor_names) == 0
+    assert len(bdi.hemis) == 2
     assert bdi.descriptor_values.shape == (2, 0)
+
+
+def test_braindescriptors_init_with_hemi():
+    subjects_list = ['subject1', 'subject2']
+    bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='lh')
+    bdi.report_descriptors()
+    bdi.check_for_hemi_dependent_file([])
+    assert len(bdi.subjects_list) == 2
+    assert len(bdi.descriptor_names) == 0
+    assert bdi.descriptor_values.shape == (2, 0)
+    assert len(bdi.hemis) == 1
+
+
+def test_check_for_NaNs_no_descriptors_yet():
+    subjects_list = ['subject1', 'subject2']
+    bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='lh')
+    subjects_over_threshold, descriptors_over_threshold, nan_share_per_subject, nan_share_per_descriptor = bdi.check_for_NaNs()
+    assert len(subjects_over_threshold) == 0
+    assert len(descriptors_over_threshold) == 0
+
+
+def test_check_for_NaNs_with_curv_descriptors():
+    subjects_list = ['subject1', 'subject2']
+    bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='lh')
+    bdi.add_curv_stats()
+    subjects_over_threshold, descriptors_over_threshold, nan_share_per_subject, nan_share_per_descriptor = bdi.check_for_NaNs()
+    assert len(subjects_over_threshold) == 0
+    assert len(descriptors_over_threshold) == 0
+
+
+def test_check_for_custom_measure_stats_files_invalid_format():
+    subjects_list = ['subject1', 'subject2']
+    bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='rh')
+    with pytest.raises(ValueError) as exc_info:
+        bdi.check_for_custom_measure_stats_files(["aparc"], ["area"], morph_file_format="nosuchformat")
+    assert "nosuchformat" in str(exc_info.value)
+    assert "morph_file_format must be one of" in str(exc_info.value)
+
+
+def test_check_for_custom_measure_stats_files_curv_format():
+    subjects_list = ['subject1', 'subject2']
+    bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='rh')
+    bdi.check_for_custom_measure_stats_files(["aparc"], ["area"], morph_file_format="curv")
+
+
+def test_check_for_custom_measure_stats_files_mgh_format():
+    subjects_list = ['subject1', 'subject2']
+    bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='rh')
+    bdi.check_for_custom_measure_stats_files(["aparc"], ["area"], morph_file_format="mgh")
+
+
+def test_braindescriptors_init_with_invalid_hemi():
+    subjects_list = ['subject1', 'subject2']
+    with pytest.raises(ValueError) as exc_info:
+            bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='nosuchhemi')
+    assert "hemi must be one of {'lh', 'rh', 'both'} but is" in str(exc_info.value)
+    assert "nosuchhemi" in str(exc_info.value)
 
 
 def test_braindescriptors_parcellation_stats():

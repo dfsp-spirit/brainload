@@ -404,6 +404,16 @@ def test_region_data_native():
     assert mean_thickness_in_region == pytest.approx(0.687, 0.1)
 
 
+def test_get_atlas_region_names():
+    regions = an.get_atlas_region_names('aparc', TEST_DATA_DIR, subject_id="subject1")
+    assert len(regions) == 36
+
+
+def test_get_atlas_region_names_invalid():
+    regions = an.get_atlas_region_names('nosuchatlas', TEST_DATA_DIR, subject_id="subject1")
+    assert regions is None
+
+
 def test_get_atlas_region_names_hardcoded():
     region_names = an.get_atlas_region_names_hardcoded('aseg')
     assert len(region_names) == 44
@@ -416,3 +426,15 @@ def test_get_atlas_region_names_hardcoded():
 
     region_names = an.get_atlas_region_names_hardcoded('aparc.DKTatlas')
     assert len(region_names) == 31
+
+
+def test_get_atlas_region_names_hardcoded_invalid_atlas():
+    with pytest.raises(ValueError) as exc_info:
+        region_names = an.get_atlas_region_names_hardcoded('nosuchatlas')
+    assert 'Atlas must be one of' in str(exc_info.value)
+
+
+def test_get_atlas_region_names_hardcoded_invalid_fsversion():
+    with pytest.raises(ValueError) as exc_info:
+        region_names = an.get_atlas_region_names_hardcoded('aparc', freesurfer_version=9)
+    assert 'FreeSurfer version must be 5 or 6' in str(exc_info.value)

@@ -158,6 +158,21 @@ class BrainDescriptors:
 
 
     def check_for_custom_measure_stats_files(self, annot_list, morph_list, morph_file_format="curv"):
+        """
+        Check for custom annotation files.
+
+        Check for the existence of custom annotation and morphometry files.
+
+        Parameters
+        ----------
+        annot_list: list of strings
+            The annotations (atlas file names), a typical entry in the list would be "aparc" or "aparc.a2009s".
+
+        morph_list: list of strings
+            The morphometry data, a typical entry in the list would be "area" or "thickness".
+
+        morph_file_format: string, one of 'curv', 'mgh', or 'mgz'. Defaults to 'curv'.
+        """
         for annot in annot_list:
             parts = ['label', "%s.annot" % (annot)]
             self.check_for_hemi_dependent_file(parts)
@@ -417,7 +432,28 @@ class BrainDescriptors:
     def check_for_NaNs(self, threshold=0.6):
         """
         Check for descriptors and subjects with all NaN values.
+
+        Parameters
+        ----------
+        threshold: float
+            The NaN threshold, subjects and descriptors for which the share of NaN values exceeds this threshold are reported. Must be between .0 and 1.0 to make sense. Defaults to 0.6.
+
+        Returns
+        -------
+        subjects_over_threshold: list of string
+            The subjects
+
+        descriptors_over_threshold: list of string
+            The descriptors
+
+        nan_share_per_subject: numpy float array
+            The share of NaN values for each subject. Numpy array with length n for the n subjects.
+
+        nan_share_per_descriptor: numpy float array
+            The share of NaN values for each descriptor. Numpy array with length m for the m descriptor.
         """
+        if self.descriptor_values.shape[0] == 0 or self.descriptor_values.shape[1] == 0:
+            return [], [], np.zeros((0, )), np.zeros((0, ))
         all_nan_subject_indices = np.all(np.isnan(self.descriptor_values), axis=0)[0]
         all_nan_subjects = np.array(self.subjects_list)[all_nan_subject_indices]
         logging.info("There are %d subjects which have only NaN descriptors values: %s" % (all_nan_subjects.shape[0], ", ".join(all_nan_subjects)))
