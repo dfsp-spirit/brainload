@@ -145,7 +145,7 @@ class BrainDataConsistency:
 
                     except (OSError, IOError):
                         morphometry_data = np.array([])
-                        self.data[hemi][measure_key][subject_index] = 0
+                        self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
                         issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
                         self.subject_issues[subject_id].append(issue_tag_no_file)
                         logging.warn("[%s][%s] Missing file for native space vertex data of measure '%s'." % (subject_id, hemi, measure))
