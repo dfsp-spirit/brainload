@@ -6,11 +6,13 @@ While `brainload` works on several platforms, development happens under Linux an
 
 ## Essential tools
 
-You will need Python and some standard development tools. Under Linux, this should be enough:
+You will need Python 3 and some standard development tools. Under Linux, this should be enough:
 
 ```console
 sudo apt-get install python-pip build-essential git
 ```
+
+Make sure you have Python 3, not Python 2. (Run `python --version` to find out.)
 
 ## Development installation
 
