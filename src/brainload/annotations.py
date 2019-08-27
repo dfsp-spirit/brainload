@@ -7,8 +7,8 @@ Functions for reading FreeSurfer vertex annotation files. These are the file in 
 import os
 import numpy as np
 import nibabel.freesurfer.io as fsio
-import brainload.nitools as nit
-import brainload.freesurferdata as fsd
+from . import nitools as nit
+from . import freesurferdata as fsd
 import logging
 
 
@@ -124,7 +124,7 @@ def get_atlas_region_names_hardcoded(atlas, freesurfer_version=6):
     else:
         raise ValueError("Atlas must be one of ('aseg', 'aparc', 'aparc.a2009s', 'aparc.DKTatlas').")
 
-    
+
     if freesurfer_version == 6:
         return regions_v6
     elif freesurfer_version == 5:

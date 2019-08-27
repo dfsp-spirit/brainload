@@ -7,9 +7,8 @@ Functions to perform consistency checks on neuroimaging data preprocessed with F
 import os, sys
 import numpy as np
 import nibabel.freesurfer.io as fsio
-import brainload.nitools as nit
-import brainload.freesurferdata as fsd
-import brainload.stats
+from . import nitools as nit
+from . import freesurferdata as fsd
 import logging
 import collections
 import errno

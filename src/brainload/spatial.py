@@ -16,7 +16,7 @@ Now you have the coordinates of the mesh vertices in the required format and can
 """
 
 import numpy as np
-import brainload.freesurferdata as blfsd
+from . import freesurferdata as blfsd
 import numpy.linalg as npl  # for matrix inversion
 
 def rotate_3D_coordinates_around_axes(x, y, z, radians_x, radians_y, radians_z):

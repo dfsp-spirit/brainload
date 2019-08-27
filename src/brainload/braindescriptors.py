@@ -7,9 +7,10 @@ Functions to collect brain descriptors from neuroimaging data preprocessed with 
 import os, sys
 import numpy as np
 import nibabel.freesurfer.io as fsio
-import brainload.nitools as nit
-import brainload.freesurferdata as fsd
-import brainload.stats
+from . import nitools as nit
+from . import freesurferdata as fsd
+from . import stats as blst
+from . import annotations as blant
 import logging
 import collections
 
@@ -72,11 +73,11 @@ class BrainDescriptors:
             The hemisphere.
         """
         stats_filename = '%s.%s.stats' % (hemi, atlas)
-        stats_table_type_list = brainload.stats.typelist_for_aparc_atlas_stats()
+        stats_table_type_list = blst.typelist_for_aparc_atlas_stats()
         logging.info("Getting group stats by row for atlas '%s' hemi '%s'." % (atlas, hemi))
-        all_subjects_measures_dict, all_subjects_table_data_dict_by_region = brainload.stats.group_stats_by_row(self.subjects_list, self.subjects_dir, stats_filename, stats_table_type_list=stats_table_type_list)
+        all_subjects_measures_dict, all_subjects_table_data_dict_by_region = blst.group_stats_by_row(self.subjects_list, self.subjects_dir, stats_filename, stats_table_type_list=stats_table_type_list)
         logging.info("Getting table column names.")
-        table_column_names = brainload.stats.get_stats_table_column_names(self.subjects_dir, stats_filename, subject=self.subjects_list[0])
+        table_column_names = blst.get_stats_table_column_names(self.subjects_dir, stats_filename, subject=self.subjects_list[0])
 
         # Add a prefix for the atlas and hemi to the keys in the dictionary, as these will become descriptor names (which should be unique).
         all_subjects_measures_dict_new = dict()
@@ -104,7 +105,7 @@ class BrainDescriptors:
 
         if ignore_columns is None:
             ignore_columns = []
-        region_colum_name = brainload.stats.stats_table_region_label_column_name()
+        region_colum_name = blst.stats_table_region_label_column_name()
         region_names = [rname.decode('utf-8') for rname in all_subjects_table_data_dict[region_colum_name][0]]
 
         for table_column_name in all_subjects_table_data_dict.keys():
@@ -326,7 +327,7 @@ class BrainDescriptors:
             logging.info("Adding curv stats for hemi '%s'." % (hemi))
             all_subject_data_this_hemi = None
             for subject_id in self.subjects_list:
-                curv_stat_names, curv_stat_values = brainload.stats.parse_curve_stats(subject_id, self.subjects_dir, hemi)
+                curv_stat_names, curv_stat_values = blst.parse_curve_stats(subject_id, self.subjects_dir, hemi)
                 if all_subject_data_this_hemi is None:
                     all_subject_data_this_hemi = curv_stat_values
                 else:
@@ -346,7 +347,7 @@ class BrainDescriptors:
         atlas: string
             A valid FreeSurfer segmentation name, like ```aseg```. A file with that name has to exist in the subjects directory under ```stats/```, e.g., ```stats/aseg.stats``` for ```aseg```.
         """
-        all_subjects_measures_dict, all_subjects_table_data_dict = brainload.stats.group_stats_aseg(self.subjects_list, self.subjects_dir)
+        all_subjects_measures_dict, all_subjects_table_data_dict = blst.group_stats_aseg(self.subjects_list, self.subjects_dir)
 
         self._add_measure_dict_stats(all_subjects_measures_dict, atlas)
         self._add_all_subjects_table_data_stats(all_subjects_table_data_dict, atlas, ignore_columns=['Index', 'SegId'])
@@ -392,17 +393,17 @@ class BrainDescriptors:
         """
         all_subjects_data = None
         label_name_subject = self.subjects_list[0]
-        label_names = brainload.annotations.get_atlas_region_names(atlas, self.subjects_dir, subject_id=label_name_subject)
+        label_names = blant.get_atlas_region_names(atlas, self.subjects_dir, subject_id=label_name_subject)
         if label_names is None:
             raise ValueError("Loading region names for atlas '%s' failed, tried reading from annot file for subject '%s' in subjects directory '%s'." % (atlas, label_name_subject, self.subjects_dir))
         for subject_id in self.subjects_list:
-            morphometry_data, morphometry_meta_data = brainload.freesurferdata.subject_data_native(subject_id, self.subjects_dir, measure, hemi)
+            morphometry_data, morphometry_meta_data = fsd.subject_data_native(subject_id, self.subjects_dir, measure, hemi)
             try:
-                region_data_per_hemi, _ = brainload.annotations.region_data_native(subject_id, self.subjects_dir, atlas, hemi, morphometry_data, morphometry_meta_data)
+                region_data_per_hemi, _ = blant.region_data_native(subject_id, self.subjects_dir, atlas, hemi, morphometry_data, morphometry_meta_data)
             except Exception as e:
                 region_data_per_hemi = dict()
                 region_data_per_hemi[hemi] = dict()
-            am_descriptor_data, am_descriptor_names = brainload.annotations.region_stats(region_data_per_hemi, label_names)
+            am_descriptor_data, am_descriptor_names = blant.region_stats(region_data_per_hemi, label_names)
             am_descriptor_names = ["%s_%s_%s" % (atlas, measure, n) for n in am_descriptor_names]
             if all_subjects_data is None:
                 all_subjects_data = am_descriptor_data
