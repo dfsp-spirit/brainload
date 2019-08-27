@@ -7,6 +7,7 @@ nibabel
 ## The following packages are needed for testing
 pytest
 pytest-cov
+pytest-console-scripts
 ## The following packages are needed for building the documentation
 #sphinx
 ## The following packages are needed for visualization only, they may be removed later when we split that into a separate package
