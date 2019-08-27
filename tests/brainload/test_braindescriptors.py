@@ -14,6 +14,9 @@ TEST_DATA_DIR = os.path.join(THIS_DIR, os.pardir, 'test_data')
 TEST_DATA_DIR = os.getenv('BRAINLOAD_TEST_DATA_DIR', TEST_DATA_DIR)
 
 def test_braindescriptors_init_nonempty():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     assert len(bdi.subjects_list) == 2
@@ -23,6 +26,9 @@ def test_braindescriptors_init_nonempty():
 
 
 def test_braindescriptors_init_with_hemi():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='lh')
     bdi.report_descriptors()
@@ -34,6 +40,9 @@ def test_braindescriptors_init_with_hemi():
 
 
 def test_check_for_NaNs_no_descriptors_yet():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='lh')
     subjects_over_threshold, descriptors_over_threshold, nan_share_per_subject, nan_share_per_descriptor = bdi.check_for_NaNs()
@@ -42,6 +51,9 @@ def test_check_for_NaNs_no_descriptors_yet():
 
 
 def test_check_for_NaNs_with_curv_descriptors():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='lh')
     bdi.add_curv_stats()
@@ -51,6 +63,9 @@ def test_check_for_NaNs_with_curv_descriptors():
 
 
 def test_check_for_custom_measure_stats_files_invalid_format():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='rh')
     with pytest.raises(ValueError) as exc_info:
@@ -60,18 +75,27 @@ def test_check_for_custom_measure_stats_files_invalid_format():
 
 
 def test_check_for_custom_measure_stats_files_curv_format():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='rh')
     bdi.check_for_custom_measure_stats_files(["aparc"], ["area"], morph_file_format="curv")
 
 
 def test_check_for_custom_measure_stats_files_mgh_format():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='rh')
     bdi.check_for_custom_measure_stats_files(["aparc"], ["area"], morph_file_format="mgh")
 
 
 def test_braindescriptors_init_with_invalid_hemi():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     with pytest.raises(ValueError) as exc_info:
             bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list, hemi='nosuchhemi')
@@ -80,6 +104,9 @@ def test_braindescriptors_init_with_invalid_hemi():
 
 
 def test_braindescriptors_parcellation_stats():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.add_parcellation_stats(['aparc', 'aparc.a2009s'])
@@ -91,6 +118,9 @@ def test_braindescriptors_parcellation_stats():
 
 
 def test_braindescriptors_add_standard_stats():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.add_standard_stats()
@@ -99,6 +129,9 @@ def test_braindescriptors_add_standard_stats():
 
 
 def test_braindescriptors_standard_stats_have_unique_names():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.add_standard_stats()
@@ -110,6 +143,9 @@ def test_braindescriptors_standard_stats_have_unique_names():
 
 
 def test_braindescriptors_file_checks():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdi = bd.BrainDescriptors(TEST_DATA_DIR, subjects_list)
     bdi.check_for_parcellation_stats_files(['aparc', 'aparc.a2009s'])
