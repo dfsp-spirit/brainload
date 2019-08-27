@@ -12,8 +12,8 @@ import collections
 import gzip
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
-import brainload.nitools as nit
-import brainload.annotations as an
+from . import nitools as nit
+from . import annotations as an
 import nibabel as nib
 import numpy.linalg as npl  # for matrix inversion
 import struct   # for reading binary data
