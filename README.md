@@ -86,13 +86,22 @@ Brainload is fully documented. The full API documentation and some workflow exam
 
 ## Installation
 
+Make sure you have Python 3 and pip for it.
+
 #### Recommended: via pip
 
 ```console
 pip install --user brainload
 ```
 
-You can also install into a virtual environment (python2: virtualenv, python3: venv) of course, omit the `--user` part in that case.
+You can also install into a virtual environment (python2: virtualenv, python3: virtualenv or the integrated venv) of course, omit the `--user` part in that case:
+
+```console
+python -m virtualenv brainload_env
+source brainload_env/bin/activate
+pip install brainload
+```
+
 
 [![PyPI version](https://badge.fury.io/py/brainload.svg)](https://badge.fury.io/py/brainload)
 
