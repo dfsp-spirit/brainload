@@ -33,6 +33,9 @@ def test_braindataconsistency_init_invalid_hemi():
 
 
 def test_braindataconsistency_check_essentials_runs():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdc = bqa.BrainDataConsistency(TEST_DATA_DIR, subjects_list)
     bdc.check_essentials()
@@ -40,6 +43,9 @@ def test_braindataconsistency_check_essentials_runs():
 
 
 def test_braindataconsistency_check_custom_runs():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     subjects_list = ['subject1', 'subject2']
     bdc = bqa.BrainDataConsistency(TEST_DATA_DIR, subjects_list, hemi='lh')
     bdc.check_file_modification_times = False

@@ -1212,8 +1212,9 @@ def test_fsaverage_mesh():
 
 
 def test_fsaverage_mesh_no_dirs_given():
-    del os.environ['SUBJECTS_DIR']
-    del os.environ['FREESURFER_HOME']
+    for var_to_del in ['SUBJECTS_DIR', 'FREESURFER_HOME']:
+        if var_to_del in os.environ:
+            del os.environ[var_to_del]
     with pytest.raises(FileNotFoundError) as exc_info:
         verts, faces, meta_data = bl.fsaverage_mesh()
 
@@ -1396,6 +1397,9 @@ def test_get_num_fsaverage_verts_per_hemi_with_unsupported_version():
 
 
 def test_group_native():
+    expected_subject2_testdata_dir = os.path.join(TEST_DATA_DIR, 'subject2')
+    if not os.path.isdir(expected_subject2_testdata_dir):
+        pytest.skip("Test data missing: e.g., directory '%s' does not exist. You can get all test data by running './develop/get_test_data_all.bash' in the repo root." % expected_subject2_testdata_dir)
     morph_data, meta_data = fsd.group_native('area', TEST_DATA_DIR, ['subject1', 'subject2'])
     assert len(morph_data) == 2
     assert len(meta_data) == 2
