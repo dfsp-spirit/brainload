@@ -388,4 +388,4 @@ This should be pretty self-explanatory, check the GitHub documentation if you ne
 
 ## Supported Python major versions
 
-Python >= 3.5 is now the default Python version, and official support for Python 2.7 will end in December 2019. Brainload will also drop support for Python 2.x soon.
+Official support for Python 2.7 will end in December 2019. Python >= 3.5 is now the default Python version for Brainload and  we will drop support for Python 2.x soon.
