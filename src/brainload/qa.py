@@ -30,7 +30,7 @@ class BrainDataConsistency:
         self.files = dict()
 
         self.surface_vertices_counted = False
-        self.check_file_modification_times = True
+        self.check_file_modification_times = False
         self.time_format = '%Y-%m-%d %H:%M:%S'
         self.time_buffer = 2.0    # For files were one should have been created after the other, define a grace period in seconds.
 
@@ -55,6 +55,7 @@ class BrainDataConsistency:
 
     def check_essentials(self):
         logging.info("Checking essentials.")
+        self._check_subject_dirs_exist()
         if not self.surface_vertices_counted:
             self._count_surface_vertices_and_faces()
         self._check_surfaces_have_identical_vertex_count()
@@ -63,16 +64,29 @@ class BrainDataConsistency:
 
 
     def check_custom(self, native_measures):
-        logging.info("Performing custom checks.")
+        logging.info("Performing custom checks for %s native measures: %s." % (len(native_measures), ", ".join(native_measures)))
+        self._check_subject_dirs_exist()
         if not self.surface_vertices_counted:
             self._count_surface_vertices_and_faces()
-        self._count_surface_vertices_and_faces()
         self._check_surfaces_have_identical_vertex_count()
         self._check_native_space_data(native_measures)
         self._report_by_subject()
 
 
-    def _count_surface_vertices_and_faces(self):
+    def _check_subject_dirs_exist(self):
+        issue_tag_no_data_dir = "ALL_SUBJECT_DATA_MISSING"
+        for subject_index, subject_id in enumerate(self.subjects_list):
+            current_subject_dir = os.path.join(self.subjects_dir, subject_id)
+            if not os.path.isdir(current_subject_dir):
+                logging.warning("[%s] Missing subject data directory '%s'." % (subject_id, current_subject_dir))
+                self.subject_issues[subject_id].append(issue_tag_no_data_dir)
+        logging.info("Checked all subject dirs for existance.")
+
+
+    def _count_surface_vertices_and_faces(self, surfaces=None):
+        if surfaces is None:
+            surfaces = ['white', 'pial']
+
         for hemi in self.hemis:
             self.data[hemi]['mesh_vertex_count_white'] = np.zeros((len(self.subjects_list), ))
             self.data[hemi]['mesh_face_count_white'] = np.zeros((len(self.subjects_list), ))
@@ -80,17 +94,19 @@ class BrainDataConsistency:
             self.data[hemi]['mesh_face_count_pial'] = np.zeros((len(self.subjects_list), ))
 
             for subject_index, subject_id in enumerate(self.subjects_list):
-                # TODO: We should try..catch here in case of missing surface files
-                verts_white, faces_white, meta_data_white = fsd.subject_mesh(subject_id, self.subjects_dir, surf='white', hemi=hemi)
-                md_surf_file_key = "%s.surf_file" % (hemi)
-                self.files[hemi]['surf_white'] = meta_data_white[md_surf_file_key]
-                self.data[hemi]['mesh_vertex_count_white'][subject_index] = len(verts_white)
-                self.data[hemi]['mesh_face_count_white'][subject_index] = len(faces_white)
-                verts_pial, faces_pial, meta_data_pial = fsd.subject_mesh(subject_id, self.subjects_dir, surf='white', hemi=hemi)
-                self.files[hemi]['surf_pial'] = meta_data_white[md_surf_file_key]
-                self.data[hemi]['mesh_vertex_count_pial'][subject_index] = len(verts_pial)
-                self.data[hemi]['mesh_face_count_pial'][subject_index] = len(faces_pial)
+                for surf in surfaces:
+                    try:
+                        verts, faces, meta_data = fsd.subject_mesh(subject_id, self.subjects_dir, surf=surf, hemi=hemi)
+                        md_surf_file_key = "%s.surf_file" % (hemi)
+                        self.files[hemi]['surf_%s' % (surf)] = meta_data[md_surf_file_key]
+                        self.data[hemi]['mesh_vertex_count_%s' % (surf)][subject_index] = len(verts)
+                        self.data[hemi]['mesh_face_count_%s' % (surf)][subject_index] = len(faces)
+                    except (OSError, IOError):
+                        issue_tag = "NO_SURFACE_FILE_%s_%s" % (surf, hemi)
+                        self.subject_issues[subject_id].append(issue_tag)
+                        logging.warning("[%s][%s] Missing surface file for surface '%s'." % (subject_id, hemi, surf))
         self.surface_vertices_counted = True
+        logging.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
 
 
     def _check_surfaces_have_identical_vertex_count(self):
