@@ -109,14 +109,21 @@ class BrainDataConsistency:
         logging.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
 
 
-    def _check_surfaces_have_identical_vertex_count(self):
-        logging.info("Verifying that the white and pial surfaces have identical vertex counts.")
+    def _check_surfaces_have_identical_vertex_count(self, surface_pair=None):
+        if surface_pair is None:
+            surface_pair = ['white', 'pial']
+        s0 = surface_pair[0]
+        s1 = surface_pair[1]
+        logging.info("Verifying that the '%s' and '%s' surfaces have identical vertex counts." % (s0, s1))
         for hemi in self.hemis:
-            issue_tag = "VERT_MISMATCH_FACES_%s" % (hemi)
+            issue_tag = "VERT_MISMATCH_FACES_%s_%s_%s" % (s0, s1, hemi)
             for subject_index, subject_id in enumerate(self.subjects_list):
-                if self.data[hemi]['mesh_vertex_count_white'][subject_index] != self.data[hemi]['mesh_vertex_count_pial'][subject_index]:
-                    logging.warning("[%s][%s] Vertex count mismatch between surfaces white and pial: %d != %d." % (subject_id, hemi, self.data[hemi]['mesh_vertex_count_white'][subject_index], self.data[hemi]['mesh_vertex_count_pial'][subject_index]))
+                s0_count = self.data[hemi]['mesh_vertex_count_%s' % (s0)][subject_index]
+                s1_count = self.data[hemi]['mesh_vertex_count_%s' % (s1)][subject_index]
+                if s0_count != s1_count:
+                    logging.warning("[%s][%s] Vertex count mismatch between surfaces %s and %s: %d != %d." % (subject_id, hemi, s0, s1, s0_count, s1_count))
                     self.subject_issues[subject_id].append(issue_tag)
+        logging.info("Verified that the surfaces '%s' and '%s' have the same number of vertices for each subject." % (s0, s1))
 
 
     def _pts(self, timestamp):
@@ -169,6 +176,7 @@ class BrainDataConsistency:
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
                         logging.warning("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
                         self.subject_issues[subject_id].append(issue_tag)
+            logging.info("Checked native space data for measure '%s' for consistency." % (measure))
 
 
     def _report_by_subject(self):
