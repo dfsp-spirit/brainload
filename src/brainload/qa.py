@@ -34,9 +34,13 @@ class BrainDataConsistency:
         self.time_format = '%Y-%m-%d %H:%M:%S'
         self.time_buffer = 2.0    # For files were one should have been created after the other, define a grace period in seconds.
 
+        self.issue_explanations = self._issue_tag_explanation_dict()
+
         self.subject_issues = dict()
+        self.subject_issues_assoc_files = dict()
         for subject_id in self.subjects_list:
             self.subject_issues[subject_id] = []
+            self.subject_issues_assoc_files[subject_id] = []
 
         if hemi not in ('lh', 'rh', 'both'):
             raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -79,7 +83,7 @@ class BrainDataConsistency:
             current_subject_dir = os.path.join(self.subjects_dir, subject_id)
             if not os.path.isdir(current_subject_dir):
                 logging.warning("[%s] Missing subject data directory '%s'." % (subject_id, current_subject_dir))
-                self.subject_issues[subject_id].append(issue_tag_no_data_dir)
+                self._append_issue(subject_id, issue_tag_no_data_dir, current_subject_dir)
         logging.info("Checked all subject dirs for existance.")
 
 
@@ -102,9 +106,9 @@ class BrainDataConsistency:
                         self.data[hemi]['mesh_vertex_count_%s' % (surf)][subject_index] = len(verts)
                         self.data[hemi]['mesh_face_count_%s' % (surf)][subject_index] = len(faces)
                     except (OSError, IOError):
-                        issue_tag = "NO_SURFACE_FILE_%s_%s" % (surf, hemi)
-                        self.subject_issues[subject_id].append(issue_tag)
+                        issue_tag = "NO_SURFACE_FILE__%s_%s" % (surf, hemi)
                         missing_surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
+                        self._append_issue(subject_id, issue_tag, missing_surface_file)
                         logging.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, missing_surface_file))
         self.surface_vertices_counted = True
         logging.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
@@ -117,13 +121,13 @@ class BrainDataConsistency:
         s1 = surface_pair[1]
         logging.info("Verifying that the '%s' and '%s' surfaces have identical vertex counts." % (s0, s1))
         for hemi in self.hemis:
-            issue_tag = "VERT_MISMATCH_FACES_%s_%s_%s" % (s0, s1, hemi)
+            issue_tag = "VERT_MISMATCH_SURFACES__%s_%s_%s" % (s0, s1, hemi)
             for subject_index, subject_id in enumerate(self.subjects_list):
                 s0_count = self.data[hemi]['mesh_vertex_count_%s' % (s0)][subject_index]
                 s1_count = self.data[hemi]['mesh_vertex_count_%s' % (s1)][subject_index]
                 if s0_count != s1_count:
                     logging.warning("[%s][%s] Vertex count mismatch between surfaces %s and %s: %d != %d." % (subject_id, hemi, s0, s1, s0_count, s1_count))
-                    self.subject_issues[subject_id].append(issue_tag)
+                    self._append_issue(subject_id, issue_tag, fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, s1))
         logging.info("Verified that the surfaces '%s' and '%s' have the same number of vertices for each subject." % (s0, s1))
 
 
@@ -144,12 +148,17 @@ class BrainDataConsistency:
         return str(datetime.timedelta(seconds=abs(timediff_seconds))) + rel
 
 
+    def _append_issue(self, subject_id, tag, filename):
+        self.subject_issues[subject_id].append(tag)
+        self.subject_issues_assoc_files[subject_id].append(filename)
+
+
     def _check_native_space_data(self, measures_list):
         for measure in measures_list:
             logging.info("Verifying native space data for measure '%s'." % (measure))
             for hemi in self.hemis:
                 measure_key = "morphometry_vertex_data_count_%s" % (measure)
-                issue_tag = "MORPH_MISMATCH_%s_%s" % (measure, hemi)
+                issue_tag = "MORPH_MISMATCH__%s_%s" % (measure, hemi)
                 self.data[hemi][measure_key] = np.zeros((len(self.subjects_list), ))
                 for subject_index, subject_id in enumerate(self.subjects_list):
                     try:
@@ -163,21 +172,22 @@ class BrainDataConsistency:
                                 ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
                                 if ts_morph_file + self.time_buffer < ts_surf_file:
                                     logging.warning("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
-                                    issue_tag_file_time = "TIME_MORPH_FILE_%s_%s" % (measure, hemi)
-                                    self.subject_issues[subject_id].append(issue_tag_file_time)
+                                    issue_tag_file_time = "TIME_MORPH_FILE__%s_%s" % (measure, hemi)
+                                    self._append_issue(subject_id, issue_tag_file_time, morph_data_file)
+
 
                     except (OSError, IOError):
                         morphometry_data = np.array([])
                         self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
-                        issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
-                        self.subject_issues[subject_id].append(issue_tag_no_file)
-                        missing_native_morph_file = fsd.get_morphometry_file_path(self.subjects_dir, subject_id, 'white', hemi, measure)
-                        logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, missing_native_morph_file))
+                        issue_tag_no_file = "MISSING_MORPH_FILE__%s_%s" % (measure, hemi)
+                        morph_data_file = fsd.get_morphometry_file_path(self.subjects_dir, subject_id, 'white', hemi, measure)
+                        self._append_issue(subject_id, issue_tag_no_file, morph_data_file)
+                        logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, morph_data_file))
 
 
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
                         logging.warning("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
-                        self.subject_issues[subject_id].append(issue_tag)
+                        self._append_issue(subject_id, issue_tag, morph_data_file)
             logging.info("Checked native space data for measure '%s' for consistency." % (measure))
 
 
@@ -195,3 +205,56 @@ class BrainDataConsistency:
             print("%s: %s" % (subject_id, subject_report))
         print("----- End of report by subject -----")
         print("Summary: %d subjects OK and %d with inconsistencies out of %d total." % (num_ok, num_incons, len(self.subjects_list)))
+
+
+    def get_issue_tag_explanation(self, issue_tag):
+        base_issue_tag = issue_tag.split("__")[0]    # If the tag contains "__", just use the prefix.
+        return self.issue_explanations.get(base_issue_tag, "Sorry, no explanation available for issue tag '%s' (from '%s')." % (base_issue_tag, issue_tag))
+
+
+    def _issue_tag_explanation_dict(self):
+        expl = dict()
+        expl['MISSING_MORPH_FILE'] = "The native space morphology file cannot be read."
+        expl['TIME_MORPH_FILE'] = "The native space morphology file was created/modified before the respective surface file. Note: This can report false positives if the files were changed afterwards, depending on your filesystem or from copying the files."
+        expl['MORPH_MISMATCH'] = "The value count in the native space morphology file does not match the number of vertices in the surface file."
+        expl['VERT_MISMATCH_SURFACES'] = "The vertex count does not match for the surface pair."
+        expl['NO_SURFACE_FILE'] = 'The surface file cannot be read.'
+        expl['ALL_SUBJECT_DATA_MISSING'] = 'The subject directory for the subject cannot be read.'
+        return expl
+
+
+    def save_html_report(self, filename):
+        report = self._report_html()
+        with open(filename, "w") as text_file:
+            text_file.write(report)
+
+
+    def _report_html(self):
+        all_issue_types = []
+        for subject_index, subject_id in enumerate(self.subjects_list):
+            all_issue_types.extend(self.subject_issues[subject_id])
+        unique_issues = list(set(all_issue_types))
+
+        header = "<html>\n<body>\n<table style='width:100%'>\n"
+        footer = "</table>\n</body>\n</html>"
+
+        table_header = "<tr><th>subject_id</th><th>num_issues</th>"
+        for issue in unique_issues:
+            table_header = table_header + "<th>%s</th>" % (issue)
+        table_header = table_header + "</tr>\n"
+
+        table_body = ""
+
+        for subject_index, subject_id in enumerate(self.subjects_list):
+            table_row = "<tr><td class='subject_id'>%s</td><td class='issue_count_subject'>%d</td>" % (subject_id, len(self.subject_issues[subject_id]))
+            for issue in unique_issues:
+                if issue in self.subject_issues[subject_id]:
+                    table_row = table_row + "<td class='check_issue'>%s</td>\n" % (issue)
+                else:
+                    table_row = table_row + "<td class='check_ok'></td>\n"
+            table_row = table_row + "</tr>\n"
+            table_body = table_body + table_row
+
+        table = table_header + table_body
+        html = header + table + footer
+        return html

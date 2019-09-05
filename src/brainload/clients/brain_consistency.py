@@ -44,6 +44,7 @@ def brain_consistency():
 
     bdc = brainqa.BrainDataConsistency(args.subjects_dir, subjects_list)
     bdc.check_custom(native_measures)
+    bdc.save_html_report("report.html")
 
     sys.exit(0)
 
