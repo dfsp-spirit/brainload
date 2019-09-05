@@ -296,9 +296,11 @@ class BrainDataConsistency:
 
         table_body = ""
 
+        num_subjects_with_issues = 0
         for subject_index, subject_id in enumerate(self.subjects_list):
             class_issue_or_not = 'count_no_issue'
             if self.subject_issues[subject_id]:
+                num_subjects_with_issues += 1
                 class_issue_or_not = 'count_has_issue'
             table_row = "<tr><td class='subject_id'>%s</td><td class='issue_count_subject %s'>%d</td>" % (subject_id, class_issue_or_not, len(self.subject_issues[subject_id]))
             for issue in unique_issues:
@@ -312,6 +314,6 @@ class BrainDataConsistency:
             table_body = table_body + table_row
 
         table = table_header + table_body + table_end
-        suffix = "<h4>Checked %d subjects for issues.</h4>\n" % (len(self.subjects_list))
+        suffix = "<h4>Checked %d subjects for issues, found %d with issues, %d ok.</h4>\n" % (len(self.subjects_list), num_subjects_with_issues, len(self.subjects_list)- num_subjects_with_issues)
         html = header + prefix + table + suffix + footer
         return html
