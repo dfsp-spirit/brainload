@@ -1116,11 +1116,34 @@ def subject(subject_id, surf='white', measure='area', hemi='both', subjects_dir=
     return vert_coords, faces, morphometry_data, meta_data
 
 
+def get_surface_file_path(subjects_dir, subject_id, hemi, surf, subdir='surf'):
+    """
+    Determine the path to a surface file, e.g., `lh.white`.
+    """
+    return os.path.join(subjects_dir, subject_id, subdir, (hemi + '.' + surf))
+
+
+def get_standard_space_morphometry_file_path(subjects_dir, subject_id, hemi, measure, fwhm="10", average_subject="fsaverage", surf='white', subdir='surf', file_ext='mgh'):
+    """
+    Determine the path to a standard space morphometry file, e.g., `lh.area.fwhm10.fsaverage.mgh`.
+    """
+    fwhm_tag = _get_fwhm_tag(fwhm)
+    return os.path.join(subjects_dir, subject_id, subdir, (hemi + '.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fwhm_tag + '.' + average_subject + '.' + file_ext))
+
+
 def get_morphometry_file_path(subjects_dir, subject_id, surf, hemi, measure, subdir='surf'):
     """
-    Determine the path to a morphometry file.
+    Determine the path to a native space morphometry file, e.g., `lh.area`.
     """
     return os.path.join(subjects_dir, subject_id, subdir, (hemi + '.' + measure + _get_morphometry_data_suffix_for_surface(surf)))
+
+
+def _get_fwhm_tag(fwhm_string):
+    if fwhm_string is None:
+        fwhm_tag = ''
+    else:
+        fwhm_tag = '.fwhm' + fwhm_string
+    return fwhm_tag
 
 
 def _merge_meshes(meshes):
@@ -1159,7 +1182,7 @@ def _merge_meshes(meshes):
 
 def subject_avg(subject_id, measure='area', surf='white', display_surf='white', hemi='both', fwhm='10', subjects_dir=None, average_subject='fsaverage', subjects_dir_for_average_subject=None, meta_data=None, load_surface_files=True, load_morphometry_data=True, custom_morphometry_files=None):
     """
-    Load morphometry data that has been mapped to an average subject for a subject.
+    Load morphometry data that has been mapped to an average subject for a subject, i.e., standard space data.
 
     Load data for a single subject that has been mapped to an average subject like the `fsaverage` subject from FreeSurfer. Can also load the mesh of an arbitrary surface for the average subject.
 
@@ -1289,15 +1312,13 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     morphometry_data = None
     if load_morphometry_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
-        if fwhm is None:    # If the uses explicitely sets fwmh to None, we use the file without any 'fwhmX' part. This data in this file should be identical to the data on the fwhm='0' case, so we expect that this will be rarely used.
-            fhwm_tag = ''
-        else:
-            fhwm_tag = '.fwhm' + fwhm
+
+        fwhm_tag = _get_fwhm_tag(fwhm)
 
         if custom_morphometry_files is None:
             meta_data['custom_morphometry_files_used'] = False
-            lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
-            rh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fhwm_tag + '.' + average_subject + '.mgh'))
+            lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fwhm_tag + '.' + average_subject + '.mgh'))
+            rh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fwhm_tag + '.' + average_subject + '.mgh'))
         else:
             meta_data['custom_morphometry_files_used'] = True
             lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphometry_files['lh'])

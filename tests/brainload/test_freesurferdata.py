@@ -1408,3 +1408,16 @@ def test_group_native():
     assert 'subject1' in meta_data
     assert 'subject2' in meta_data
     assert len(morph_data['subject1']) == SUBJECT1_SURF_LH_WHITE_NUM_VERTICES + SUBJECT1_SURF_RH_WHITE_NUM_VERTICES
+
+
+def test_get_surface_file_path():
+    assert fsd.get_surface_file_path('study1', 'subject1', 'lh', 'white') == os.path.join('study1', 'subject1', 'surf', 'lh.white')
+    assert fsd.get_surface_file_path('study1', 'subject2', 'rh', 'pial') == os.path.join('study1', 'subject2', 'surf', 'rh.pial')
+    assert fsd.get_surface_file_path('study1', 'subject2', 'rh', 'pial', subdir='mri') == os.path.join('study1', 'subject2', 'mri', 'rh.pial')
+
+
+def test_get_standard_space_morphometry_file_path():
+    assert fsd.get_standard_space_morphometry_file_path('study1', 'subject1', 'lh', 'area') == os.path.join('study1', 'subject1', 'surf', 'lh.area.fwhm10.fsaverage.mgh')
+    assert fsd.get_standard_space_morphometry_file_path('study1', 'subject1', 'lh', 'area', fwhm="25") == os.path.join('study1', 'subject1', 'surf', 'lh.area.fwhm25.fsaverage.mgh')
+    assert fsd.get_standard_space_morphometry_file_path('study1', 'subject1', 'lh', 'area', average_subject="bert") == os.path.join('study1', 'subject1', 'surf', 'lh.area.fwhm10.bert.mgh')
+    assert fsd.get_standard_space_morphometry_file_path('study1', 'subject1', 'rh', 'area', subdir='mri', file_ext='mgz') == os.path.join('study1', 'subject1', 'mri', 'rh.area.fwhm10.fsaverage.mgz')
