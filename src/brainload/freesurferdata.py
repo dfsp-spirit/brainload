@@ -1313,12 +1313,10 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
     if load_morphometry_data:
         subject_surf_dir = os.path.join(subjects_dir, subject_id, 'surf')
 
-        fwhm_tag = _get_fwhm_tag(fwhm)
-
         if custom_morphometry_files is None:
             meta_data['custom_morphometry_files_used'] = False
-            lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('lh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fwhm_tag + '.' + average_subject + '.mgh'))
-            rh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, ('rh.' + measure + _get_morphometry_data_suffix_for_surface(surf) + fwhm_tag + '.' + average_subject + '.mgh'))
+            lh_morphometry_data_mapped_to_fsaverage = get_standard_space_morphometry_file_path(subjects_dir, subject_id, 'lh', measure, fwhm=fwhm, average_subject=average_subject, surf=surf)
+            rh_morphometry_data_mapped_to_fsaverage = get_standard_space_morphometry_file_path(subjects_dir, subject_id, 'rh', measure, fwhm=fwhm, average_subject=average_subject, surf=surf)
         else:
             meta_data['custom_morphometry_files_used'] = True
             lh_morphometry_data_mapped_to_fsaverage = os.path.join(subject_surf_dir, custom_morphometry_files['lh'])
