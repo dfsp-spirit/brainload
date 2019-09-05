@@ -104,7 +104,8 @@ class BrainDataConsistency:
                     except (OSError, IOError):
                         issue_tag = "NO_SURFACE_FILE_%s_%s" % (surf, hemi)
                         self.subject_issues[subject_id].append(issue_tag)
-                        logging.warning("[%s][%s] Missing surface file for surface '%s'." % (subject_id, hemi, surf))
+                        missing_surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
+                        logging.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, missing_surface_file))
         self.surface_vertices_counted = True
         logging.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
 
@@ -170,7 +171,8 @@ class BrainDataConsistency:
                         self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
                         issue_tag_no_file = "MISSING_MORPH_FILE_%s_%s" % (measure, hemi)
                         self.subject_issues[subject_id].append(issue_tag_no_file)
-                        logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s'." % (subject_id, hemi, measure))
+                        missing_native_morph_file = fsd.get_morphometry_file_path(self.subjects_dir, subject_id, 'white', hemi, measure)
+                        logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, missing_native_morph_file))
 
 
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
