@@ -289,9 +289,9 @@ class BrainDataConsistency:
         table_end = "</table>\n"
         footer = "</body>\n</html>"
 
-        table_header = "<table class='issues_table'>\n<tr><th>subject_id</th><th>num_issues</th>"
+        table_header = "<table class='issues_table'>\n<tr><th title='The subject identifier'>subject_id</th><th title='Number of issues detected for this subject'>num_issues</th>"
         for issue in unique_issues:
-            table_header = table_header + "<th>%s</th>" % (issue)
+            table_header = table_header + "<th title='%s'>%s</th>" % (self.get_issue_tag_explanation(issue), issue)
         table_header = table_header + "</tr>\n"
 
         table_body = ""
