@@ -227,6 +227,55 @@ class BrainDataConsistency:
         report = self._report_html()
         with open(filename, "w") as text_file:
             text_file.write(report)
+        logging.info("HTML report written to file '%s'." % (filename))
+
+
+    def _get_css_style(self):
+        return """<style>
+        body {
+          width: 95%;
+        }
+
+        table {
+          border-collapse: collapse;
+          border: 1px solid silver;
+          width: 100%;
+        }
+
+        th {
+          text-align: center;
+          padding: 8px;
+        }
+
+        td {
+          text-align: left;
+          padding: 8px;
+        }
+
+        td.check_issue {
+          background-color: #99555555
+        }
+
+        td.count_no_issue {
+          background-color: #55995555
+        }
+
+        td.count_has_issue {
+          background-color: #99555555
+        }
+
+        tr:nth-child(even){background-color: #D5D5D5}
+
+        tr:hover {
+          background: silver;
+          cursor: pointer;
+        }
+
+        th {
+          background-color: #0000FF;
+          color: white;
+        }
+        </style>"""
 
 
     def _report_html(self):
@@ -235,10 +284,12 @@ class BrainDataConsistency:
             all_issue_types.extend(self.subject_issues[subject_id])
         unique_issues = list(set(all_issue_types))
 
-        header = "<html>\n<body>\n<table style='width:100%'>\n"
-        footer = "</table>\n</body>\n</html>"
+        header = "<html>\n<head>\n%s</head>\n<body>\n"  % (self._get_css_style())
+        prefix = "<h1>Braindata QA Report</h1><h4>Hover mouse over issues to see full file path.</h4>\n"
+        table_end = "</table>\n"
+        footer = "</body>\n</html>"
 
-        table_header = "<tr><th>subject_id</th><th>num_issues</th>"
+        table_header = "<table class='issues_table'>\n<tr><th>subject_id</th><th>num_issues</th>"
         for issue in unique_issues:
             table_header = table_header + "<th>%s</th>" % (issue)
         table_header = table_header + "</tr>\n"
@@ -246,15 +297,21 @@ class BrainDataConsistency:
         table_body = ""
 
         for subject_index, subject_id in enumerate(self.subjects_list):
-            table_row = "<tr><td class='subject_id'>%s</td><td class='issue_count_subject'>%d</td>" % (subject_id, len(self.subject_issues[subject_id]))
+            class_issue_or_not = 'count_no_issue'
+            if self.subject_issues[subject_id]:
+                class_issue_or_not = 'count_has_issue'
+            table_row = "<tr><td class='subject_id'>%s</td><td class='issue_count_subject %s'>%d</td>" % (subject_id, class_issue_or_not, len(self.subject_issues[subject_id]))
             for issue in unique_issues:
                 if issue in self.subject_issues[subject_id]:
-                    table_row = table_row + "<td class='check_issue'>%s</td>\n" % (issue)
+                    issue_index = self.subject_issues[subject_id].index(issue)
+                    related_file = self.subject_issues_assoc_files[subject_id][issue_index]
+                    table_row = table_row + "<td class='check_issue' title='%s'>%s</td>\n" % (related_file, issue)
                 else:
-                    table_row = table_row + "<td class='check_ok'></td>\n"
+                    table_row = table_row + "<td class='check_ok'>ok</td>\n"
             table_row = table_row + "</tr>\n"
             table_body = table_body + table_row
 
-        table = table_header + table_body
-        html = header + table + footer
+        table = table_header + table_body + table_end
+        suffix = "<h4>Checked %d subjects for issues.</h4>\n" % (len(self.subjects_list))
+        html = header + prefix + table + suffix + footer
         return html
