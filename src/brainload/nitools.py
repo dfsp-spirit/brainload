@@ -313,6 +313,12 @@ def write_subjects_file(file_name, subjects_list):
     write_lines_to_text_file(lines, file_name)
 
 
+def write_BIDS_participants_file(file_name, subjects_list):
+    lines = ["participant_id"]
+    lines = lines.extend(["%s" % (s) for s in subjects_list])
+    write_lines_to_text_file(lines, file_name)
+
+
 def load_vertex_indices(vertex_indices_file):
     return np.loadtxt(vertex_indices_file, dtype=np.uint32, delimiter=",")
 
