@@ -360,12 +360,37 @@ class BrainDataConsistency:
           font-weight: bold;
         }
 
+        td.subject_max_severity_0 {
+          background-color: #55995555
+        }
+
+        td.subject_max_severity_1 {
+          background-color: #99000022
+        }
+
+        td.subject_max_severity_2 {
+          background-color: #99000044
+        }
+
+        td.subject_max_severity_3 {
+          background-color: #99000066
+        }
+
+        td.subject_max_severity_4 {
+          background-color: #990000AA
+        }
+
+        td.subject_max_severity_5 {
+          background-color: #990000FF;
+          font-weight: bold;
+        }
+
         td.count_no_issue {
           background-color: #55995555
         }
 
         td.count_has_issue {
-          background-color: #99555555
+          font-weight: bold;
         }
 
         tr:nth-child(even){
@@ -391,11 +416,11 @@ class BrainDataConsistency:
         unique_issues = list(set(all_issue_types))
 
         header = "<html>\n<head>\n%s</head>\n<body>\n"  % (self._get_css_style())
-        prefix = "<h1>Braindata QA Report</h1><h4>Hover mouse over issues to see full file path.</h4>\n"
+        prefix = "<h1>Braindata QA Report</h1><h4>* Hover mouse over table header to see an explanation of that column.</h4>\n<h4>* Hover mouse over an issue to see the path of the related file or directory.</h4>\n<h4>* Issues are colored by severity (darker red is worse). Check the ones with highest severity first, as the others may only be aftereffects.</h4>\n"
         table_end = "</table>\n"
         footer = "</body>\n</html>"
 
-        table_header = "<table class='issues_table'>\n<tr><th title='The subject identifier'>subject_id</th><th title='Number of issues detected for this subject'>num_issues</th>"
+        table_header = "<table class='issues_table'>\n<tr><th title='The subject identifier'>subject_id</th><th title='Maximal severity of issues for this subject, from 0 to 5. Higher is worse.'>severity</th><th title='Number of issues detected for this subject'>num_issues</th>"
         for issue in unique_issues:
             table_header = table_header + "<th title='%s'>%s</th>" % (self.get_issue_tag_explanation(issue), issue)
         table_header = table_header + "</tr>\n"
@@ -405,10 +430,14 @@ class BrainDataConsistency:
         num_subjects_with_issues = 0
         for subject_index, subject_id in enumerate(self.subjects_list):
             class_issue_or_not = 'count_no_issue'
+            max_severity = 0
+            tag_max_severity = 'subject_max_severity_0'
             if self.subject_issues[subject_id]:
                 num_subjects_with_issues += 1
+                max_severity = max(self.subject_issues_severity[subject_id])
+                tag_max_severity = 'subject_max_severity_%s' % (str(max_severity))
                 class_issue_or_not = 'count_has_issue'
-            table_row = "<tr><td class='subject_id'>%s</td><td class='issue_count_subject %s'>%d</td>" % (subject_id, class_issue_or_not, len(self.subject_issues[subject_id]))
+            table_row = "<tr><td class='subject_id'>%s</td><td class='subject_severity %s'>%d</td><td class='issue_count_subject %s %s'>%d</td>" % (subject_id, tag_max_severity, max_severity, class_issue_or_not, tag_max_severity, len(self.subject_issues[subject_id]))
             for issue in unique_issues:
                 if issue in self.subject_issues[subject_id]:
                     issue_index = self.subject_issues[subject_id].index(issue)
