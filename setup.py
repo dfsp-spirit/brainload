@@ -29,7 +29,7 @@ setup(
     license='MIT',
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'pytest-cov', 'pytest-console-scripts'],
-    install_requires=['numpy', 'nibabel', 'pandas'],
+    install_requires=['numpy', 'nibabel'],
     package_dir = {'': 'src'},                               # The root directory that contains the source for the modules (relative to setup.py) is ./src/,
     include_package_data=True,                               # respect MANIFEST.in at install time
     zip_safe=False,

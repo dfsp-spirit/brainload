@@ -3,7 +3,6 @@ setuptools>=36.0.0
 six>=0.11
 numpy
 nibabel
-pandas
 
 ## The following packages are needed for testing
 pytest
