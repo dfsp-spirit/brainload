@@ -49,7 +49,7 @@ def test_braindataconsistency_check_custom_runs():
     subjects_list = ['subject1', 'subject2']
     bdc = bqa.BrainDataConsistency(TEST_DATA_DIR, subjects_list, hemi='lh')
     bdc.check_file_modification_times = False
-    bdc.check_custom(['area'])
+    bdc.check_custom(['area'], ['area'])
 
 
 def test_braindataconsistency_pts():
