@@ -15,6 +15,13 @@ import errno
 import datetime
 
 
+SEVERITY_TIMESTAMP = 1
+SEVERITY_DATA_MISMATCH = 2
+SEVERITY_REQUESTED_FILE_MISSING = 3             # A file which was requested by a query is missing (like 'lh.area' if a check of native measure 'area' was requested)
+SEVERITY_EXPECTED_FILE_MISSING = 4              # A standard file which we need in any case to perform the checks is missing (like 'lh.white', which we need to check vertex counts of *any* native space measure data)
+SEVERITY_SUBJECTS_DIR_MISSING = 5
+
+
 class BrainDataConsistency:
     """
     Check brain data consistency for one or more subjects.
@@ -43,9 +50,11 @@ class BrainDataConsistency:
 
         self.subject_issues = dict()
         self.subject_issues_assoc_files = dict()
+        self.subject_issues_severity = dict()
         for subject_id in self.subjects_list:
             self.subject_issues[subject_id] = []
             self.subject_issues_assoc_files[subject_id] = []
+            self.subject_issues_severity[subject_id] = []
 
         if hemi not in ('lh', 'rh', 'both'):
             raise ValueError("ERROR: hemi must be one of {'lh', 'rh', 'both'} but is '%s'." % hemi)
@@ -95,7 +104,7 @@ class BrainDataConsistency:
             current_subject_dir = os.path.join(self.subjects_dir, subject_id)
             if not os.path.isdir(current_subject_dir):
                 logging.warning("[%s] Missing subject data directory '%s'." % (subject_id, current_subject_dir))
-                self._append_issue(subject_id, issue_tag_no_data_dir, current_subject_dir)
+                self._append_issue(subject_id, issue_tag_no_data_dir, current_subject_dir, SEVERITY_SUBJECTS_DIR_MISSING)
         logging.info("Checked all subject dirs for existance.")
 
 
@@ -119,9 +128,9 @@ class BrainDataConsistency:
                         self.data[hemi]['mesh_face_count_%s' % (surf)][subject_index] = len(faces)
                     except (OSError, IOError):
                         issue_tag = "NO_SURFACE_FILE__%s_%s" % (surf, hemi)
-                        NO_surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
-                        self._append_issue(subject_id, issue_tag, NO_surface_file)
-                        logging.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, NO_surface_file))
+                        surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
+                        self._append_issue(subject_id, issue_tag, surface_file, SEVERITY_EXPECTED_FILE_MISSING)
+                        logging.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, surface_file))
         self.surface_vertices_counted = True
         logging.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
 
@@ -140,7 +149,7 @@ class BrainDataConsistency:
                 s1_count = self.data[hemi]['mesh_vertex_count_%s' % (s1)][subject_index]
                 if s0_count != s1_count:
                     logging.warning("[%s][%s] Vertex count mismatch between surfaces %s and %s: %d != %d." % (subject_id, hemi, s0, s1, s0_count, s1_count))
-                    self._append_issue(subject_id, issue_tag, fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, s1))
+                    self._append_issue(subject_id, issue_tag, fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, s1), SEVERITY_REQUESTED_FILE_MISSING)
         logging.info("Verified that the surfaces '%s' and '%s' have the same number of vertices for each subject." % (s0, s1))
 
 
@@ -149,6 +158,7 @@ class BrainDataConsistency:
         Print a time stamp in readable format.
         """
         return datetime.datetime.utcfromtimestamp(timestamp).strftime(self.time_format)
+
 
     def _ptd(self, timediff_seconds):
         """
@@ -161,9 +171,27 @@ class BrainDataConsistency:
         return str(datetime.timedelta(seconds=abs(timediff_seconds))) + rel
 
 
-    def _append_issue(self, subject_id, tag, filename):
+    def _append_issue(self, subject_id, tag, filename, severity):
+        """
+        Append an issue for a subject.
+
+        Parameters
+        ----------
+        subject_id: string
+            A subject identifier.
+
+        tag: string
+            A string identifying the issue. Should be listed in the explanation dictionary.
+
+        filename: string
+            Path to the file associated with the isse, pass empty string if none. Example: If the issue is that a file is missing or has a wrong vertex count, pass the file.
+
+        severity: int
+            How severe the issue is, from 1 to 5. Higher is more severe. If the whole subject directory is missing, this is more severe than a wrong date on a file. This is used in the report.
+        """
         self.subject_issues[subject_id].append(tag)
         self.subject_issues_assoc_files[subject_id].append(filename)
+        self.subject_issues_severity[subject_id].append(severity)
 
 
     def _check_native_space_data(self, measures_list):
@@ -187,7 +215,7 @@ class BrainDataConsistency:
                                 if ts_morph_file + self.time_buffer < ts_surf_file:
                                     logging.warning("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
                                     issue_tag_file_time = "TIME_MORPH_FILE__%s_%s" % (measure, hemi)
-                                    self._append_issue(subject_id, issue_tag_file_time, morph_data_file)
+                                    self._append_issue(subject_id, issue_tag_file_time, morph_data_file, SEVERITY_TIMESTAMP)
 
 
                     except (OSError, IOError):
@@ -195,13 +223,13 @@ class BrainDataConsistency:
                         self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
                         issue_tag_no_file = "NO_MORPH_FILE__%s_%s" % (measure, hemi)
                         morph_data_file = fsd.get_morphometry_file_path(self.subjects_dir, subject_id, 'white', hemi, measure)
-                        self._append_issue(subject_id, issue_tag_no_file, morph_data_file)
+                        self._append_issue(subject_id, issue_tag_no_file, morph_data_file, SEVERITY_REQUESTED_FILE_MISSING)
                         logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, morph_data_file))
 
 
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
                         logging.warning("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
-                        self._append_issue(subject_id, issue_tag, morph_data_file)
+                        self._append_issue(subject_id, issue_tag, morph_data_file, SEVERITY_DATA_MISMATCH)
             logging.info("Checked native space data for measure '%s' for consistency." % (measure))
 
 
@@ -226,20 +254,20 @@ class BrainDataConsistency:
                                     if ts_morph_file + self.time_buffer < ts_surf_file:
                                         logging.warning("[%s][%s] Standard space morphometry file for measure '%s' fwhm '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, fwhm, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file - ts_surf_file)))
                                         issue_tag_file_time = "TIME_STD_MORPH_FILE__%s_%s_%s" % (measure, hemi, fwhm)
-                                        self._append_issue(subject_id, issue_tag_file_time, morph_data_file)
+                                        self._append_issue(subject_id, issue_tag_file_time, morph_data_file, SEVERITY_TIMESTAMP)
 
 
                         except (OSError, IOError):
                             morphometry_data = np.array([])
                             self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
                             issue_tag_no_file = "NO_STD_MORPH_FILE__%s_%s_%s" % (measure, hemi, fwhm)
-                            self._append_issue(subject_id, issue_tag_no_file, morph_data_file_std)
+                            self._append_issue(subject_id, issue_tag_no_file, morph_data_file_std, SEVERITY_REQUESTED_FILE_MISSING)
                             logging.warning("[%s][%s] Missing file for standard space vertex data of measure '%s' at fwhm '%s': '%s'." % (subject_id, hemi, measure, fwhm, morph_data_file_std))
 
 
                         if len(morphometry_data) != self.average_subject_mesh_vertex_count:
                             logging.warning("[%s][%s] Mismatch between length of vertex data for standard space measure '%s' and number of vertices of average subject '%s' surface: %d != %d." % (subject_id, hemi, measure, self.average_subject, len(morphometry_data), self.average_subject_mesh_vertex_count))
-                            self._append_issue(subject_id, issue_tag, morph_data_file_std)
+                            self._append_issue(subject_id, issue_tag, morph_data_file_std, SEVERITY_DATA_MISMATCH)
                 logging.info("Checked standard space data for measure '%s' for consistency." % (measure))
 
 
@@ -309,7 +337,27 @@ class BrainDataConsistency:
         }
 
         td.check_issue {
-          background-color: #99555555
+        }
+
+        td.issue_severity_1 {
+          background-color: #99000022
+        }
+
+        td.issue_severity_2 {
+          background-color: #99000044
+        }
+
+        td.issue_severity_3 {
+          background-color: #99000066
+        }
+
+        td.issue_severity_4 {
+          background-color: #990000AA
+        }
+
+        td.issue_severity_5 {
+          background-color: #990000FF;
+          font-weight: bold;
         }
 
         td.count_no_issue {
@@ -320,7 +368,9 @@ class BrainDataConsistency:
           background-color: #99555555
         }
 
-        tr:nth-child(even){background-color: #D5D5D5}
+        tr:nth-child(even){
+          background-color: #D5D5D5
+        }
 
         tr:hover {
           background: silver;
@@ -363,7 +413,9 @@ class BrainDataConsistency:
                 if issue in self.subject_issues[subject_id]:
                     issue_index = self.subject_issues[subject_id].index(issue)
                     related_file = self.subject_issues_assoc_files[subject_id][issue_index]
-                    table_row = table_row + "<td class='check_issue' title='%s'>%s</td>\n" % (related_file, issue)
+                    severity = self.subject_issues_severity[subject_id][issue_index]
+                    severity_tag = "issue_severity_%s" % (str(severity))
+                    table_row = table_row + "<td class='check_issue %s' title='%s'>%s</td>\n" % (severity_tag, related_file, issue)
                 else:
                     table_row = table_row + "<td class='check_ok'>ok</td>\n"
             table_row = table_row + "</tr>\n"
