@@ -22,6 +22,17 @@ def test_read_subjects_file_five_subjects():
     assert 'subject5' in subject_ids
 
 
+def test_read_participants_file_five_subjects():
+    participants_file = os.path.join(TEST_DATA_DIR, 'participants.tsv')
+    subject_ids = nit.read_BIDS_participants_file(participants_file)
+    assert len(subject_ids) == 5
+    assert 'subject1' in subject_ids
+    assert 'subject2' in subject_ids
+    assert 'subject3' in subject_ids
+    assert 'subject4' in subject_ids
+    assert 'subject5' in subject_ids
+
+
 def test_read_subjects_file_one_subject():
     subjects_file = os.path.join(TEST_DATA_DIR, 'subjects_only1.txt')
     subject_ids = nit.read_subjects_file(subjects_file)

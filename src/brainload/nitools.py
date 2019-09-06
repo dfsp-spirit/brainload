@@ -33,6 +33,24 @@ def _read_text_file_lines(file_name):
     return lines
 
 
+def read_BIDS_participants_file(participants_file):
+    """
+    Read all subjects from BIDS participants file.
+
+    The file must a tab-separated text file with an arbitrary number of columns and one header line. Exactly one of the columns must be named 'participants_id'. The file should be name 'participants.tsv', but this is not enforced. See https://www.nature.com/articles/sdata201644 for details on BIDS, the Brain Imaging Data Structure standard.
+    """
+    subject_ids = []
+    with open(participants_file, 'r') as sfh:
+        reader = csv.reader(sfh, delimiter='\t', quotechar='"')
+        row_idx = 0
+        for row in reader:
+            if row_idx == 0:
+                relevant_index = row.index("participant_id")
+            else:
+                subject_ids.append(row[relevant_index])
+            row_idx += 1
+    return subject_ids
+
 
 def read_subjects_file(subjects_file, has_header_line=False, index_of_subject_id_field=0, **kwargs):
     """
