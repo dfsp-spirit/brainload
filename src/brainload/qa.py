@@ -99,7 +99,7 @@ class BrainDataConsistency:
 
 
     def _check_subject_dirs_exist(self):
-        issue_tag_no_data_dir = "ALL_SUBJECT_DATA_MISSING"
+        issue_tag_no_data_dir = "NO_SUBJECT_DIR"
         for subject_index, subject_id in enumerate(self.subjects_list):
             current_subject_dir = os.path.join(self.subjects_dir, subject_id)
             if not os.path.isdir(current_subject_dir):
@@ -143,7 +143,7 @@ class BrainDataConsistency:
         s1 = surface_pair[1]
         logging.info("Verifying that the '%s' and '%s' surfaces have identical vertex counts." % (s0, s1))
         for hemi in self.hemis:
-            issue_tag = "VERT_MISMATCH_SURFACES__%s_%s_%s" % (s0, s1, hemi)
+            issue_tag = "MISMATCH_VERTS_SURFACES__%s_%s_%s" % (s0, s1, hemi)
             for subject_index, subject_id in enumerate(self.subjects_list):
                 s0_count = self.data[hemi]['mesh_vertex_count_%s' % (s0)][subject_index]
                 s1_count = self.data[hemi]['mesh_vertex_count_%s' % (s1)][subject_index]
@@ -200,7 +200,7 @@ class BrainDataConsistency:
             logging.info("Verifying native space data for measure '%s'." % (measure))
             for hemi in self.hemis:
                 measure_key = "morphometry_vertex_data_count_%s" % (measure)
-                issue_tag = "MORPH_MISMATCH__%s_%s" % (measure, hemi)
+                issue_tag = "MISMATCH_MORPH_NAT_SURFACE__%s_%s" % (measure, hemi)
                 self.data[hemi][measure_key] = np.zeros((len(self.subjects_list), ))
                 for subject_index, subject_id in enumerate(self.subjects_list):
                     try:
@@ -214,14 +214,14 @@ class BrainDataConsistency:
                                 ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
                                 if ts_morph_file + self.time_buffer < ts_surf_file:
                                     logging.warning("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
-                                    issue_tag_file_time = "TIME_MORPH_FILE__%s_%s" % (measure, hemi)
+                                    issue_tag_file_time = "TIME_NAT_MORPH_FILE__%s_%s" % (measure, hemi)
                                     self._append_issue(subject_id, issue_tag_file_time, morph_data_file, SEVERITY_TIMESTAMP)
 
 
                     except (OSError, IOError):
                         morphometry_data = np.array([])
                         self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
-                        issue_tag_no_file = "NO_MORPH_FILE__%s_%s" % (measure, hemi)
+                        issue_tag_no_file = "NO_NAT_MORPH_FILE__%s_%s" % (measure, hemi)
                         morph_data_file = fsd.get_morphometry_file_path(self.subjects_dir, subject_id, 'white', hemi, measure)
                         self._append_issue(subject_id, issue_tag_no_file, morph_data_file, SEVERITY_REQUESTED_FILE_MISSING)
                         logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, morph_data_file))
@@ -240,7 +240,7 @@ class BrainDataConsistency:
                 logging.info("Verifying standard space data for measure '%s' at fwhm '%s' (average subject='%s')." % (measure, fwhm, self.average_subject))
                 for hemi in self.hemis:
                     measure_key = "std_space_morphometry_vertex_data_count_%s_%s" % (measure, fwhm)
-                    issue_tag = "STD_MORPH_MISMATCH__%s_%s_%s" % (measure, hemi, fwhm)
+                    issue_tag = "MISMATCH_MORPH_STD_SURFACE__%s_%s_%s" % (measure, hemi, fwhm)
                     self.data[hemi][measure_key] = np.zeros((len(self.subjects_list), ))
                     for subject_index, subject_id in enumerate(self.subjects_list):
                         morph_data_file_std = fsd.get_standard_space_morphometry_file_path(self.subjects_dir, subject_id, hemi, measure, fwhm=fwhm, average_subject=self.average_subject)
@@ -295,15 +295,15 @@ class BrainDataConsistency:
 
     def _issue_tag_explanation_dict(self):
         expl = dict()
-        expl['NO_MORPH_FILE'] = "The native space morphology file cannot be read."
+        expl['NO_NAT_MORPH_FILE'] = "The native space morphology file cannot be read."
         expl['NO_STD_MORPH_FILE'] = "The standard space morphology file cannot be read."
-        expl['TIME_MORPH_FILE'] = "The native space morphology file was created/modified before the respective surface file. Note: This can report false positives if the files were changed afterwards, depending on your filesystem or from copying the files."
+        expl['TIME_NAT_MORPH_FILE'] = "The native space morphology file was created/modified before the respective surface file. Note: This can report false positives if the files were changed afterwards, depending on your filesystem or from copying the files."
         expl['TIME_STD_MORPH_FILE'] = "The standard space morphology file was created/modified before the respective surface file. Note: This can report false positives if the files were changed afterwards, depending on your filesystem or from copying the files."
-        expl['MORPH_MISMATCH'] = "The value count in the native space morphology file does not match the number of vertices in the surface file."
-        expl['STD_MORPH_MISMATCH'] = "The value count in the standard space morphology file does not match the number of vertices in the surface file of the template subject."
-        expl['VERT_MISMATCH_SURFACES'] = "The vertex count does not match for the surface pair."
+        expl['MISMATCH_MORPH_NAT_SURFACE'] = "The value count in the native space morphology file does not match the number of vertices in the native surface file."
+        expl['MISMATCH_MORPH_STD_SURFACE'] = "The value count in the standard space morphology file does not match the number of vertices in the surface file of the template subject."
+        expl['MISMATCH_VERTS_SURFACES'] = "The vertex count differs for the native surface pair."
         expl['NO_SURFACE_FILE'] = 'The surface file cannot be read.'
-        expl['ALL_SUBJECT_DATA_MISSING'] = 'The subject directory for the subject cannot be read.'
+        expl['NO_SUBJECT_DIR'] = 'The subject directory for the subject cannot be read.'
         return expl
 
 
