@@ -37,10 +37,9 @@ setup(
         'console_scripts': [
             'visualize_verts = brainload.clients.visualize_verts:visualize_verts',
             'brain_mesh_info= brainload.clients.brain_mesh_info:brain_mesh_info',
-            'brain_surf_info = brainload.clients.brain_surf_info:brain_surf_info',
             'brain_vol_info = brainload.clients.brain_vol_info:brain_vol_info',
             'brain_morph_info = brainload.clients.brain_morph_info:brain_morph_info',
-            'brain_qa= brainload.clients.brain_consistency:brain_consistency',
+            'brain_qa = brainload.clients.brain_consistency:brain_consistency',
         ]
     }
 )
