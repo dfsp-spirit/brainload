@@ -1343,6 +1343,38 @@ def subject_avg(subject_id, measure='area', surf='white', display_surf='white', 
 
 
 def group_native(measure, subjects_dir, subjects_list, surf='white', hemi='both'):
+    """
+    Load native space morphometry data for a number of subjects.
+
+    Load native space group data, i.e., morphometry data for all subjects in a study.
+    The information given in the parameters `measure`, `surf`, and `hemi` are used to construct the file name that will be loaded by default. This function will NOT load the meshes.
+
+    Parameters
+    ----------
+    measure : string
+        The measure to load, e.g., 'area' or 'curv'. Data files for this measure have to exist for all subjects.
+
+    surf : string, optional
+        The brain surface where the data has been measured, e.g., 'white' or 'pial'. Defaults to 'white'. Will be added after the measure name unless left at default.
+
+    hemi : {'both', 'lh', 'rh'}, optional
+        The hemisphere that should be loaded. Defaults to 'both'.
+
+    subjects_dir: string, optional
+        A string representing the full path to a directory. Defaults to the environment variable SUBJECTS_DIR if omitted. If that is not set, used the current working directory instead. This is the directory from which the application was executed.
+
+    subjects_list: list of strings, optional (unless `subjects_detection_mode` is set to `list`)
+        A list of subject identifiers or directory names that should be loaded from the `subjects_dir`. Example list: `['subject1', 'subject2']`. Defaults to None. Only allowed if `subjects_detection_mode` is `auto` or `list`. In `auto` mode, this takes
+        precedence over all other options, i.e., if a `subjects_list` *and* the (default or custom) `subjects_file` are given, the `subjects_list` will be used.
+
+    Returns
+    -------
+    morphdata_by_subject: dictionary
+        A dictionary containing the morphometry data. Keys are subject identifiers, and values are the morphometry data numpy 1D arrays.
+
+    group_meta_data: dictionary
+        A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject.
+    """
     morphdata_by_subject = dict()
     metadata_by_subject = dict()
     for subject_id in subjects_list:
