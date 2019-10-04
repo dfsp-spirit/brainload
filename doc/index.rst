@@ -12,6 +12,7 @@ Welcome to brainload's documentation!
 
    brainload
    workflows
+   braintools
 
 
 Indices and tables
