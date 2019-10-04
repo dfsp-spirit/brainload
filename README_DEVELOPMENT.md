@@ -118,7 +118,7 @@ conda install conda-build anaconda-client
 Set the new version information:
 
 ```console
-export NEW_VERSION="0.0.2"
+export NEW_VERSION="0.3.5"
 export NEW_RELEASE="v${NEW_VERSION}"
 cd ~/develop/brainload/        # repo root
 git checkout master
@@ -204,19 +204,19 @@ Now try it in a fresh virtual environment (you may have to wait a sec for it to 
 
 ```console
 $ deactivate                                  # leave current virtual env
-$ python -m virtualenv env_for_v2             # create a fresh one
-$ source env_for_v2/bin/activate              # activate it
+$ python -m virtualenv env_for_${NEW_VERSION}             # create a fresh one
+$ source env_for_${NEW_VERSION}/bin/activate              # activate it
 $ pip install nibabel six        # these are not on test.pypi.org
 $ pip install --index-url https://test.pypi.org/simple/ brainload     # install it.
 #now try the example client. e.g.:
 $ python -c 'import brainload as bl; print(bl.__version__)'
-0.2.0
+0.3.4
 $ python
 >>> import brainload as bl
 >>> # do more stuff
 >>> quit()
 $ deactivate
-$ rm -rf env_for_v2
+$ rm -rf env_for_${NEW_VERSION}
 ```
 
 If something is wrong, fix it and commit again. If everything looks fine, tag the current version as the new release:
@@ -234,7 +234,7 @@ It is finally time to upload it to the real PyPI:
 twine upload dist/*                           # will ask for your PyPI credentials for brainload
 ```
 
-Now, update the version information in the source code to the next dev release in `src/brainload/__init__.py`. Example: If you just released `v0.2.0`, set it to `v0.2.1dev` in there. The other files will be updated only at the next release (and the version in init.py will also be changed then, of course). But this allows you to always find out which version of the code somebody is running. Everything labeled as dev is not a release.
+Now, update the version information in the source code to the next dev release in `src/brainload/__init__.py`. Example: If you just released `v0.3.4`, set it to `v0.3.5dev` in there. The other files will be updated only at the next release (and the version in init.py will also be changed then, of course). But this allows you to always find out which version of the code somebody is running. Everything labeled as dev is not a release.
 
 
 #### Anaconda (build and distribution, recipe)
@@ -248,19 +248,11 @@ This has been done successfully under Linux and MacOS. It more or less follows t
 
 ##### Prepare environment
 
-Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into ${CONDA_DIR}, which could be something like `~/software/anaconda2`.
+Get the tools: install `conda` on your system and fire it up, then use it to get the build tools. We will assume you installed it into ${CONDA_DIR}, which could be something like `~/software/anaconda3`.
 
 The first step is to activate conda if it is not yet active. Type `conda --version` to check whether the `conda` command is available. If the command is not found:
 
-If you installed conda < 4.4:
 
-```console
-export PATH=${CONDA_DIR}/bin:${PATH}   # also activates the base conda environment
-conda --version
-conda env list        # shows available environments, the one marked with a * is active (should be base)
-```
-
-If you installed conda >= 4.4:
 ```console
 source ${CONDA_DIR}/etc/profile.d/conda.sh     # does NOT activate the base conda environment
 conda --version
@@ -274,8 +266,8 @@ Now that conda is active, we are in the conda `base` environment. Let's create a
 ```console
 cd develop/anaconda_dist/recipe/
 conda update conda
-conda create -y --name blbuild2 python=2.7                  # skip if you have done these steps before
-conda activate blbuild2
+conda create -y --name blbuild python=3.7                  # skip if you have done these steps before
+conda activate blbuild
 conda install -y conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 conda config --add channels conda-forge      # add channel so the next command will find dependencies, e.g., nibabel
@@ -290,7 +282,7 @@ Create a new dir for the release, copy the old `meta.yaml` file in there. Create
 ```console
 # we are still in REPO_ROOT/develop/anaconda_dist/recipe/
 mkdir ${NEW_RELEASE}
-cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the **last** release
+cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the **old** release
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 # Before running the next command, delete the directory REPO_ROOT/develop/anaconda_dist/recipe/brainload in case it exists
 CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
@@ -354,7 +346,7 @@ It follows the [official guide using the skeleton from PyPI method](https://cond
 ```console
 cd develop/anaconda_dist
 conda update conda
-conda create -y --name blbuild python=2.7                  # skip if you have done these steps before
+conda create -y --name blbuild python=3.7                 # skip if you have done these steps before
 conda activate blbuild
 conda install -y conda-build anaconda-client conda-verify
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
