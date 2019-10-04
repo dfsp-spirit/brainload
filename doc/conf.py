@@ -28,9 +28,9 @@ copyright = u'2018-2019, Tim Schäfer'
 author = u'Tim Schäfer'
 
 # The short X.Y version
-version = u'0.3.4'
+version = u'0.3.5'
 # The full version, including alpha/beta/rc tags
-release = u'v0.3.4'
+release = u'v0.3.5'
 
 
 # -- General configuration ---------------------------------------------------

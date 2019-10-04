@@ -301,10 +301,12 @@ def write_lines_to_text_file(lines, file_name, line_sep="\n"):
 
     line_sep: str, optional
         Line separator. Defaults to "\n".
+
     """
     with open(file_name, 'w') as f:
         for l in lines:
             f.write("%s%s" % (l, line_sep))
+
 
 
 def write_subjects_file(file_name, subjects_list):
