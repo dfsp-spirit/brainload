@@ -53,6 +53,7 @@ A parcellation contains:
 Here is how to load a parcellation in brainload:
 
 .. code:: python
+
     import brainload as bl
     subjects_dir = os.path.join(os.getenv('HOME'), 'data', 'study1')
     vertex_labels, label_colors, label_names, meta_data = bl.annot('subject1', subjects_dir, 'aparc', hemi='lh')
@@ -106,6 +107,7 @@ Load brain mesh and morphometry data for a group of subjects in native space
 
 
 .. code:: python
+
     import os
     import brainload as bl
     import numpy as np
@@ -118,11 +120,13 @@ This will load the file ``surf/lh.curv`` for each subject.
 Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject 'subject4':
 
 .. code:: python
+
     morphdata_by_subject['subject4'][100000]
 
 You may also be interested in the average curvature of subject1:
 
 .. code:: python
+
     np.mean(morphdata_by_subject['subject1'])
 
 
@@ -131,6 +135,7 @@ Load brain mesh and morphometry data for a group of subjects in standard space
 
 
 .. code:: python
+
     import os
     import brainload as bl
     import numpy as np
@@ -143,10 +148,12 @@ This will load the file ``surf/lh.curv.fwhm20.fsaverage.mgh`` for each subject.
 In standard space, all subjects have the same number of vertices, so the data is returned as a matrix instead of dictionaries. Continuing the last example, we may want to have a look at the curv value of the vertex at index 100000 of the subject 'subject4':
 
 .. code:: python
+
     subject4_idx = subjects.index('subject4')
     print data[subject4_idx][100000]
 
 You may also be interested in the average curvature of subject1:
 
 .. code:: python
+
     np.mean(data[subjects.index('subject1')])

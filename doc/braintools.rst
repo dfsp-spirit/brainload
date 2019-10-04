@@ -14,10 +14,11 @@ Available command line tools
 - ``brain_qa``: Tool to check the consistency and availability of pre-processed FreeSurfer data for a study. Checks whether all requested data files are available for all subjects, and whether the data are consistent.
 
 Getting help on command line tools
----------------------------------
+-----------------------------------
 
 All command line tools come with detailed built-in help. Run them with ``-h`` or ``--help`` to access it. Example:
 
 
-.. code:: shell
+.. code:: bash
+
     brain_vol_info --help
