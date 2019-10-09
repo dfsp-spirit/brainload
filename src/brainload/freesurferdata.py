@@ -1372,7 +1372,7 @@ def group_native(measure, subjects_dir, subjects_list, surf='white', hemi='both'
     morphdata_by_subject: dictionary
         A dictionary containing the morphometry data. Keys are subject identifiers, and values are the morphometry data numpy 1D arrays.
 
-    group_meta_data: dictionary
+    metadata_by_subject: dictionary
         A dictionary containing detailed information on all subjects and files that were loaded. Each of its keys is a subject identifier. The data value is another dictionary that contains all meta data for this subject.
     """
     morphdata_by_subject = dict()
