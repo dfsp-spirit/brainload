@@ -28,7 +28,7 @@ def brain_consistency():
     parser.add_argument("-f", "--fwhm-list", help="The list of fwhm files to check for standard space data (see '-s'). Defaults to '0:5:10:15:20:25'.", default="0:5:10:15:20:25")
     parser.add_argument("-r", "--report", help="File name for the report in HTML format. If not given, no HTML report is written.", default=None)
     verb_group = parser.add_mutually_exclusive_group(required=False)
-    verb_group.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
+    verb_group.add_argument("-v", "--verbose", help="Increase output verbosity to INFO.", action="store_true")
     verb_group.add_argument("-w", "--verbosity", help="Set verbosity level. One of 'WARN', 'INFO', or 'DEBUG'. Defaults to 'WARN'", default="WARN")
     args = parser.parse_args()
 
@@ -36,7 +36,7 @@ def brain_consistency():
     log_level = logging.WARN  # Default
 
     if args.verbose:
-        logging.basicConfig(level=logging.INFO)
+        log_level = logging.INFO
     elif args.verbosity:
         if args.verbosity == 'INFO':
             log_level = logging.INFO
@@ -57,12 +57,18 @@ def brain_consistency():
     standard_fwhm_list = args.fwhm_list.split(":")
     subjects_list = nit.read_subjects_file(args.subjects_file)
 
-    if args.verbose:
-        print("Handling %d subjects." % (len(subjects_list)))
-        print("Handling %d native space measures: %s" % (len(native_measures), ", ".join(native_measures)))
-        print("Handling %d standard space measures using template subject '%s': %s" % (len(standard_measures), args.average_subject, ", ".join(standard_measures)))
-        if len(standard_measures):
-            print("Handling standard space measures at %d fwhm settings: %s" % (len(standard_fwhm_list), ", ".join(standard_fwhm_list)))
+
+    logger.info("Handling %d subjects." % (len(subjects_list)))
+    if len(native_measures):
+        logger.info("Handling %d native space measures: %s" % (len(native_measures), ", ".join(native_measures)))
+    else:
+        logger.info("Not handling any native space measures.")
+
+    if len(standard_measures):
+        logger.info("Handling %d standard space measures using template subject '%s': %s" % (len(standard_measures), args.average_subject, ", ".join(standard_measures)))
+        logger.info("Handling standard space measures at %d fwhm settings: %s" % (len(standard_fwhm_list), ", ".join(standard_fwhm_list)))
+    else:
+        logger.info("Not handling any standard space measures.")
 
 
 
