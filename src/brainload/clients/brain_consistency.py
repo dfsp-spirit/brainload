@@ -6,6 +6,7 @@ import brainload.qa as brainqa
 import brainload.nitools as nit
 import argparse
 import logging
+logger = logging.getLogger('brain_consistency')
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
 # PYTHONPATH=./src/brainload python src/brainload/clients/brain_consistency.py $SUBJECTS_DIR $SUBJECTS_DIR/subjects.txt -m area:volume:thickness:pial_lgi -v
@@ -26,16 +27,26 @@ def brain_consistency():
     parser.add_argument("-a", "--average-subject", help="Name of the average subject (template) for standard space data (see '-s'). Defaults to 'fsaverage'.", default="fsaverage")
     parser.add_argument("-f", "--fwhm-list", help="The list of fwhm files to check for standard space data (see '-s'). Defaults to '0:5:10:15:20:25'.", default="0:5:10:15:20:25")
     parser.add_argument("-r", "--report", help="File name for the report in HTML format. If not given, no HTML report is written.", default=None)
-    parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
+    verb_group = parser.add_mutually_exclusive_group(required=False)
+    verb_group.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
+    verb_group.add_argument("-w", "--verbosity", help="Set verbosity level. One of 'WARN', 'INFO', or 'DEBUG'. Defaults to 'WARN'", default="WARN")
     args = parser.parse_args()
 
 
+    log_level = logging.WARN  # Default
+
     if args.verbose:
-        print("---Brain Data Consistency Checks---")
-        print("Using subjects_dir '%s' and subjects file '%s'." % (args.subjects_dir, args.subjects_file))
         logging.basicConfig(level=logging.INFO)
-    else:
-        logging.basicConfig(level=logging.WARN)
+    elif args.verbosity:
+        if args.verbosity == 'INFO':
+            log_level = logging.INFO
+        elif args.verbosity == 'DEBUG':
+            log_level = logging.DEBUG
+
+    logging.basicConfig(level=log_level)
+
+    logger.info("---Brain Data Consistency Checks---")
+    logger.info("Using subjects_dir '%s' and subjects file '%s'." % (args.subjects_dir, args.subjects_file))
 
     native_measures = args.measures_native.split(":")
     if args.measures_native == "None":
@@ -55,7 +66,7 @@ def brain_consistency():
 
 
 
-    bdc = brainqa.BrainDataConsistency(args.subjects_dir, subjects_list)
+    bdc = brainqa.BrainDataConsistency(args.subjects_dir, subjects_list, log_level = log_level)
     bdc.average_subject = args.average_subject
     bdc.fwhm_list = standard_fwhm_list
     bdc.check_custom(native_measures, standard_measures)

@@ -14,6 +14,7 @@ import collections
 import errno
 import datetime
 
+LOG = logging.getLogger("brainload")        # module logger
 
 SEVERITY_TIMESTAMP = 1
 SEVERITY_DATA_MISMATCH = 2
@@ -29,7 +30,10 @@ class BrainDataConsistency:
     This class parses standard data files which are written by FreeSurfer when a subject is preprocessed using the recon-all pipeline. It then performs various consistency checks on the data.
     These checks include comparing the number of vertices in surfaces and morphometry files.
     """
-    def __init__(self, subjects_dir, subjects_list, hemi='both'):
+    def __init__(self, subjects_dir, subjects_list, hemi='both', log_level=logging.INFO):
+        self.log = logging.getLogger("BrainDataConsistency")
+        self.log.setLevel(log_level)
+
         self.subjects_dir = subjects_dir
         self.subjects_list = subjects_list
 
@@ -68,7 +72,7 @@ class BrainDataConsistency:
             self.hemis = [hemi]
             self.data[hemi] = dict()
             self.files[hemi] = dict()
-        logging.info("BrainDataConsistency instance initialized, handling %s subjects in subjects_dir '%s'." % (len(self.subjects_list), self.subjects_dir))
+        self.log.info("BrainDataConsistency instance initialized, handling %s subjects in subjects_dir '%s'." % (len(self.subjects_list), self.subjects_dir))
 
 
     def _prepare_native_space_checks(self):
@@ -82,7 +86,7 @@ class BrainDataConsistency:
 
 
     def check_essentials(self):
-        logging.info("Checking essentials.")
+        self.log.info("Checking essentials.")
         self._check_subject_dirs_exist()
         self._check_surfaces_have_identical_vertex_count()
         self._check_native_space_data(["area", "volume", "thickness"])
@@ -90,7 +94,7 @@ class BrainDataConsistency:
 
 
     def check_custom(self, native_measures, std_measures):
-        logging.info("Performing custom checks for %s native measures: %s." % (len(native_measures), ", ".join(native_measures)))
+        self.log.info("Performing custom checks for %s native measures: %s." % (len(native_measures), ", ".join(native_measures)))
         self._check_subject_dirs_exist()
         self._check_surfaces_have_identical_vertex_count()
         self._check_native_space_data(native_measures)
@@ -103,16 +107,18 @@ class BrainDataConsistency:
         for subject_index, subject_id in enumerate(self.subjects_list):
             current_subject_dir = os.path.join(self.subjects_dir, subject_id)
             if not os.path.isdir(current_subject_dir):
-                logging.warning("[%s] Missing subject data directory '%s'." % (subject_id, current_subject_dir))
+                self.log.warning("[%s] Missing subject data directory '%s'." % (subject_id, current_subject_dir))
                 self._append_issue(subject_id, issue_tag_no_data_dir, current_subject_dir, SEVERITY_SUBJECTS_DIR_MISSING)
-        logging.info("Checked all subject dirs for existance.")
+        self.log.info("Checked all subject dirs for existence.")
 
 
     def _count_surface_vertices_and_faces(self, surfaces=None):
         if surfaces is None:
             surfaces = ['white', 'pial']
+        self.log.info("Counting the vertices and faces for the following %d surfaces: '%s'." % (len(surfaces), ' '.join(surfaces)))
 
         for hemi in self.hemis:
+            self.log.debug("Counting the vertices and faces for hemisphere '%s'." % (hemi))
             self.data[hemi]['mesh_vertex_count_white'] = np.zeros((len(self.subjects_list), ))
             self.data[hemi]['mesh_face_count_white'] = np.zeros((len(self.subjects_list), ))
             self.data[hemi]['mesh_vertex_count_pial'] = np.zeros((len(self.subjects_list), ))
@@ -120,6 +126,7 @@ class BrainDataConsistency:
 
             for subject_index, subject_id in enumerate(self.subjects_list):
                 for surf in surfaces:
+                    self.log.debug("Counting the vertices and faces for subject '%s' surface '%s' hemisphere '%s' (subject %d / %d))." % (subject_id, surf, hemi, (subject_index+1), len(self.subjects_list)))
                     try:
                         verts, faces, meta_data = fsd.subject_mesh(subject_id, self.subjects_dir, surf=surf, hemi=hemi)
                         md_surf_file_key = "%s.surf_file" % (hemi)
@@ -130,9 +137,9 @@ class BrainDataConsistency:
                         issue_tag = "NO_SURFACE_FILE__%s_%s" % (surf, hemi)
                         surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
                         self._append_issue(subject_id, issue_tag, surface_file, SEVERITY_EXPECTED_FILE_MISSING)
-                        logging.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, surface_file))
+                        self.log.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, surface_file))
         self.surface_vertices_counted = True
-        logging.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
+        self.log.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
 
 
     def _check_surfaces_have_identical_vertex_count(self, surface_pair=None):
@@ -141,16 +148,16 @@ class BrainDataConsistency:
             surface_pair = ['white', 'pial']
         s0 = surface_pair[0]
         s1 = surface_pair[1]
-        logging.info("Verifying that the '%s' and '%s' surfaces have identical vertex counts." % (s0, s1))
+        self.log.info("Verifying that the '%s' and '%s' surfaces have identical vertex counts." % (s0, s1))
         for hemi in self.hemis:
             issue_tag = "MISMATCH_VERTS_SURFACES__%s_%s_%s" % (s0, s1, hemi)
             for subject_index, subject_id in enumerate(self.subjects_list):
                 s0_count = self.data[hemi]['mesh_vertex_count_%s' % (s0)][subject_index]
                 s1_count = self.data[hemi]['mesh_vertex_count_%s' % (s1)][subject_index]
                 if s0_count != s1_count:
-                    logging.warning("[%s][%s] Vertex count mismatch between surfaces %s and %s: %d != %d." % (subject_id, hemi, s0, s1, s0_count, s1_count))
+                    self.log.warning("[%s][%s] Vertex count mismatch between surfaces %s and %s: %d != %d." % (subject_id, hemi, s0, s1, s0_count, s1_count))
                     self._append_issue(subject_id, issue_tag, fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, s1), SEVERITY_REQUESTED_FILE_MISSING)
-        logging.info("Verified that the surfaces '%s' and '%s' have the same number of vertices for each subject." % (s0, s1))
+        self.log.info("Verified that the surfaces '%s' and '%s' have the same number of vertices for each subject." % (s0, s1))
 
 
     def _pts(self, timestamp):
@@ -197,7 +204,7 @@ class BrainDataConsistency:
     def _check_native_space_data(self, measures_list):
         self._prepare_native_space_checks()
         for measure in measures_list:
-            logging.info("Verifying native space data for measure '%s'." % (measure))
+            self.log.info("Verifying native space data for measure '%s'." % (measure))
             for hemi in self.hemis:
                 measure_key = "morphometry_vertex_data_count_%s" % (measure)
                 issue_tag = "MISMATCH_MORPH_NAT_SURFACE__%s_%s" % (measure, hemi)
@@ -213,7 +220,7 @@ class BrainDataConsistency:
                                 ts_morph_file = os.path.getmtime(morph_data_file)
                                 ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
                                 if ts_morph_file + self.time_buffer < ts_surf_file:
-                                    logging.warning("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
+                                    self.log.warning("[%s][%s] Morphometry file for measure '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file-ts_surf_file)))
                                     issue_tag_file_time = "TIME_NAT_MORPH_FILE__%s_%s" % (measure, hemi)
                                     self._append_issue(subject_id, issue_tag_file_time, morph_data_file, SEVERITY_TIMESTAMP)
 
@@ -224,20 +231,20 @@ class BrainDataConsistency:
                         issue_tag_no_file = "NO_NAT_MORPH_FILE__%s_%s" % (measure, hemi)
                         morph_data_file = fsd.get_morphometry_file_path(self.subjects_dir, subject_id, 'white', hemi, measure)
                         self._append_issue(subject_id, issue_tag_no_file, morph_data_file, SEVERITY_REQUESTED_FILE_MISSING)
-                        logging.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, morph_data_file))
+                        self.log.warning("[%s][%s] Missing file for native space vertex data of measure '%s': '%s'." % (subject_id, hemi, measure, morph_data_file))
 
 
                     if len(morphometry_data) != self.data[hemi]['mesh_vertex_count_white'][subject_index]:
-                        logging.warning("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
+                        self.log.warning("[%s][%s] Mismatch between length of vertex data for native space measure '%s' and number of vertices of surface white: %d != %d." % (subject_id, hemi, measure, len(morphometry_data), self.data[hemi]['mesh_vertex_count_white'][subject_index]))
                         self._append_issue(subject_id, issue_tag, morph_data_file, SEVERITY_DATA_MISMATCH)
-            logging.info("Checked native space data for measure '%s' for consistency." % (measure))
+            self.log.info("Checked native space data for measure '%s' for consistency." % (measure))
 
 
     def _check_standard_space_data(self, std_measures_list):
         self._prepare_standard_space_checks()
         for fwhm in self.fwhm_list:
             for measure in std_measures_list:
-                logging.info("Verifying standard space data for measure '%s' at fwhm '%s' (average subject='%s')." % (measure, fwhm, self.average_subject))
+                self.log.info("Verifying standard space data for measure '%s' at fwhm '%s' (average subject='%s')." % (measure, fwhm, self.average_subject))
                 for hemi in self.hemis:
                     measure_key = "std_space_morphometry_vertex_data_count_%s_%s" % (measure, fwhm)
                     issue_tag = "MISMATCH_MORPH_STD_SURFACE__%s_%s_%s" % (measure, hemi, fwhm)
@@ -252,7 +259,7 @@ class BrainDataConsistency:
                                     ts_morph_file = os.path.getmtime(morph_data_file_std)
                                     ts_surf_file = os.path.getmtime(self.files[hemi]['surf_pial'])
                                     if ts_morph_file + self.time_buffer < ts_surf_file:
-                                        logging.warning("[%s][%s] Standard space morphometry file for measure '%s' fwhm '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, fwhm, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file - ts_surf_file)))
+                                        self.log.warning("[%s][%s] Standard space morphometry file for measure '%s' fwhm '%s' was last changed earlier than surface file: %s is before %s (%s)." % (subject_id, hemi, measure, fwhm, self._pts(ts_morph_file), self._pts(ts_surf_file), self._ptd(ts_morph_file - ts_surf_file)))
                                         issue_tag_file_time = "TIME_STD_MORPH_FILE__%s_%s_%s" % (measure, hemi, fwhm)
                                         self._append_issue(subject_id, issue_tag_file_time, morph_data_file, SEVERITY_TIMESTAMP)
 
@@ -262,13 +269,13 @@ class BrainDataConsistency:
                             self.data[hemi][measure_key][subject_index] = len(morphometry_data) # = 0
                             issue_tag_no_file = "NO_STD_MORPH_FILE__%s_%s_%s" % (measure, hemi, fwhm)
                             self._append_issue(subject_id, issue_tag_no_file, morph_data_file_std, SEVERITY_REQUESTED_FILE_MISSING)
-                            logging.warning("[%s][%s] Missing file for standard space vertex data of measure '%s' at fwhm '%s': '%s'." % (subject_id, hemi, measure, fwhm, morph_data_file_std))
+                            self.log.warning("[%s][%s] Missing file for standard space vertex data of measure '%s' at fwhm '%s': '%s'." % (subject_id, hemi, measure, fwhm, morph_data_file_std))
 
 
                         if len(morphometry_data) != self.average_subject_mesh_vertex_count:
-                            logging.warning("[%s][%s] Mismatch between length of vertex data for standard space measure '%s' and number of vertices of average subject '%s' surface: %d != %d." % (subject_id, hemi, measure, self.average_subject, len(morphometry_data), self.average_subject_mesh_vertex_count))
+                            self.log.warning("[%s][%s] Mismatch between length of vertex data for standard space measure '%s' and number of vertices of average subject '%s' surface: %d != %d." % (subject_id, hemi, measure, self.average_subject, len(morphometry_data), self.average_subject_mesh_vertex_count))
                             self._append_issue(subject_id, issue_tag, morph_data_file_std, SEVERITY_DATA_MISMATCH)
-                logging.info("Checked standard space data for measure '%s' for consistency." % (measure))
+                self.log.info("Checked standard space data for measure '%s' for consistency." % (measure))
 
 
 
@@ -311,7 +318,7 @@ class BrainDataConsistency:
         report = self._report_html()
         with open(filename, "w") as text_file:
             text_file.write(report)
-        logging.info("HTML report written to file '%s'." % (filename))
+        self.log.info("HTML report written to file '%s'." % (filename))
 
 
     def _get_css_style(self):
