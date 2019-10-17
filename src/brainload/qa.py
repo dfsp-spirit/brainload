@@ -317,8 +317,9 @@ class BrainDataConsistency:
         expl['MISMATCH_MORPH_NAT_SURFACE'] = "The value count in the native space morphology file does not match the number of vertices in the native surface file."
         expl['MISMATCH_MORPH_STD_SURFACE'] = "The value count in the standard space morphology file does not match the number of vertices in the surface file of the template subject."
         expl['MISMATCH_VERTS_SURFACES'] = "The vertex count differs for the native surface pair."
-        expl['NO_SURFACE_FILE'] = 'The surface file cannot be read.'
+        expl['NO_SURFACE_FILE'] = 'The surface file does not exist or cannot be accessed.'
         expl['NO_SUBJECT_DIR'] = 'The subject directory for the subject cannot be read.'
+        expl['BAD_SURFACE_FILE'] = 'The surface file exists but is broken, loading it failed.'
         return expl
 
 
