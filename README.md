@@ -162,3 +162,20 @@ Less related but still useful:
 ## License
 
 Brainload is free software, released under the [MIT license](https://opensource.org/licenses/MIT). See the LICENSE file for the full license text.
+
+## Citing 
+
+
+    Schäfer, T. Brainload: Working with FreeSurfer neuroimaging data in Python, 2018-, https://github.com/dfsp-spirit/brainload/ [Online; accessed 2019-10-17].
+
+Here’s an example of a BibTeX entry:
+```
+@Misc{,
+  author =    {Tim Schäfer},
+  title =     {{Brainload}: Working with {FreeSurfer} neuroimaging data in {Python}},
+  year =      {2018--},
+  url = "https://github.com/dfsp-spirit/brainload/",
+  note = {[Online; accessed <today>]}
+}
+```
+
