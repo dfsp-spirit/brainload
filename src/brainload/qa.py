@@ -19,8 +19,11 @@ LOG = logging.getLogger("brainload")        # module logger
 SEVERITY_TIMESTAMP = 1
 SEVERITY_DATA_MISMATCH = 2
 SEVERITY_REQUESTED_FILE_MISSING = 3             # A file which was requested by a query is missing (like 'lh.area' if a check of native measure 'area' was requested)
-SEVERITY_EXPECTED_FILE_MISSING = 4              # A standard file which we need in any case to perform the checks is missing (like 'lh.white', which we need to check vertex counts of *any* native space measure data)
+SEVERITY_REQUESTED_FILE_BAD = 3                  # A file which was requested by a query exists but is broken (parsing it failed)
+SEVERITY_EXPECTED_FILE_MISSING = 4              # A standard file which we need in any case to perform the checks is missing (like 'lh.white', which we need to check vertex counts of *any*  native space measure data)
+SEVERITY_EXPECTED_FILE_BAD = 4                  # A standard file which we need in any case to perform the checks exists but is broken (parsing it failed)
 SEVERITY_SUBJECTS_DIR_MISSING = 5
+
 
 
 class BrainDataConsistency:
@@ -138,6 +141,11 @@ class BrainDataConsistency:
                         surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
                         self._append_issue(subject_id, issue_tag, surface_file, SEVERITY_EXPECTED_FILE_MISSING)
                         self.log.warning("[%s][%s] Missing surface file for surface '%s': '%s'." % (subject_id, hemi, surf, surface_file))
+                    except (ValueError):
+                        issue_tag = "BAD_SURFACE_FILE__%s_%s" % (surf, hemi)
+                        surface_file = fsd.get_surface_file_path(self.subjects_dir, subject_id, hemi, surf)
+                        self._append_issue(subject_id, issue_tag, surface_file, SEVERITY_EXPECTED_FILE_BAD)
+                        self.log.warning("[%s][%s] Bad surface file for surface '%s': '%s'." % (subject_id, hemi, surf, surface_file))
         self.surface_vertices_counted = True
         self.log.info("Counted vertices of %d surfaces for all %s subjects (%s)." % (len(surfaces), len(self.subjects_list), ", ".join(surfaces)))
 
