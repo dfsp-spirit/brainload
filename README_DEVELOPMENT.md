@@ -118,7 +118,8 @@ conda install conda-build anaconda-client
 Set the new version information:
 
 ```console
-export NEW_VERSION="0.3.5"
+export OLD_VERSION="0.3.4"      # the old version that is already on pypi
+export NEW_VERSION="0.3.5"      # the new version you are about to package
 export NEW_RELEASE="v${NEW_VERSION}"
 cd ~/develop/brainload/        # repo root
 git checkout master
@@ -282,7 +283,7 @@ Create a new dir for the release, copy the old `meta.yaml` file in there. Create
 ```console
 # we are still in REPO_ROOT/develop/anaconda_dist/recipe/
 mkdir ${NEW_RELEASE}
-cp v0.3.0/meta.yaml ${NEW_RELEASE}         # replace v0.3.0 with the **old** release
+cp ${OLD_RELEASE}/meta.yaml ${NEW_RELEASE}        
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 # Before running the next command, delete the directory REPO_ROOT/develop/anaconda_dist/recipe/brainload in case it exists
 CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
@@ -301,29 +302,10 @@ vim ${NEW_RELEASE}/meta.yaml         # Update the version at the top AND paste t
 CONDA_BLD_PATH=/tmp/condaishacky conda-build ${NEW_RELEASE}                        # may take a while... will output the full path to the file in the end. You will need this soon.
 ```
 
-Let's export the filename (not the full path) of the resulting package to an environment variable as we will need it a few times below. The file name can be found in the output of the last command (conda-build). The full path should be something like `/tmp/condaishacky/some_name_and_version_here.tar.bz2`, so we will do something like this:
+When the build is done, upload the package:
 
 ```console
-export PKG_FILENAME="some_name_and_version_here.tar.bz2"
-```
-
-Since brainload is a pure python package, we can easily convert it for other platforms:
-
-```console
-$ conda convert --platform all /tmp/condaishacky/$PKG_FILENAME -o pkg_converted/
-```
-
-When the build and conversion are done, upload the first package:
-
-```console
-anaconda upload /tmp/condaishacky/$PKG_FILENAME         # may ask for your condacloud credentials for brainload
-```
-
-Now, you can upload all converted packages:
-
-```console
-for ARCH in linux-32 linux-64 linux-ppc64le linux-armv6l linux-armv7l linux-aarch64 osx-64 win-32 win-64; do anaconda upload pkg_converted/${ARCH}/${PKG_FILENAME}; done
-conda deactivate        # leave the blbuild2 environment
+anaconda upload /tmp/condaishacky/noarch/$PKG_FILENAME         # may ask for your condacloud credentials for brainload
 ```
 
 Finally, add the conda recipe to the repo and delete the temporary directories:
