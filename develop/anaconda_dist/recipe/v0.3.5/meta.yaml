@@ -49,6 +49,13 @@ about:
   summary: Load FreeSurfer brain imaging data with minimal cognitive load.
   doc_url: http://dfsp-spirit.github.io/brainload
   dev_url: https://github.com/dfsp-spirit/brainload
+  description: |
+    Load FreeSurfer brain surface meshes and morphometry data files for single
+    subjects and groups. This is a wrapper around nibabel that knows about the
+    FreeSurfer directory structure. Also included are high-level functions
+    typically required in the analysis of surface-based brain morphometry data.
+    This included some command line tools, e.g., to perform quality checks on
+    FreeSurfer data.
 
 extra:
   recipe-maintainers:
