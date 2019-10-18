@@ -93,10 +93,6 @@ The tests are run automatically when you push to master and developers get resul
 
 [![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
 
-For Windows, we use conda on AppVeyor:
-
-[![Build status](https://ci.appveyor.com/api/projects/status/smuegt2hbqw7cy94/branch/master?svg=true)](https://ci.appveyor.com/project/dfsp-spirit/brainload/branch/master)
-
 
 Note that not all test data is available on Travis and as a result, some tests get skipped. We are working on this. When run locally with all test data, coverage must be greater than 95% for all files.
 
