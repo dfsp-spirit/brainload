@@ -211,11 +211,7 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization=
     num_scalars = data.shape[0]
     assigned_colors = np.zeros((num_scalars, 4), dtype=np.float_)
 
-    it = np.nditer(data, flags=['f_index'])
-    while not it.finished:
-        color = cmap(norm(it[0]))
-        assigned_colors[it.index][:] = color
-        it.iternext()
+    assigned_colors = cmap(norm(data))
     assigned_colors = np.round(assigned_colors * 255.0)   # matplotlib colors are in range 0. to 1., transform to 0 to 255
     return assigned_colors
 
