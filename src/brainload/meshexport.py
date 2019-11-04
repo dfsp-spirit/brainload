@@ -161,7 +161,7 @@ def _ply_faces(faces):
     return '\n'.join(face_reps) + '\n'
 
 
-def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization='linear', custom_cmap=None):
+def scalars_to_colors_matplotlib(data, matplotlib_cmap_name='viridis', data_normalization='linear', custom_cmap=None, scale=True):
     """
     Assign colors to scalars using a colormap from matplotlib.
 
@@ -173,7 +173,7 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization=
         The scalars data, each data point will be assigned a color.
 
     matplotlib_cmap_name: string
-        A valid name of a matplotlib colormap. Example: 'Spectral'. Note that it is important to chose the color map based on the data and your application. For sequential data, try 'viridis' or 'plasma'. For diverging data, try 'Spectral' or 'coolwarm'. For qualitative color maps, try 'tab10' or 'tab20'. See https://matplotlib.org/users/colormaps.html for details. If the parameter custom_cmap is given, this can be a freeform name for your that colormap.
+        A valid name of a matplotlib colormap. Example: 'Spectral'. Note that it is important to chose the color map based on the data and your application. For sequential data, try 'viridis' or 'plasma'. For diverging data, try 'Spectral' or 'coolwarm'. For qualitative color maps, try 'tab10' or 'tab20'. See https://matplotlib.org/users/colormaps.html for details. If the parameter custom_cmap is given, this can be a freeform name for your that colormap. Defaults to 'viridis'.
 
     data_normalization: string, one of ('linear', 'log'), optional
         How the data should be normalized to match the range of the color map. Defaults to 'linear'.
@@ -181,10 +181,13 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization=
     custom_cmap: matplotlib colormap instance, optional
         A custom matplotlib colormap, e.g., one created using LinearSegmentedColormap.from_list() or other matplotlib functions. Optional. If given, takes precedence over matplotlib_cmap_name.
 
+    scale: boolean
+        Whether to scale the returned color values to the range 1..255. If False, the colors will be in range 0..1. Defaults to TRUE.
+
     Returns
     -------
     numpy float array of shape (n, 4)
-        An array that assigns one RGBA color to each value from the scalars parameter (use the index). A color is given as 4 floats (RGBA), each in range 0.0 to 1.0.
+        An array that assigns one RGBA color to each value from the scalars parameter (use the index). A color is given as 4 floats (RGBA), each in range 0.0 to 1.0 or 1 to 255, depending on the parameter 'scale'.
     """
     if data_normalization not in ('linear', 'log'):
         raise ValueError("ERROR: data_normalization must be one of {'linear', 'log'} but is '%s'." % data_normalization)
@@ -212,7 +215,8 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name, data_normalization=
     assigned_colors = np.zeros((num_scalars, 4), dtype=np.float_)
 
     assigned_colors = cmap(norm(data))
-    assigned_colors = np.round(assigned_colors * 255.0)   # matplotlib colors are in range 0. to 1., transform to 0 to 255
+    if scale:
+        assigned_colors = np.round(assigned_colors * 255.0)   # matplotlib colors are in range 0. to 1., transform to 0 to 255
     return assigned_colors
 
 
