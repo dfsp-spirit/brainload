@@ -10,6 +10,6 @@ __version__ = '0.3.5'
 from .freesurferdata import subject, subject_avg, group, group_native, fsaverage_mesh, subject_mesh, rhi, rhv, hemi_range, subject_data_native, subject_data_standard
 from .annotations import label, annot
 from .stats import stat
-from .meshexport import mesh_to_ply, mesh_to_obj
+from .meshexport import mesh_to_ply, mesh_to_obj, mesh_to_off
 from .nitools import read_subjects_file, detect_subjects_in_directory
 from .export import export_mesh_nocolor_to_file

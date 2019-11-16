@@ -19,11 +19,13 @@ def export_mesh_nocolor_to_file(filename, vertex_coords, faces):
 
 
 def _get_export_nc_string(export_format, vertex_coords, faces):
-    if export_format not in ('obj', 'ply'):
-        raise ValueError("ERROR: export_format must be one of {'obj', 'ply'} but is '%s'." % export_format)
+    if export_format not in ('obj', 'ply', 'off'):
+        raise ValueError("ERROR: export_format must be one of {'obj', 'ply', 'off'} but is '%s'." % export_format)
 
     if export_format == 'obj':
         return bl.mesh_to_obj(vertex_coords, faces)
+    elif export_format == 'off':
+        return bl.mesh_to_off(vertex_coords, faces)
     else:
         return bl.mesh_to_ply(vertex_coords, faces)
 
@@ -43,7 +45,7 @@ def _mesh_export_nc_format_from_filename(filename):
     Returns
     -------
     format: string
-        A string defining a supported mesh output format. One of ('ply', 'obj').
+        A string defining a supported mesh output format. One of ('ply', 'obj', 'off').
 
     matched: Boolean
         Whether the file name ended with a known extension. If not, the returned format was chosen because it is the default format.
@@ -52,5 +54,7 @@ def _mesh_export_nc_format_from_filename(filename):
         return 'ply', True
     elif filename.endswith('.obj'):
         return 'obj', True
+    elif filename.endswith('.off'):
+        return 'off', True
     else:
         return 'obj', False
