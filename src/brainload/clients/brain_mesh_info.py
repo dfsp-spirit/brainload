@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import nibabel.freesurfer.io as fsio
 import brainload.nitools as nit
+import brainload
 import argparse
 
 # To run this in dev mode (in virtual env, pip -e install of brainload active) from REPO_ROOT:
@@ -25,6 +26,7 @@ def brain_mesh_info():
     parser.add_argument("-m", "--mode", help="The query mode, i.e., whether you want to query information on a 'vertex' or a 'face'.", default="vertex", choices=['vertex', 'face'])
     parser.add_argument("-s", "--separator", help="Output separator (between vertex coords / indices). Defaults to ','.", default=",")
     parser.add_argument("-v", "--verbose", help="Increase output verbosity.", action="store_true")
+    parser.add_argument("-x", "--mesh-export", help="Mesh export output filename. The file extension should be '.obj' or '.ply' to indicate the output format, otherwise obj is used. Optional, if not given at all, then no mesh will be exported.", default="")
     args = parser.parse_args()
 
     mesh_file = args.mesh
@@ -61,6 +63,10 @@ def brain_mesh_info():
             print("Vertices forming faces # %s are: %s" % ([str(x) for x in query_indices], res))
         else:
             print(res)
+
+    if args.mesh_export != "":
+        print("Exporting brain mesh to file '%s'..." % args.mesh_export)
+        brainload.export.export_mesh_nocolor_to_file(args.mesh_export, vert_coords, faces)
 
     sys.exit(0)
 
