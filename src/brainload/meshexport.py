@@ -56,7 +56,7 @@ def mesh_to_off(vertex_coords, faces):
     verts_rep = _off_verts(vertex_coords)
     faces_rep = _off_faces(faces)
     hdr = "OFF\n"
-    counts =  "%d %d %d\n" % (vertex_coords.shape[0], faces.shape[0], 0)
+    counts =  "%d %d %d\n" % (vertex_coords.shape[0], faces.shape[0], faces.shape[0] * 3)
     return ''.join([hdr, counts, verts_rep, faces_rep])
 
 
