@@ -60,7 +60,7 @@ vert_coords, faces, per_vertex_data, meta_data = bl.subject_avg(subject_id, surf
 
 This time, the mesh you get is the inflated surface of the `fsaverage` subject (since that is the default for the named parameter `average_subject`, which we omitted in the example above). The `per_vertex_data` represents the area data for the white matter surface of your subject, mapped to the vertices of the average subject and ready for group comparison.
 
-### Load fsaverage data for all subjects in your SUBJECTS_DIR
+### Load standard space (mapped to fsaverage) per-vertex data for all subjects in your SUBJECTS_DIR
 
 ```python
 import brainload as bl
