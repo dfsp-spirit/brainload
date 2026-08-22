@@ -1,5 +1,0 @@
-[run]
-branch = True
-source = src/brainload
-omit = */*/__init__.py
-      src/brainload/clients/*
