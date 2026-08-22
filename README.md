@@ -105,22 +105,6 @@ pip install brainload
 
 Both source and wheel packages are also available here in the [brainload releases](https://github.com/dfsp-spirit/brainload/releases) section at GitHub, but you should not need them.
 
-#### via Anaconda
-
-I started building conda packages for different operating systems, check https://anaconda.org/dfspspirit/brainload to see whether one is available for yours. In case it is:
-
-```console
-conda install -c dfspspirit brainload
-```
-
-[![Anaconda-Server Badge](https://anaconda.org/dfspspirit/brainload/badges/version.svg)](https://anaconda.org/dfspspirit/brainload)
-
-
-If it is not, you can use the recipe in this repo to build it yourself, see [README_DEVELOPMENT](README_DEVELOPMENT.md).
-
-#### Supported Python versions
-
-Brainload works on both Python 2 and Python 3. You can see all supported versions in the `.travis.yml` file in this directory.
 
 
 ## What about visualization?
@@ -129,8 +113,6 @@ Brainload loads (and in very few cases writes) files in standard neuroimaging fo
 
 To visualize directly in Python, e.g. for debugging while developing a script, or in an interactive jupyter notebook, there are different options, usually based on matplotlib (2D) and mayavi (3D):
 - If you are interesting in a full solution that can provide output in publication quality, I suggest you have a look at [PySurfer](https://pysurfer.github.io/). The project is mature and works great.
-- While `brainload` itself does not care about visualization, I am working on the [brainview](https://github.com/dfsp-spirit/brainview) package that is designed to visualize morphometry data in 3D on brain surfaces. The goal is to provide an easy-to-use interface to quickly visualize data loaded with `brainload` or any other tool. The module will only provide basic visualization functions intended for live inspection of your data though.
-
 
 ## Obtaining suitable pre-processed sMRI input data for brainload
 
@@ -171,7 +153,7 @@ Here’s an example of a BibTeX entry:
 @Misc{,
   author =    {Tim Schäfer},
   title =     {{Brainload}: Working with {FreeSurfer} neuroimaging data in {Python}},
-  year =      {2018--},
+  year =      {2018--2026},
   url = "https://github.com/dfsp-spirit/brainload/",
   note = {[Online; accessed <today>]}
 }
