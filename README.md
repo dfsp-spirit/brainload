@@ -83,7 +83,8 @@ Whatever function you used, you can now use the data for statistical analysis in
 
 Brainload is fully documented. The full API documentation and some workflow examples can be found here:
 - [Brainload documentation for the latest release](http://dfsp-spirit.github.io/brainload)
-- [Brainload documentation: Older versions](http://dfsp-spirit.github.io/brainload/versions.html)
+
+The documentation is built from the sources in `doc/` and deployed to GitHub Pages automatically by the `docs` GitHub Actions workflow (see `.github/workflows/docs.yml`).
 
 
 ## Installation

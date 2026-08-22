@@ -44,7 +44,7 @@ def stat(file_name):
     Read the `aseg.stats` file for a subject:
 
     >>> import brainload as bl
-    >>> stats = bl.stats('/path/to/study/subject1/stats/aseg.stats')
+    >>> stats = bl.stat('/path/to/study/subject1/stats/aseg.stats')
 
     Collect some data, just to show the data structures.
 

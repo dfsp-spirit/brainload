@@ -6,6 +6,8 @@ WIP: Version 0.3.5
 - Switch packaging configuration from `setup.py`/`setup.cfg` to `pyproject.toml`
 - Drop `tox`; add GitHub Actions workflow `unittests` that runs the unit tests on Python 3.12
 - Drop support for Python < 3.12; fix use of removed `collections.Mapping` (use `collections.abc.Mapping`)
+- Documentation: build and deploy to GitHub Pages via GitHub Actions (`docs` workflow); remove the generated HTML that was previously committed to `docs/`
+- Documentation: add usage example for parsing FreeSurfer stats files (`aseg.stats`, `?h.aparc.stats`), closes #6
 - Fix: Generate documentation for latest modules (braindescriptors, brainlocate, etc.)
 - Drop official support for Python 2.7
 - Add new command line tools, including one to perform file-level QA on FreeSurfer data

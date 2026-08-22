@@ -124,50 +124,26 @@ git pull
 
 vim src/brainload/__init__.py  # update __version__ in here (this is the single source of truth; pyproject.toml reads it dynamically)
 vim doc/conf.py                # update 'version' and 'release' in here
-vim MANIFEST.in                # update the new documentation to include: docs/${NEW_RELEASE}/ (hard-code the number, of course)
+vim MANIFEST.in                # update the files shipped in the release if needed (e.g., README or LICENSE)
 
 git add pyproject.toml doc/conf.py MANIFEST.in src/brainload/__init__.py
 ```
 
 #### Build docs
 
-First note the difference between the directories 'doc' (source for documentation and sphinx templates) and 'docs' (Github page made containing the generated documentation). Do not confuse them.
+The generated HTML documentation is no longer committed to the repository. It is built automatically from the sources in `doc/` by the `docs` GitHub Actions workflow (see `.github/workflows/docs.yml`) and deployed to GitHub Pages on every push to the default branch.
 
 If you added a new module (code file), be sure to add it to `doc/brainload.rst` so the documentation gets generated from the doc strings and it shows up in the docs.
 
-We use sphinx with the theme from `readthedocs.org` to generate the documentation. In the virtual environment:
+To build the documentation locally for testing, use sphinx with the theme from `readthedocs.org`. In the virtual environment:
 
 ```console
 pip install sphinx sphinx_rtd_theme
-```
-
-Now build the documentation:
-
-```console
 cd doc/
 make html
 ```
 
-This will build the documentation in HTML format and place it in `doc/_build/html/`. Now copy it to the correct location to be included in the release:
-
-```console
-cd ..    # back to repo root
-mkdir docs/${NEW_RELEASE}/
-cp -r doc/_build/html/* docs/${NEW_RELEASE}/
-```
-
-The [Brainload API documentation](http://dfsp-spirit.github.io/brainload) is made available on the internet using Github Pages, and our page is served from the directory `docs/` (note the `s` at the end) in this repo. You have to update the following HTML files:
-
-- `docs/index.html`
-- `docs/versions.html`
-
-Now it's time to add all those changes to git:
-
-```console
-git add docs/${NEW_RELEASE}
-git add docs/index.html docs/versions.html
-git commit -m "Update version to ${NEW_VERSION}, add generated documentation."
-```
+This will build the documentation in HTML format and place it in `doc/_build/html/` (do not commit this; it is gitignored).
 
 
 #### Build the packages for PyPI / pip

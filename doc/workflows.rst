@@ -160,3 +160,83 @@ You may also be interested in the average curvature of subject1:
 .. code:: python
 
     np.mean(data[subjects.index('subject1')])
+
+
+Parse FreeSurfer stats files (e.g., ``aseg.stats`` or ``?h.aparc.stats``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FreeSurfer writes one or more stats files per subject into the ``stats/`` sub directory of the subject directory. These are text files that contain:
+
+- a header and various meta data,
+- a list of global *measures* (lines starting with ``# Measure``), e.g., the volume of a brain structure, and
+- a data *table* with one row per brain region or structure.
+
+The most common stats files are:
+
+- ``aseg.stats``: global and subcortical measures, e.g., the volume of subcortical structures or the estimated total intracranial volume.
+- ``?h.aparc.stats`` (as well as ``?h.aparc.a2009s.stats`` and ``?h.aparc.DKTatlas.stats``): measures per cortical region of a parcellation, e.g., the mean cortical thickness of each region.
+
+brainload can parse all of these files. The high-level function ``brainload.stat`` (or ``bl.stat`` after ``import brainload as bl``) reads a single stats file and returns a dictionary with the raw data.
+
+.. code:: python
+
+    import brainload as bl
+
+    stats = bl.stat('/path/to/study/subject1/stats/aseg.stats')
+
+    # The returned dictionary contains the following keys:
+    stats['measures']                # list of measures; each measure is a list of strings
+    stats['table_data']              # list of table rows; each row is a list of strings
+    stats['table_column_headers']    # names of the table columns
+    stats['table_meta_data']         # parsed meta data, incl. per-column info under 'column_info_'
+
+All data is returned as strings. To work with the numbers, convert them to numpy arrays. The helpers for this live in the ``brainload.stats`` module.
+
+Work with the measures (e.g., get the volume of a structure for a subject):
+
+.. code:: python
+
+    from brainload import stats as blstats
+
+    numpy_measures, measure_names = blstats.measures_to_numpy(stats['measures'])
+    # measure_names is a list of 2-tuples like ('BrainSeg', 'BrainSegVol'),
+    # numpy_measures contains the corresponding values.
+
+Convert the data table to numpy arrays, one array per column. You need to specify the data type of each column; use the pre-defined type lists for the standard files:
+
+.. code:: python
+
+    # For aseg.stats:
+    table_by_column = blstats.stats_table_to_numpy(stats, blstats.typelist_for_aseg_stats())
+    table_by_column['Volume_mm3']        # numpy 1D array, the volume of each structure
+    table_by_column['StructName']        # the structure names (byte strings)
+
+    # For ?h.aparc.stats / ?h.aparc.a2009s.stats / ?h.aparc.DKTatlas.stats:
+    lh_stats = bl.stat('/path/to/study/subject1/stats/lh.aparc.stats')
+    table_by_column = blstats.stats_table_to_numpy(lh_stats, blstats.typelist_for_aparc_atlas_stats())
+    table_by_column['ThickAvg']          # numpy 1D array, the mean thickness of each region
+
+.. note::
+
+    The column-based conversion above is fine for a single subject. For group analyses you should use the row-based variant (``stats_table_to_numpy_by_row``), because FreeSurfer omits a region from a stats file when a subject has no vertices assigned to it, so the number of table rows can differ between subjects.
+
+Load the stats for a group of subjects, e.g., to use brain volumes or cortical thickness values as covariates in a statistical model:
+
+.. code:: python
+
+    import brainload as bl
+    from brainload import stats as blstats
+
+    subjects_list = ['subject1', 'subject2', 'subject3']
+    subjects_dir = '/path/to/study'
+
+    # All measures from aseg.stats for all subjects:
+    measures, table_data = blstats.group_stats_aseg(subjects_list, subjects_dir)
+    measures['BrainSeg,BrainSegVol']     # numpy 1D array, one value per subject
+
+    # All measures from lh.aparc.stats for all subjects:
+    measures, table_data = blstats.group_stats_aparc(subjects_list, subjects_dir, hemi='lh')
+    measures['Cortex,MeanThickness']     # numpy 1D array, one value per subject
+    table_data['ThickAvg']               # numpy 2D array of shape (n_subjects, n_regions)
+
+The ``group_stats_aseg`` and ``group_stats_aparc`` convenience functions wrap ``group_stats`` (by column) and ``group_stats_by_row`` (by region). Analogous helpers exist for the a2009s atlas (``group_stats_aparc_a2009s``) and the DKT atlas (``group_stats_aparc_DKTatlas``).
