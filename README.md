@@ -14,11 +14,6 @@ You are free to use this, but it should not be considered an officially maintain
 `brainload` can parse and compute brain descriptors from FreeSurfer statistics files and pre-processed image files (brain segmentations, parcellations, morphometry data files, ...) and store them in CSV format for machine learning.
 
 
-## Development stage
-
-This has been in alpha stage and ready for usage since December 10, 2018. The API is not 100% stable yet, be prepared for minor changes in the future.
-
-
 ## Features
 
 * Load FreeSurfer meshes (like `lh.white`, `lh.pial`) and/or morphometry data (like `lh.area` or `lh.thickness`) for a single subject or groups of subjects
@@ -166,7 +161,7 @@ Less related but still useful:
 
 Brainload is free software, released under the [MIT license](https://opensource.org/licenses/MIT). See the LICENSE file for the full license text.
 
-## Citing 
+## Citing
 
 
     Schäfer, T. Brainload: Working with FreeSurfer neuroimaging data in Python, 2018-, https://github.com/dfsp-spirit/brainload/ [Online; accessed 2019-10-17].

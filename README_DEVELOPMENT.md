@@ -255,7 +255,7 @@ Create a new dir for the release, copy the old `meta.yaml` file in there. Create
 ```console
 # we are still in REPO_ROOT/develop/anaconda_dist/recipe/
 mkdir ${NEW_RELEASE}
-cp ${OLD_RELEASE}/meta.yaml ${NEW_RELEASE}        
+cp ${OLD_RELEASE}/meta.yaml ${NEW_RELEASE}
 mkdir /tmp/condaishacky         # just don't ask, you do not wanna know why this is needed...
 # Before running the next command, delete the directory REPO_ROOT/develop/anaconda_dist/recipe/brainload in case it exists
 CONDA_BLD_PATH=/tmp/condaishacky conda skeleton pypi brainload --version ${NEW_VERSION}
