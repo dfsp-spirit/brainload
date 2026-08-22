@@ -1,8 +1,9 @@
 Brainload Changes
 =================
 
-WIP: Version 0.3.5
-------------------
+
+Version 0.4.0
+--------------
 - Switch packaging configuration from `setup.py`/`setup.cfg` to `pyproject.toml`
 - Drop `tox`; add GitHub Actions workflow `unittests` that runs the unit tests on Python 3.12
 - Drop support for Python < 3.12; fix use of removed `collections.Mapping` (use `collections.abc.Mapping`)
