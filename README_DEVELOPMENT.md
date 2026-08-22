@@ -75,10 +75,11 @@ The script downloads all required [neuroimaging test data from Github](https://g
 
 #### Running the tests
 
-The easiest it to use the integration into `setup.py`, as this will install all test dependencies for you automatically. In the virtual environment and the top-level brainload directory, just run:
+The easiest way is to install the package (including its test dependencies) into your virtual environment, and then run `pytest` from the top-level brainload directory:
 
 ```console
-python setup.py test
+pip install -e '.[test]'
+pytest
 ```
 
 #### Test coverage
@@ -89,9 +90,9 @@ Test coverage statistics are displayed automatically when running the tests as d
 
 ### Continuous Integration
 
-The tests are run automatically when you push to master and developers get results by email. Build status from travis-ci.org (Linux, branch master):
+The unit tests are run automatically on GitHub Actions for every push and pull request via the `unittests` workflow (see `.github/workflows/unittests.yml`). Build status on the default branch:
 
-[![Build Status](https://travis-ci.org/dfsp-spirit/brainload.svg?branch=master)](https://travis-ci.org/dfsp-spirit/brainload)
+[![Unit tests](https://github.com/dfsp-spirit/brainload/actions/workflows/unittests.yml/badge.svg?branch=master)](https://github.com/dfsp-spirit/brainload/actions/workflows/unittests.yml)
 
 
 Note that not all test data is available on Travis and as a result, some tests get skipped. We are working on this. When run locally with all test data, coverage must be greater than 95% for all files.
@@ -121,12 +122,11 @@ cd ~/develop/brainload/        # repo root
 git checkout master
 git pull
 
-vim setup.py                   # update 'version' in here
+vim src/brainload/__init__.py  # update __version__ in here (this is the single source of truth; pyproject.toml reads it dynamically)
 vim doc/conf.py                # update 'version' and 'release' in here
 vim MANIFEST.in                # update the new documentation to include: docs/${NEW_RELEASE}/ (hard-code the number, of course)
-vim src/brainload/__init__.py  # update __version__ in here.
 
-git add setup.py doc/conf.py MANIFEST.in src/brainload/__init__.py
+git add pyproject.toml doc/conf.py MANIFEST.in src/brainload/__init__.py
 ```
 
 #### Build docs
@@ -175,12 +175,12 @@ git commit -m "Update version to ${NEW_VERSION}, add generated documentation."
 We use setuptools for building:
 
 ```console
-pip install --upgrade setuptools wheel              # just make sure we have the latest versions
+pip install --upgrade build                         # just make sure we have the latest versions
 rm -rf dist/
-python setup.py sdist bdist_wheel --universal
+python -m build
 ```
 
-Carefully check the output of the command for warnings or errors: wrong information in `setup.py` or `MANIFEST.in` may become obvious. If something is wrong, fix it and commit again.
+Carefully check the output of the command for warnings or errors: wrong information in `pyproject.toml` or `MANIFEST.in` may become obvious. If something is wrong, fix it and commit again.
 
 ### Distributing the packages
 

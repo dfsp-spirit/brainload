@@ -109,7 +109,7 @@ def test_write_voldata_to_nifti_file():
         bw.write_voldata_to_nifti_file(nifti_file_name, vol_data)
         assert os.path.isfile(nifti_file_name)
         img = nib.load(nifti_file_name)
-        nifti_data = img.get_data()
+        nifti_data = np.asanyarray(img.dataobj)
         assert nifti_data.shape == (10, 10, 10)
         assert nifti_data[0,0,0] == 0
         assert nifti_data[0,0,1] == 20

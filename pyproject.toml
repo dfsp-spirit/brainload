@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brainload"
+description = "Load FreeSurfer brain imaging data with minimal cognitive load."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Tim Schäfer", email = "ts+code@rcmd.org" }]
+keywords = ["neuroimaging", "freesurfer", "nibabel", "mgh", "curv", "MRI", "morphometry"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy",
+    "nibabel",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-console-scripts",
+]
+
+[project.urls]
+Homepage = "https://github.com/dfsp-spirit/brainload"
+
+[project.scripts]
+visualize_verts = "brainload.clients.visualize_verts:visualize_verts"
+brain_mesh_info = "brainload.clients.brain_mesh_info:brain_mesh_info"
+brain_vol_info = "brainload.clients.brain_vol_info:brain_vol_info"
+brain_morph_info = "brainload.clients.brain_morph_info:brain_morph_info"
+brain_qa = "brainload.clients.brain_consistency:brain_consistency"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "brainload.__version__" }
+
+[tool.pytest.ini_options]
+addopts = "--verbose --cov=src/"
+testpaths = ["tests"]

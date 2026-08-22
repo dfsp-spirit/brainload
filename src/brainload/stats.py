@@ -275,7 +275,7 @@ def typelist_for_aseg_stats():
     """
     f = np.float32
     i = np.int32
-    s = np.string_
+    s = np.bytes_
     return [i, i, i, f, s, f, f, f, f, f]
 
 
@@ -292,11 +292,11 @@ def typelist_for_aparc_atlas_stats():
     """
     f = np.float32
     i = np.int32
-    s = np.string_
+    s = np.bytes_
     return [s, i, i, i, f, f, f, f, i, f]
 
 
-def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
+def measures_to_numpy(measures, requested_measures=None, dtype=np.float64):
     """
     Convert the measures list of lists to a 2D numpy array of the given type.
 
@@ -311,7 +311,7 @@ def measures_to_numpy(measures, requested_measures=None, dtype=np.float_):
         If given, only the measures listed in here are used. Each measure is identified by 2 strings, which must match the first and second token on the measure line. For a line like '# Measure Cortex, NumVert, Number of Vertices, 140843, unitless', the 2 strings of a tuple would be 'Cortex' and 'NumVert'. If omitted, all measures will be used.
 
     dtype: numpy data type, optional
-        The data type that should be used for the returned numpy array. Defaults to ```np.float_``` if omitted.
+        The data type that should be used for the returned numpy array. Defaults to ```np.float64``` if omitted.
 
     Returns
     -------
@@ -375,11 +375,11 @@ def stats_table_to_numpy_by_row(stat, type_list, subject_id, label_column_index=
         raise ValueError('Length of type_list (%d) must match number of stat[table_column_headers] (%d).' % (len(type_list), len(header)))
 
     if label_column_index == -1:
-        s = np.string_
+        s = np.bytes_
         if s in type_list:
             label_column_index = type_list.index(s)
         else:
-            raise ValueError("stats_table_to_numpy_by_row: No column of type np.string_ found in type_list. Must set label_column_index in this case.")
+            raise ValueError("stats_table_to_numpy_by_row: No column of type np.bytes_ found in type_list. Must set label_column_index in this case.")
 
     result = {}
     numpy_string_matrix = np.array(table)
@@ -779,11 +779,11 @@ def _parse_registration_matrix(matrix_lines):
         raise ValueError("Registration matrix has wrong line count. Expected exactly 4 lines, got %d." % len(matrix_lines))
     reg_matrix = np.zeros((4, 4))
     for idx, line in enumerate(matrix_lines):
-        reg_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
+        reg_matrix[idx] = np.fromstring(line, dtype=np.float64, sep=' ')
     return reg_matrix
 
 
-def extract_field_from_table_data(column_name, row_index, all_subjects_table_data_dict, dtype=np.float_):
+def extract_field_from_table_data(column_name, row_index, all_subjects_table_data_dict, dtype=np.float64):
     """
     Extract the values in one table field for all subjects.
 
@@ -854,7 +854,7 @@ def extract_table_data_indices_where(column_name, target_value_string, all_subje
         return res_tuple[0]
 
 
-def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float_):
+def extract_column_from_table_data(all_subjects_table_data_dict, column_name_for_dict_keys, column_name_of_values, dtype=np.float64):
     """
     For all rows and a single column, extract the data for all subjects.
 

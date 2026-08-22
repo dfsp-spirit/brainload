@@ -7,7 +7,10 @@ Most of these functions interact with the filesystem to find data.
 import os
 import csv
 import string
-import collections
+try:
+    from collections.abc import Mapping
+except ImportError:  # pragma: no cover -- Python < 3.10
+    from collections import Mapping
 import numpy as np
 
 
@@ -214,7 +217,7 @@ def _check_hemi_dict(hemi_dict, both_required=True):
     >>> print nit._check_hemi_dict(my_dict)
     True
     """
-    if not isinstance(hemi_dict, collections.Mapping):
+    if not isinstance(hemi_dict, Mapping):
         return False
     if both_required:
         if not len(hemi_dict) == 2 or not ( 'lh' in hemi_dict and 'rh' in hemi_dict ):
@@ -325,7 +328,7 @@ def load_vertex_indices(vertex_indices_file):
 
 
 def save_vertex_indices(vertex_indices_file, vertex_indices):
-    np.savetxt(vertex_indices_file, vertex_indices, delimiter=",")
+    np.savetxt(vertex_indices_file, vertex_indices, delimiter=",", fmt='%d')
 
 def load_voxel_indices(vertex_indices_file):
     return np.loadtxt(vertex_indices_file, dtype=np.uint32, delimiter=",")

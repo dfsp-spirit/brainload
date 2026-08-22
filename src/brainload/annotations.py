@@ -540,7 +540,7 @@ def read_vertex_list_file(file_name, sep=' '):
     numpy 1D int array
         The data read from all non-comment lines.
     """
-    verts = np.array([], dtype=np.int)
+    verts = np.array([], dtype=np.int64)
     lines = nit._read_text_file_lines(file_name)
     for line in lines:
         if line.startswith('#'):

@@ -1,14 +1,12 @@
-## requirements.txt -- Requirements to be installed for automated tests on travis. Users should ignore this file.
-setuptools>=36.0.0
-six>=0.11
+## requirements.txt -- Requirements for running the unit tests on CI (GitHub Actions). Users should ignore this file.
+## Note: Runtime and test dependencies are now declared in `pyproject.toml` (see `[project]` and `[project.optional-dependencies]`).
+##       This file is kept for reference / manual installation only.
 numpy
 nibabel
-tox
 
 ## The following packages are needed for testing
 pytest
 pytest-cov
-pytest-runner
 pytest-console-scripts
 ## The following packages are needed for building the documentation
 #sphinx

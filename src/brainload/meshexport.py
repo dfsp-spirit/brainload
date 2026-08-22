@@ -279,7 +279,7 @@ def scalars_to_colors_matplotlib(data, matplotlib_cmap_name='viridis', data_norm
         norm = mpl_colors.LogNorm(vmin=data_min, vmax=data_max)
 
     num_scalars = data.shape[0]
-    assigned_colors = np.zeros((num_scalars, 4), dtype=np.float_)
+    assigned_colors = np.zeros((num_scalars, 4), dtype=np.float64)
 
     assigned_colors = cmap(norm(data))
     if scale:

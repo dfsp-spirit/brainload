@@ -47,6 +47,9 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+# Runtime output of the visualize_verts console script (tests may create this in the repo root)
+surface_RGB_map.txt
+
 # Translations
 *.mo
 *.pot

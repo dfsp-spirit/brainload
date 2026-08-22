@@ -303,7 +303,7 @@ def test_stats_table_to_numpy_aseg_stats():
 def test_stats_table_to_numpy_raises_on_invalied_type_count():
     stats_file = os.path.join(TEST_DATA_DIR, 'subject1', 'stats', 'aseg.stats')
     stats = bl.stat(stats_file)
-    types = [np.string_, np.string_]        # wrong number of types!
+    types = [np.bytes_, np.bytes_]        # wrong number of types!
     with pytest.raises(ValueError) as exc_info:
         numpy_data = st.stats_table_to_numpy(stats, types)
     assert 'Length of type_list' in str(exc_info.value)
@@ -318,7 +318,7 @@ def test_measures_to_numpy():
     assert numpy_measures.shape[0] == len(stats['measures'])
     assert measure_names[0] == ('BrainSeg', 'BrainSegVol')
     assert numpy_measures[0] == pytest.approx(1243340.0, 0.01)
-    assert np.dtype(numpy_measures[0]) == np.float_
+    assert np.dtype(numpy_measures[0]) == np.float64
 
 
 def test_measures_to_numpy_with_custom_dtype():

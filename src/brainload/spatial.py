@@ -507,7 +507,7 @@ def parse_registration_matrix(matrix_lines):
         raise ValueError("Registration matrix has wrong line count. Expected exactly 4 lines, got %d." % len(matrix_lines))
     reg_matrix = np.zeros((4, 4))
     for idx, line in enumerate(matrix_lines):
-        reg_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
+        reg_matrix[idx] = np.fromstring(line, dtype=np.float64, sep=' ')
     return reg_matrix
 
 

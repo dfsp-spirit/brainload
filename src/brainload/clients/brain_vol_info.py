@@ -33,7 +33,7 @@ def brain_vol_info():
     verbose = args.verbose
     sep = args.separator
 
-    vol_data = nib.load(volume_file).get_data()
+    vol_data = np.asanyarray(nib.load(volume_file).dataobj)
     if verbose:
         print("---Brain Vol Info---")
         print("Volume has %d dimensions, shape %s and data type %s. It contains %d voxels." % (len(vol_data.shape), vol_data.shape, vol_data.dtype, len(np.ravel(vol_data))))

@@ -8,7 +8,10 @@ import os
 import sys
 import errno
 import numpy as np
-import collections
+try:
+    from collections.abc import Mapping
+except ImportError:  # pragma: no cover -- Python < 3.10
+    from collections import Mapping
 import gzip
 import nibabel.freesurfer.io as fsio
 import nibabel.freesurfer.mghformat as fsmgh
@@ -86,7 +89,7 @@ def read_m3z_file(m3z_file):
     meta_data['file_end_pos'] = len(fdata)
 
     # create indices into the vol_data where data resides
-    indices = np.kron(np.ones((12,1), dtype=np.int), range(width * height * depth))
+    indices = np.kron(np.ones((12,1), dtype=np.int64), range(width * height * depth))
     vox_offset = 9 * 4 * indices
     to_repeat = np.array([3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8])
     reshaped_offsets = np.reshape(vox_offset, -1, order='F').copy()
@@ -335,7 +338,7 @@ def merge_morphometry_data(morphometry_data_arrays, dtype=float):
 
     >>> lh_morphometry_data = np.array([0.0, 0.1, 0.2, 0.3])   # some fake data
     >>> rh_morphometry_data = np.array([0.5, 0.6])
-    >>> merged_data = fsd.merge_morphometry_data(np.array([lh_morphometry_data, rh_morphometry_data]))
+    >>> merged_data = fsd.merge_morphometry_data([lh_morphometry_data, rh_morphometry_data])
     >>> print merged_data.shape
     (6, )
 
@@ -343,7 +346,7 @@ def merge_morphometry_data(morphometry_data_arrays, dtype=float):
 
     >>> lh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh')
     >>> rh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data)
-    >>> both_hemis_morphometry_data = merge_morphometry_data(np.array([lh_morphometry_data, rh_morphometry_data]))
+    >>> both_hemis_morphometry_data = merge_morphometry_data([lh_morphometry_data, rh_morphometry_data])
     """
     merged_data = np.empty((0), dtype=dtype)
     for morphometry_data in morphometry_data_arrays:
@@ -590,7 +593,7 @@ def load_subject_mesh_files(lh_surf_file, rh_surf_file, hemi='both', meta_data=N
     else:
         lh_vert_coords, lh_faces, meta_data = read_fs_surface_file_and_record_meta_data(lh_surf_file, 'lh', meta_data=meta_data)
         rh_vert_coords, rh_faces, meta_data = read_fs_surface_file_and_record_meta_data(rh_surf_file, 'rh', meta_data=meta_data)
-        vert_coords, faces = _merge_meshes(np.array([[lh_vert_coords, lh_faces], [rh_vert_coords, rh_faces]]))
+        vert_coords, faces = _merge_meshes([[lh_vert_coords, lh_faces], [rh_vert_coords, rh_faces]])
     return vert_coords, faces, meta_data
 
 
@@ -620,7 +623,7 @@ def rhi(rh_relative_index, meta_data):
     """
     lh_key = 'lh.num_data_points'
     rh_key = 'rh.num_data_points'
-    if not isinstance(meta_data, collections.Mapping):
+    if not isinstance(meta_data, Mapping):
         raise ValueError("rhi: meta_data must be a meta data dictionary containing the keys '%s' and '%s'." % (lh_key, rh_key))
 
     if not ('lh.num_data_points' in meta_data and 'rh.num_data_points' in meta_data):
@@ -775,7 +778,7 @@ def load_subject_morphometry_data_files(lh_morphometry_data_file, rh_morphometry
     else:
         lh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(lh_morphometry_data_file, 'lh', meta_data=meta_data, format=format)
         rh_morphometry_data, meta_data = read_fs_morphometry_data_file_and_record_meta_data(rh_morphometry_data_file, 'rh', meta_data=meta_data, format=format)
-        morphometry_data = merge_morphometry_data(np.array([lh_morphometry_data, rh_morphometry_data]))
+        morphometry_data = merge_morphometry_data([lh_morphometry_data, rh_morphometry_data])
     return morphometry_data, meta_data
 
 
@@ -1624,5 +1627,5 @@ def _parse_talairach_matrix_lines(matrix_lines):
 
     tal_matrix = np.zeros((3, 4))
     for idx, line in enumerate(matrix_lines):
-        tal_matrix[idx] = np.fromstring(line, dtype=np.float_, sep=' ')
+        tal_matrix[idx] = np.fromstring(line, dtype=np.float64, sep=' ')
     return tal_matrix
